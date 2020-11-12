@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('BIid', models.AutoField(primary_key=True, serialize=False)),
                 ('BIregDate', models.DateField()),
-                ('BIaddress', models.CharField(max_length=100)),
-                ('BIworkTime', models.CharField(max_length=100)),
-                ('BItelephone', models.CharField(max_length=100)),
-                ('BIfaxes', models.CharField(max_length=100)),
-                ('BIemail', models.CharField(max_length=100)),
-                ('BIaddressPlace', models.CharField(max_length=100)),
+                ('BIaddress', models.CharField(max_length=1000)),
+                ('BIworkTime', models.CharField(max_length=1000)),
+                ('BItelephone', models.CharField(max_length=1000)),
+                ('BIfaxes', models.CharField(max_length=1000)),
+                ('BIemail', models.CharField(max_length=1000)),
+                ('BIaddressPlace', models.CharField(max_length=1000)),
             ],
         ),
         migrations.CreateModel(
