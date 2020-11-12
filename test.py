@@ -1,8 +1,9 @@
 import bs4
 
-html_text = '<html><title>QWE</title><body><div id="1">qqqq</div></body>'
+with open("index.php", "r", encoding="utf-8") as f:
+    contents = f.read()
 
 if __name__ == '__main__':
-    p = bs4.BeautifulSoup(html_text, 'lxml')
-    p.find_all('div', {'id': '1'})[0].string = "123123123"
-    print(str(p))
+    soup = bs4.BeautifulSoup(contents, 'lxml')
+    soup.find_all('td', {'itemprop': 'email'})[0].string = "000000000000"
+    print(str(soup))
