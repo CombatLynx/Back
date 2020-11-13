@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from django.http.response import JsonResponse
+from django.http.response import JsonResponse, HttpResponse
 
 from .models import Departments, Employees, BasicInformations
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer
 
 from django.core.files.storage import default_storage
 
+import bs4
 
 # Create your views here.
 @csrf_exempt
@@ -99,6 +100,54 @@ def basicInformationApi(request, id=0):
         basicInformation.delete()
         return JsonResponse("Deleted Succeffully!!", safe=False)
 
+
+basic_information_replace_map = {
+    'td': {
+        'regDate': lambda obj: obj.BIregDate,
+        'address': lambda obj: obj.BIaddress,
+        'workTime': lambda obj: obj.BIworkTime,
+        'telephone': lambda obj: obj.BItelephone,
+        'fax': lambda obj: obj.BIfaxes,
+        'email': lambda obj: obj.BIemail,
+        'addressPlace': lambda obj: obj.BIaddressPlace
+    }
+}
+
+
+def read_page(filename):
+    with open(filename, "r") as f:
+        content = f.read()
+        return bs4.BeautifulSoup(content, 'lxml')
+
+
+def write_page(filename, page):
+    with open(filename, "w") as f:
+        print(page, file=f)
+
+
+def replace_page_elements(replace_map, parser, obj):
+    for tag, parameters in replace_map.items():
+        for name, getter in parameters.items():
+            tags = parser.find_all(tag, {'itemprop': name})
+            if len(tags) == 1:
+                print(getter(obj))
+                tags[0].string = str(getter(obj))
+            else:
+                pass
+    return str(parser)
+
+
+@csrf_exempt
+def publish_basic_information(request):
+    if request.method == 'POST':
+        body_json = JSONParser().parse(request)
+        id = body_json['id']
+        information = BasicInformations.objects.get(BIid=id)
+        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        page_parser = read_page(file)
+        new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, new_page)
+        return HttpResponse("OK")
 
 @csrf_exempt
 def SaveFile(request):

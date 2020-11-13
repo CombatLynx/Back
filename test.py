@@ -1,6 +1,6 @@
 import bs4
 
-with open("index.php", "r", encoding="utf-8") as f:
+with open("DjangoAPI/media/index.php", "r", encoding="utf-8") as f:
     contents = f.read()
 
 if __name__ == '__main__':
