@@ -115,13 +115,13 @@ basic_information_replace_map = {
 
 
 def read_page(filename):
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         content = f.read()
         return bs4.BeautifulSoup(content, 'lxml')
 
 
 def write_page(filename, page):
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         print(page, file=f)
 
 
@@ -143,7 +143,7 @@ def publish_basic_information(request):
         body_json = JSONParser().parse(request)
         id = body_json['id']
         information = BasicInformations.objects.get(BIid=id)
-        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        file = 'EmployeeApp/parser/pages/basic_information/index.php'
         page_parser = read_page(file)
         new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
         write_page(file, new_page)
@@ -165,7 +165,7 @@ def SaveFile(request):
 # @csrf_exempt
 # def generate_html_page(request):
 #     if request.method == 'GET':
-#         html = read_html('emploee/index.html')
+#         html = read_html('emploee/index.php')
 #
 #         # update data
 #         emploee = Employees.objects.all()
@@ -175,5 +175,5 @@ def SaveFile(request):
 #
 #
 #         # print
-#         with open('emploee/index.html', 'w') as f:
+#         with open('emploee/index.php', 'w') as f:
 #             print(str(html), file=f)

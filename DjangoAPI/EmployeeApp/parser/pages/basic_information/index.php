@@ -196,32 +196,32 @@
 <tbody>
 <tr>
 <td style="width: 30%;"><b>Дата создания образовательной организации</b></td>
-<td align="bottom" itemprop="regDate">1931-10-01</td>
+<td align="bottom" itemprop="regDate">2020-11-04</td>
 </tr>
 <tr>
 <td><b>Адрес местонахождения образовательной организации</b></td>
-<td itemprop="address">ул. Большевистская, д. 68, г. Саранск, Республика Мордовия, 430005</td>
+<td itemprop="address">342</td>
 </tr>
 <tr>
 <td><b>Режим, график работы</b></td>
-<td itemprop="workTime">Для работников унивделя) пн-пт: 8.</td>
+<td itemprop="workTime">34c</td>
 </tr>
 <tr>
 <td><b>Контактные телефоны</b></td>
-<td itemprop="telephone">+7 (8342)24-37-32, 24-48-88, 47-29-13</td>
+<td itemprop="telephone">vqer</td>
 </tr>
 <tr>
 <td><b>Факсы</b></td>
-<td itemprop="fax">+7 (8342) 472913</td>
+<td itemprop="fax">rqwer</td>
 </tr>
 <tr>
 <td><b>Адреса электронной почты</b></td>
-<td itemprop="email">dep-general@adm.mrsu.ru dep-mail@adm.mrsu.ru</td>
+<td itemprop="email">rvew</td>
 </tr>
 <!-- ----------------------------------------------------------------------- -->
 <tr>
 <td><b>Сведения о каждом месте осуществления образовательной деятельности</b></td>
-<td itemprop="addressPlace">Адреса, указанные в лицензии.pdf</td>
+<td itemprop="addressPlace">logo_ozVIXcg.png</td>
 </tr>
 </tbody></table><h4 style="text-align:left;">Учредители образовательной организации</h4>
 <table border="1" itemprop="uchredLaw">
