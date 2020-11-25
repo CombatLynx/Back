@@ -25,3 +25,15 @@ class BasicInformations(models.Model):
     BIfaxes = models.CharField(max_length=1000)
     BIemail = models.CharField(max_length=1000)
     BIaddressPlace = models.CharField(max_length=1000)
+
+
+# УЧРЕДИТЕЛИ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ
+class UchredsInformation(models.Model):
+    UBIid = models.AutoField(primary_key=True)
+    UBIrow = models.CharField(max_length=100000)
+
+
+# СТРУКТУРНЫЕ ПОДРАЗДЕЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ
+class DepartmentsInformation(models.Model):
+    DIid = models.AutoField(primary_key=True)
+    DIrow = models.CharField(max_length=100000)

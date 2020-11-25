@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Departments, Employees, BasicInformations
+from .models import Departments, Employees, BasicInformations, DepartmentsInformation
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -31,3 +31,21 @@ class BasicInformationSerializer(serializers.ModelSerializer):
                   'BIfaxes',
                   'BIemail',
                   'BIaddressPlace')
+
+
+class UchredBISerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DepartmentsInformation
+        fields = (
+            'UBIid',
+            'UBIrow'
+        )
+
+
+class DepartmentsInformationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DepartmentsInformation
+        fields = (
+            'DIid',
+            'DIrow'
+        )
