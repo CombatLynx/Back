@@ -3,115 +3,117 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
-from .models import BasicInformations, Subdivisions
+from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions
+from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
+    DepartmentsInformationSerializer, SubdivisionsSerializer
 
 from django.core.files.storage import default_storage
 
 import bs4
 
 
-# # Create your views here.
-# @csrf_exempt
-# def departmentApi(request, id=0):
-#     if request.method == 'GET':
-#         departments = Departments.objects.all()
-#         departments_serializer = DepartmentSerializer(departments, many=True)
-#         return JsonResponse(departments_serializer.data, safe=False)
-#
-#     elif request.method == 'POST':
-#         department_data = JSONParser().parse(request)
-#         department_serializer = DepartmentSerializer(data=department_data)
-#         if department_serializer.is_valid():
-#             department_serializer.save()
-#             return JsonResponse("Added Successfully!!", safe=False)
-#         return JsonResponse("Failed to Add.", safe=False)
-#
-#     elif request.method == 'PUT':
-#         department_data = JSONParser().parse(request)
-#         department = Departments.objects.get(DepartmentId=department_data['DepartmentId'])
-#         department_serializer = DepartmentSerializer(department, data=department_data)
-#         if department_serializer.is_valid():
-#             department_serializer.save()
-#             return JsonResponse("Updated Successfully!!", safe=False)
-#         return JsonResponse("Failed to Update.", safe=False)
-#
-#     elif request.method == 'DELETE':
-#         department = Departments.objects.get(DepartmentId=id)
-#         department.delete()
-#         return JsonResponse("Deleted Succeffully!!", safe=False)
-#
-#
-# @csrf_exempt
-# def employeeApi(request, id=0):
-#     if request.method == 'GET':
-#         employees = Employees.objects.all()
-#         employees_serializer = EmployeeSerializer(employees, many=True)
-#         return JsonResponse(employees_serializer.data, safe=False)
-#
-#     elif request.method == 'POST':
-#         employee_data = JSONParser().parse(request)
-#         employee_serializer = EmployeeSerializer(data=employee_data)
-#         if employee_serializer.is_valid():
-#             employee_serializer.save()
-#             return JsonResponse("Added Successfully!!", safe=False)
-#         return JsonResponse("Failed to Add.", safe=False)
-#
-#     elif request.method == 'PUT':
-#         employee_data = JSONParser().parse(request)
-#         employee = Employees.objects.get(EmployeeId=employee_data['EmployeeId'])
-#         employee_serializer = EmployeeSerializer(employee, data=employee_data)
-#         if employee_serializer.is_valid():
-#             employee_serializer.save()
-#             return JsonResponse("Updated Successfully!!", safe=False)
-#         return JsonResponse("Failed to Update.", safe=False)
-#
-#     elif request.method == 'DELETE':
-#         employee = Employees.objects.get(EmployeeId=id)
-#         employee.delete()
-#         return JsonResponse("Deleted Successfully!!", safe=False)
-#
-#
-# @csrf_exempt
-# def basicInformationApi(request, id=0):
-#     if request.method == 'GET':
-#         basicInformations = BasicInformations.objects.all()
-#         basicInformations_serializer = BasicInformationSerializer(basicInformations, many=True)
-#         return JsonResponse(basicInformations_serializer.data, safe=False)
-#
-#     elif request.method == 'POST':
-#         basicInformation_data = JSONParser().parse(request)
-#         basicInformation_serializer = BasicInformationSerializer(data=basicInformation_data)
-#         if basicInformation_serializer.is_valid():
-#             basicInformation_serializer.save()
-#             return JsonResponse("Added Successfully!!", safe=False)
-#         return JsonResponse("Failed to Add.", safe=False)
-#
-#     elif request.method == 'PUT':
-#         basicInformation_data = JSONParser().parse(request)
-#         basicInformation = BasicInformations.objects.get(BIid=basicInformation_data['BIid'])
-#         basicInformation_serializer = BasicInformationSerializer(basicInformation, data=basicInformation_data)
-#         if basicInformation_serializer.is_valid():
-#             basicInformation_serializer.save()
-#             return JsonResponse("Updated Successfully!!", safe=False)
-#         return JsonResponse("Failed to Update.", safe=False)
-#
-#     elif request.method == 'DELETE':
-#         basicInformation = BasicInformations.objects.get(BIid=id)
-#         basicInformation.delete()
-#         return JsonResponse("Deleted Succeffully!!", safe=False)
-#
+# Create your views here.
+@csrf_exempt
+def departmentApi(request, id=0):
+    if request.method == 'GET':
+        departments = Departments.objects.all()
+        departments_serializer = DepartmentSerializer(departments, many=True)
+        return JsonResponse(departments_serializer.data, safe=False)
 
-# basic_information_replace_map = {
-#     'td': {
-#         'regDate': lambda obj: obj.BIregDate,
-#         'address': lambda obj: obj.BIaddress,
-#         'workTime': lambda obj: obj.BIworkTime,
-#         'telephone': lambda obj: obj.BItelephone,
-#         'fax': lambda obj: obj.BIfaxes,
-#         'email': lambda obj: obj.BIemail,
-#         'addressPlace': lambda obj: obj.BIaddressPlace
-#     }
-# }
+    elif request.method == 'POST':
+        department_data = JSONParser().parse(request)
+        department_serializer = DepartmentSerializer(data=department_data)
+        if department_serializer.is_valid():
+            department_serializer.save()
+            return JsonResponse("Added Successfully!!", safe=False)
+        return JsonResponse("Failed to Add.", safe=False)
+
+    elif request.method == 'PUT':
+        department_data = JSONParser().parse(request)
+        department = Departments.objects.get(DepartmentId=department_data['DepartmentId'])
+        department_serializer = DepartmentSerializer(department, data=department_data)
+        if department_serializer.is_valid():
+            department_serializer.save()
+            return JsonResponse("Updated Successfully!!", safe=False)
+        return JsonResponse("Failed to Update.", safe=False)
+
+    elif request.method == 'DELETE':
+        department = Departments.objects.get(DepartmentId=id)
+        department.delete()
+        return JsonResponse("Deleted Succeffully!!", safe=False)
+
+
+@csrf_exempt
+def employeeApi(request, id=0):
+    if request.method == 'GET':
+        employees = Employees.objects.all()
+        employees_serializer = EmployeeSerializer(employees, many=True)
+        return JsonResponse(employees_serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        employee_data = JSONParser().parse(request)
+        employee_serializer = EmployeeSerializer(data=employee_data)
+        if employee_serializer.is_valid():
+            employee_serializer.save()
+            return JsonResponse("Added Successfully!!", safe=False)
+        return JsonResponse("Failed to Add.", safe=False)
+
+    elif request.method == 'PUT':
+        employee_data = JSONParser().parse(request)
+        employee = Employees.objects.get(EmployeeId=employee_data['EmployeeId'])
+        employee_serializer = EmployeeSerializer(employee, data=employee_data)
+        if employee_serializer.is_valid():
+            employee_serializer.save()
+            return JsonResponse("Updated Successfully!!", safe=False)
+        return JsonResponse("Failed to Update.", safe=False)
+
+    elif request.method == 'DELETE':
+        employee = Employees.objects.get(EmployeeId=id)
+        employee.delete()
+        return JsonResponse("Deleted Successfully!!", safe=False)
+
+
+@csrf_exempt
+def basicInformationApi(request, id=0):
+    if request.method == 'GET':
+        basicInformations = BasicInformations.objects.all()
+        basicInformations_serializer = BasicInformationSerializer(basicInformations, many=True)
+        return JsonResponse(basicInformations_serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        basicInformation_data = JSONParser().parse(request)
+        basicInformation_serializer = BasicInformationSerializer(data=basicInformation_data)
+        if basicInformation_serializer.is_valid():
+            basicInformation_serializer.save()
+            return JsonResponse("Added Successfully!!", safe=False)
+        return JsonResponse("Failed to Add.", safe=False)
+
+    elif request.method == 'PUT':
+        basicInformation_data = JSONParser().parse(request)
+        basicInformation = BasicInformations.objects.get(BIid=basicInformation_data['BIid'])
+        basicInformation_serializer = BasicInformationSerializer(basicInformation, data=basicInformation_data)
+        if basicInformation_serializer.is_valid():
+            basicInformation_serializer.save()
+            return JsonResponse("Updated Successfully!!", safe=False)
+        return JsonResponse("Failed to Update.", safe=False)
+
+    elif request.method == 'DELETE':
+        basicInformation = BasicInformations.objects.get(BIid=id)
+        basicInformation.delete()
+        return JsonResponse("Deleted Succeffully!!", safe=False)
+
+
+basic_information_replace_map = {
+    'td': {
+        'regDate': lambda obj: obj.BIregDate,
+        'address': lambda obj: obj.BIaddress,
+        'workTime': lambda obj: obj.BIworkTime,
+        'telephone': lambda obj: obj.BItelephone,
+        'fax': lambda obj: obj.BIfaxes,
+        'email': lambda obj: obj.BIemail,
+        'addressPlace': lambda obj: obj.BIaddressPlace
+    }
+}
 
 
 def read_page(filename):
@@ -137,18 +139,18 @@ def replace_page_elements(replace_map, parser, obj):
     return parser
 
 
-# @csrf_exempt
-# def publish_basic_information(request):
-#     if request.method == 'POST':
-#         body_json = JSONParser().parse(request)
-#         id = body_json['id']
-#         information = BasicInformations.objects.get(BIid=id)
-#         file = 'EmployeeApp/parser/pages/basic_information/index.php'
-#         page_parser = read_page(file)
-#         new_page = str(replace_page_elements(basic_information_replace_map, page_parser, information))
-#         write_page(file, new_page)
-#         return HttpResponse("OK")
-#
+@csrf_exempt
+def publish_basic_information(request):
+    if request.method == 'POST':
+        body_json = JSONParser().parse(request)
+        id = body_json['id']
+        information = BasicInformations.objects.get(BIid=id)
+        file = 'EmployeeApp/parser/pages/basic_information/index.php'
+        page_parser = read_page(file)
+        new_page = str(replace_page_elements(basic_information_replace_map, page_parser, information))
+        write_page(file, new_page)
+        return HttpResponse("OK")
+
 
 @csrf_exempt
 def SaveFile(request):
@@ -181,22 +183,19 @@ def SaveFile(request):
 #             print(str(html), file=f)
 
 
-# def fill_json(keys, values, json):
-#     for i, name in enumerate(keys):
-#         json[name] = values[i]
-#     return json
-#
-#
-# def get_department_table_header():
-#     header_row = DepartmentsInformation.objects.get(DIid=0)
-#     return header_row.DIrow.split('\t')
+def fill_json(keys, values, json):
+    for i, name in enumerate(keys):
+        json[name] = values[i]
+    return json
 
 
-# ---------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------
-# ------------------------  СТРУКТУРНЫЕ ПОДРАЗДЕЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ   -----------------------
+# ------------------------- СТРУКТУРНЫЕ ПОДРАЗДЕЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
+
+
+def get_department_table_header():
+    header_row = DepartmentsInformation.objects.get(DIid=0)
+    return header_row.DIrow.split('\t')
+
 
 def subdivision_to_list(row):
     return [row.id, row.name, row.fio, row.position, row.address, row.off_site, row.email, row.file_url]
@@ -204,7 +203,6 @@ def subdivision_to_list(row):
 
 def subdivision_format():
     return ['id', 'name', 'fio', 'position', 'address', 'off_site', 'email', 'file_url']
-
 
 
 @csrf_exempt
@@ -347,28 +345,24 @@ def subdivisions_publish(request):
         return HttpResponse("OK")
 
 
-# ---------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------------------
-# ----------------------------------------  ОСНОВНЫЕ СВЕДЕНИЯ   -------------------------------------------
+# ------------------------- Основные сведения ---------------------------------
 
 def basic_information_to_list(row):
-    return [row.id, row.regDate, row.address, row.workTime, row.telephone, row.email, row.addressPlace]
+    return [row.id, row.date_create, row.address, row.mode, row.phones, row.emails, row.address_place]
 
 
 def basic_information_format():
-    return ['id', 'regDate', 'address', 'workTime', 'telephone', 'email', 'addressPlace']
+    return ['id', 'date_create', 'address', 'mode', 'phones', 'emails', 'address_place']
 
 
 @csrf_exempt
 def basic_informations(request):
     if request.method == 'GET':
-        b = BasicInformations.objects.all()
-        b = [basic_information_to_list(item) for item in b]
+        a = BasicInformations.objects.all()
+        a = [basic_information_to_list(item) for item in a]
         return JsonResponse({
             'format': basic_information_format(),
-            'data': b
+            'data': a
         }, safe=False)
     elif request.method == 'POST':
         pass
@@ -382,7 +376,7 @@ def basic_informationsFormat(request):
         return JsonResponse(basic_information_format(), safe=False)
 
 
-# from datetime import datetime
+from datetime import datetime
 
 
 @csrf_exempt
@@ -396,12 +390,12 @@ def basic_informations_by_id(request, id):
     elif request.method == 'POST':
         req_json = JSONParser().parse(request)
         obj = BasicInformations(
-            regDate=req_json['regDate'],
+            date_create=req_json['date_create'],
             address=req_json['address'],
-            workTime=req_json['workTime'],
-            telephone=req_json['telephone'],
-            email=req_json['email'],
-            addressPlace=req_json['addressPlace'],
+            mode=req_json['mode'],
+            phones=req_json['phones'],
+            emails=req_json['emails'],
+            address_place=req_json['address_place'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -412,12 +406,12 @@ def basic_informations_by_id(request, id):
         obj_old = BasicInformations.objects.get(id=id)
         obj = BasicInformations(
             id=int(id),
-            regDate=req_json['regDate'],
+            date_create=req_json['date_create'],
             address=req_json['address'],
-            workTime=req_json['workTime'],
-            telephone=req_json['telephone'],
-            email=req_json['email'],
-            addressPlace=req_json['addressPlace'],
+            mode=req_json['mode'],
+            phones=req_json['phones'],
+            emails=req_json['emails'],
+            address_place=req_json['address_place'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -443,6 +437,7 @@ basic_information_info_replace_links_map = {
     }
 }
 
+
 # def replace_page_links(replace_map, parser, obj):
 #     for tag, parameters in replace_map.items():
 #         for name, getter in parameters.items():
@@ -459,10 +454,10 @@ basic_information_info_row_template = \
     '<tr>' \
     '<td itemprop="regDate" style="width: 30%;"></td>' \
     '<td itemprop="address"></td>' \
-    '<td itemprop="workTime""></td>' \
+    '<td itemprop="workTime"></td>' \
     '<td itemprop="telephone"></td>' \
-    '<td itemprop="email" style="font-size: 10px !important;"></td>' \
-    '<td itemprop="addressPlace"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="email"></td>' \
+    '<td itemprop="addressPlace"><a href="">Ссылка</a></td>' \
     '</tr>'
 
 

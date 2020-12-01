@@ -63,21 +63,22 @@ from django.db import models
 #
 #         db_table = 'aval_facilities'
 #
-#
 
 class BasicInformations(models.Model):
-    regdate = models.CharField(db_column='regDate', blank=True, null=True, max_length=100)  # Field name made lowercase.
-    address = models.CharField(blank=True, null=True, max_length=100)
-    worktime = models.CharField(db_column='workTime', blank=True, null=True, max_length=100)  # Field name made lowercase.
-    telephone = models.CharField(blank=True, null=True, max_length=100)
-    emails = models.CharField(blank=True, null=True, max_length=100)
+    date_create = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    mode = models.CharField(blank=True, null=True, max_length=1000)
+    phones = models.CharField(blank=True, null=True, max_length=1000)
+    faxes = models.CharField(blank=True, null=True, max_length=1000)
+    emails = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
-    addressplace = models.BinaryField(db_column='addressPlace', blank=True, null=True, max_length=100)  # Field name made lowercase.
+    address_place = models.CharField(blank=True, null=True, max_length=1000)
 
     class Meta:
         db_table = 'basic_informations'
+
 
 #
 # class Db2(models.Model):
@@ -253,8 +254,8 @@ class BasicInformations(models.Model):
 #     owner = models.IntegerField(blank=True, null=True)
 #
 #     class Meta:
-#         db_table = 'founders'
 #
+#         db_table = 'founders'
 #
 #
 # class GosAccreditations(models.Model):
@@ -576,15 +577,15 @@ class BasicInformations(models.Model):
 
 class Subdivisions(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(blank=True, null=True, max_length=100)
-    fio = models.CharField(blank=True, null=True, max_length=100)
-    position = models.CharField(blank=True, null=True, max_length=100)
-    address = models.CharField(blank=True, null=True, max_length=100)
-    off_site = models.CharField(blank=True, null=True, max_length=100)
-    email = models.CharField(blank=True, null=True, max_length=100)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    fio = models.CharField(blank=True, null=True, max_length=1000)
+    position = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    off_site = models.CharField(blank=True, null=True, max_length=1000)
+    email = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    file_url = models.CharField(blank=True, null=True, max_length=100)
+    file_url = models.CharField(blank=True, null=True, max_length=1000)
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -768,19 +769,19 @@ class Subdivisions(models.Model):
 
 
 # Create your models here.
-#
-# class Departments(models.Model):
-#     DepartmentId = models.AutoField(primary_key=True)
-#     DepartmentName = models.CharField(max_length=100)
-#
-#
-# class Employees(models.Model):
-#     EmployeeId = models.AutoField(primary_key=True)
-#     EmployeeName = models.CharField(max_length=100)
-#     Department = models.CharField(max_length=100)
-#     DateOfJoining = models.DateField()
-#     PhotoFileName = models.CharField(max_length=100)
-#
+
+class Departments(models.Model):
+    DepartmentId = models.AutoField(primary_key=True)
+    DepartmentName = models.CharField(max_length=100)
+
+
+class Employees(models.Model):
+    EmployeeId = models.AutoField(primary_key=True)
+    EmployeeName = models.CharField(max_length=100)
+    Department = models.CharField(max_length=100)
+    DateOfJoining = models.DateField()
+    PhotoFileName = models.CharField(max_length=100)
+
 
 # class BasicInformations(models.Model):
 #     BIid = models.AutoField(primary_key=True)
@@ -791,8 +792,8 @@ class Subdivisions(models.Model):
 #     BIfaxes = models.CharField(max_length=1000)
 #     BIemail = models.CharField(max_length=1000)
 #     BIaddressPlace = models.CharField(max_length=1000)
-#
-#
-# class DepartmentsInformation(models.Model):
-#     DIid = models.AutoField(primary_key=True)
-#     DIrow = models.CharField(max_length=100000)
+
+
+class DepartmentsInformation(models.Model):
+    DIid = models.AutoField(primary_key=True)
+    DIrow = models.CharField(max_length=100000)

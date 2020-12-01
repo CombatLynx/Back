@@ -12,10 +12,10 @@
   <link href="https://www.mrsu.ru/bitrix/templates/mrsu_blue_low/components/bitrix/menu/tree_left/style.css?1353044062" type="text/css" rel="stylesheet" />
   <link href="https://www.mrsu.ru/bitrix/templates/mrsu_blue_low/styles.css?1427266307" type="text/css" rel="stylesheet" />
   <link href="https://www.mrsu.ru/bitrix/templates/mrsu_blue_low/template_styles.css?1459857364" type="text/css" rel="stylesheet" />
-    
+
 <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>-->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-    
+
   <meta charset="utf-8">
   <title>Мордовский государственный университет имени Н.П. Огарева</title>
   <meta name="author" content="">
@@ -29,10 +29,10 @@
     table tr td{
       padding-left: 3px !important;
     }
-    
+
   .accord-content { display: none; }
   .accord-content-tr { display: none; }
-  
+
   .opened { display: none; }
 
   .accord-header {cursor: pointer;}
@@ -46,12 +46,12 @@
       width: 750px !important;
       font-size: 12px !important;
     }
-    
+
     #main_information{
       border: none;
       text-align: left;
     }
-    
+
     footer, .footer_wrap{
       font-size: 12px !important;
     }
@@ -67,7 +67,7 @@
         background:rgb(255,255,255);
         }
 
- 
+
 
 
   </style>
@@ -210,12 +210,12 @@
 <style>.menu-sitemap-tree ul li:nth-child(1) a{color: #0066FF;}</style>
         <p><a href="/sveden/common-ovz" itemprop="copy" rel="noopener">Версия для слабовидящих</a></p>
 
-        <h1>Основные сведения</h1>    
-       <center itemprop="osnovSveden"> 
-    <div> 
-      
-      <table id="main_information" width="700"> 
-        <tbody> 
+        <h1>Основные сведения</h1>
+       <center itemprop="osnovSveden">
+    <div>
+
+      <table id="main_information" width="700">
+        <tbody>
 
           <tr>
             <td style="width: 30%;"><b>Дата создания образовательной организации</b></td>
@@ -245,10 +245,8 @@
           <tr>
               <td><b>Сведения о каждом месте осуществления образовательной деятельности</b></td>
               <td itemprop="addressPlace">
-                  Сведения о каждом месте осуществления образовательной деятельности,
-                  в том числе не указываемых в соответствии с частью 4 статьи 91 Федерального закона от 29.12.2012
-                  N 273-ФЗ "Об образовании в Российской Федерации" (Собрание законодательства Российской Федерации,
-                  2012, N 53, ст. 7598; 2019, N 49, ст. 6962) в приложении к лицензии на осуществление образовательной деятельности
+					<a href="../uploads/address_ukaz.xlsx">Адреса, указанные в лицензии</a> </br>
+					<a href="../uploads/address_ne_ukaz.xlsx">Адреса, не указанные в лицензии</a>
               </td>
           </tr>
         </table><h4 style="text-align:left;">Учредители образовательной организации</h4>
@@ -365,18 +363,18 @@ $(this).find(".opened").show();
 
 <script>
 $(document).ready(function() { // Ждём загрузки страницы
-	
-	$(".popup-h").click(function(){	
+
+	$(".popup-h").click(function(){
       var div = $(this).parent();
-	  	var table = div.find(".popup-table").html();	
-		$("body").append("<div class='popup'>"+ 
-						 "<div class='popup_bg'></div>"+ 
+	  	var table = div.find(".popup-table").html();
+		$("body").append("<div class='popup'>"+
+						 "<div class='popup_bg'></div>"+
              div.html() +
-						 "</div>"); 
-		$(".popup").fadeIn(800); 
-	
+						 "</div>");
+		$(".popup").fadeIn(800);
+
 	});
-	
+
 });
 </script>
 

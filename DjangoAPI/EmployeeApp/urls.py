@@ -5,6 +5,16 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
+                  url(r'^department/$', views.departmentApi),
+                  url(r'^department/([0-9]+)$', views.departmentApi),
+
+                  url(r'^employee/$', views.employeeApi),
+                  url(r'^employee/([0-9]+)$', views.employeeApi),
+
+                  url(r'^basicInformations/publish/$', views.publish_basic_information),
+                  url(r'^basicInformations/$', views.basicInformationApi),
+                  url(r'^basicInformations/([0-9]+)$', views.basicInformationApi),
+
                   # url(r'^departmentInformations/publish/$', views.publish_department_information),
                   url(r'^subdivisions/$', views.subdivisions),
                   url(r'^subdivisions/format/$', views.subdivisionsFormat),
