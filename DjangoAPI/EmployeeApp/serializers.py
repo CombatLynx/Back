@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions
+from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -32,6 +32,7 @@ class BasicInformationSerializer(serializers.ModelSerializer):
                   'BIemail',
                   'BIaddressPlace')
 
+
 class DepartmentsInformationSerializer(serializers.ModelSerializer):
     class Meta:
         model = DepartmentsInformation
@@ -39,6 +40,7 @@ class DepartmentsInformationSerializer(serializers.ModelSerializer):
             'DIid',
             'DIrow'
         )
+
 
 class SubdivisionsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,4 +54,31 @@ class SubdivisionsSerializer(serializers.ModelSerializer):
             'off_site',
             'email',
             'file_url'
-    )
+        )
+
+
+class BasicInformationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicInformations
+        fields = (
+            'id',
+            'date_create',
+            'address',
+            'mode',
+            'phones',
+            'emails',
+            'address_place'
+        )
+
+
+class FoundersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Founders
+        fields = (
+            'id',
+            'name',
+            'address',
+            'phones',
+            'email',
+            'off_site'
+        )

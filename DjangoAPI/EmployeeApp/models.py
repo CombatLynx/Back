@@ -242,20 +242,21 @@ class BasicInformations(models.Model):
 #         db_table = 'filiations'
 #
 #
-# class Founders(models.Model):
-#     name = models.CharField(blank=True, null=True)
-#     director = models.CharField(blank=True, null=True)
-#     address = models.CharField(blank=True, null=True)
-#     phones = models.CharField(blank=True, null=True)
-#     email = models.CharField(blank=True, null=True)
-#     off_site = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'founders'
+
+class Founders(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    phones = models.CharField(blank=True, null=True, max_length=1000)
+    email = models.CharField(blank=True, null=True, max_length=1000)
+    off_site = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+
+        db_table = 'founders'
+
 #
 #
 # class GosAccreditations(models.Model):

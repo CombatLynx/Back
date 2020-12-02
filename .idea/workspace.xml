@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ac1581cd-c87a-4ae5-962e-f33a519f7084" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/DjangoAPI/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/my/.idea/Back.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Back.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Back.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Django_Lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Django_Lib.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DjangoAPI/DjangoAPI/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/DjangoAPI/DjangoAPI/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/DjangoAPI/EmployeeApp/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DjangoAPI/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/DjangoAPI/db.sqlite3" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JupyterTrust" id="c973de92-fa84-478a-95ef-1fa94a17f2ff" />
+  <component name="ProjectId" id="1l60iFaQdXpl57VwhLQfdQKN0Zz" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../1ProjectMRSU/pushToGit/Back" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ac1581cd-c87a-4ae5-962e-f33a519f7084" name="Default Changelist" comment="" />
+      <created>1606902361289</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1606902361289</updated>
+      <workItem from="1606902363297" duration="22000" />
+      <workItem from="1606902387638" duration="4676000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-1180" y="166" key="FileChooserDialogImpl" timestamp="1606902746783">
+      <screen x="-1920" y="-109" width="1920" height="1040" />
+    </state>
+    <state x="-1180" y="166" key="FileChooserDialogImpl/0.0.1680.1010/-1920.-109.1920.1040@-1920.-109.1920.1040" timestamp="1606902746783" />
+  </component>
+</project>

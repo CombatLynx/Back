@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
-from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions
+from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
@@ -189,13 +189,12 @@ def fill_json(keys, values, json):
     return json
 
 
-# ------------------------- СТРУКТУРНЫЕ ПОДРАЗДЕЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
-
-
 def get_department_table_header():
     header_row = DepartmentsInformation.objects.get(DIid=0)
     return header_row.DIrow.split('\t')
 
+
+# ------------------------- СТРУКТУРНЫЕ ПОДРАЗДЕЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
 
 def subdivision_to_list(row):
     return [row.id, row.name, row.fio, row.position, row.address, row.off_site, row.email, row.file_url]
@@ -437,7 +436,6 @@ basic_information_info_replace_links_map = {
     }
 }
 
-
 # def replace_page_links(replace_map, parser, obj):
 #     for tag, parameters in replace_map.items():
 #         for name, getter in parameters.items():
@@ -451,7 +449,7 @@ basic_information_info_replace_links_map = {
 
 
 basic_information_info_row_template = \
-    '<tr>' \
+    '<tr itemprop="basic_information">' \
     '<td itemprop="regDate" style="width: 30%;"></td>' \
     '<td itemprop="address"></td>' \
     '<td itemprop="workTime"></td>' \
@@ -473,7 +471,7 @@ def basic_informations_publish(request):
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr')
+        rows = table.find_all('tr', {'itemprop': 'basic_information'})
 
         for row in rows:
             row.extract()
@@ -483,6 +481,145 @@ def basic_informations_publish(request):
             row = bs4.BeautifulSoup(basic_information_info_row_template)
             replace_page_elements(basic_information_info_replace_map, row, values)
             replace_page_links(basic_information_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- УЧРЕДИТЕЛИ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
+
+def founder_to_list(row):
+    return [row.id, row.name, row.address, row.phones, row.email, row.off_site]
+
+
+def founder_format():
+    return ['id', 'name', 'address', 'phones', 'email', 'off_site']
+
+
+@csrf_exempt
+def founders(request):
+    if request.method == 'GET':
+        a = Founders.objects.all()
+        a = [founder_to_list(item) for item in a]
+        return JsonResponse({
+            'format': founder_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def foundersFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(founder_format(), safe=False)
+
+
+from datetime import datetime
+
+
+@csrf_exempt
+def founders_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Founders.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Founders(
+            name=req_json['name'],
+            address=req_json['address'],
+            phones=req_json['phones'],
+            email=req_json['email'],
+            off_site=req_json['off_site'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Founders.objects.get(id=id)
+        obj = Founders(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            phones=req_json['phones'],
+            email=req_json['email'],
+            off_site=req_json['off_site'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+founder_info_replace_map = {
+    'td': {
+        'nameUchred': lambda obj: obj[0],
+        'addressUchred': lambda obj: obj[1],
+        'telUchred': lambda obj: obj[2],
+        'mailUchred': lambda obj: obj[3],
+    }
+}
+
+founder_info_replace_links_map = {
+    'td': {
+        'websiteUchred': lambda obj: obj[4],
+    }
+}
+
+# def replace_page_links(replace_map, parser, obj):
+#     for tag, parameters in replace_map.items():
+#         for name, getter in parameters.items():
+#             tags = parser.find_all(tag, {'itemprop': name})
+#             if len(tags) == 1:
+#                 print(getter(obj))
+#                 tags[0].a.href = str(getter(obj))
+#             else:
+#                 pass
+#     return parser
+
+
+founder_info_row_template = \
+    '<tr itemprop="uchred">' \
+    '<td itemprop="nameUchred"></td>' \
+    '<td itemprop="addressUchred"></td>' \
+    '<td itemprop="telUchred"></td>' \
+    '<td itemprop="mailUchred"></td>' \
+    '<td itemprop="websiteUchred"><a href="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def founders_publish(request):
+    if request.method == 'GET':
+        founders_information = Founders.objects.all()
+
+        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'id': "uchredLaw"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'uchred'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(founders_information):
+            values = founder_to_list(item)[1:]
+            row = bs4.BeautifulSoup(founder_info_row_template)
+            replace_page_elements(founder_info_replace_map, row, values)
+            replace_page_links(founder_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

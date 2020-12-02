@@ -26,5 +26,10 @@ urlpatterns = [
                   url(r'^basic_informations/([1-9][0-9]*)$', views.basic_informations_by_id),
                   url(r'^basic_informations/publish/$', views.basic_informations_publish),
 
+                  url(r'^founders/$', views.founders),
+                  url(r'^founders/format/$', views.foundersFormat),
+                  url(r'^founders/([1-9][0-9]*)$', views.founders_by_id),
+                  url(r'^founders/publish/$', views.founders_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
