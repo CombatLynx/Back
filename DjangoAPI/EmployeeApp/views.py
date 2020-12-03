@@ -3,11 +3,13 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
-from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders
+from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
+    Filiations, Representations, Managements
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
 from django.core.files.storage import default_storage
+from datetime import datetime
 
 import bs4
 
@@ -160,29 +162,6 @@ def SaveFile(request):
     return JsonResponse(file_name, safe=False)
 
 
-# def update_empl_info(html, empl):
-#     tags = html.find_all('div', {'id': 'asdasd'})
-#     if len(tags) == 1:
-#         tags.string = empl.name
-#
-#
-# @csrf_exempt
-# def generate_html_page(request):
-#     if request.method == 'GET':
-#         html = read_html('emploee/index.php')
-#
-#         # update data
-#         emploee = Employees.objects.all()
-#         for empl in emploee:
-#             update_empl_info(html, empl)
-#         for departm
-#
-#
-#         # print
-#         with open('emploee/index.php', 'w') as f:
-#             print(str(html), file=f)
-
-
 def fill_json(keys, values, json):
     for i, name in enumerate(keys):
         json[name] = values[i]
@@ -192,6 +171,122 @@ def fill_json(keys, values, json):
 def get_department_table_header():
     header_row = DepartmentsInformation.objects.get(DIid=0)
     return header_row.DIrow.split('\t')
+
+
+# ------------------------- ОРГАНЫ УПРАВЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
+
+def management_to_list(row):
+    return [row.id, row.name, row.fio, row.regulation]
+
+
+def management_format():
+    return ['id', 'name', 'fio', 'regulation']
+
+
+@csrf_exempt
+def managements(request):
+    if request.method == 'GET':
+        a = Managements.objects.all()
+        a = [management_to_list(item) for item in a]
+        return JsonResponse({
+            'format': management_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def managementsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(management_format(), safe=False)
+
+
+@csrf_exempt
+def managements_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Managements.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Managements(
+            name=req_json['name'],
+            fio=req_json['fio'],
+            regulation=req_json['regulation'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Managements.objects.get(id=id)
+        obj = Managements(
+            id=int(id),
+            name=req_json['name'],
+            fio=req_json['fio'],
+            regulation=req_json['regulation'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+management_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+        'fio': lambda obj: obj[1],
+    }
+}
+
+management_info_replace_links_map = {
+    'td': {
+        'divisionClauseDocLink': lambda obj: obj[2],
+    }
+}
+
+management_info_row_template = \
+    '<tr itemprop="management">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="fio"></td>' \
+    '<td itemprop="divisionClauseDocLink"><a href="" download="">Положение</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def managements_publish(request):
+    if request.method == 'GET':
+        managements_information = Managements.objects.all()
+
+        file = 'EmployeeApp/parser/pages/subdivisions/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'id': "management"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'management'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(managements_information):
+            values = management_to_list(item)[1:]
+            row = bs4.BeautifulSoup(management_info_row_template)
+            replace_page_elements(management_info_replace_map, row, values)
+            replace_page_links(management_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
 
 
 # ------------------------- СТРУКТУРНЫЕ ПОДРАЗДЕЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
@@ -223,9 +318,6 @@ def subdivisions(request):
 def subdivisionsFormat(request):
     if request.method == 'GET':
         return JsonResponse(subdivision_format(), safe=False)
-
-
-from datetime import datetime
 
 
 @csrf_exempt
@@ -375,9 +467,6 @@ def basic_informationsFormat(request):
         return JsonResponse(basic_information_format(), safe=False)
 
 
-from datetime import datetime
-
-
 @csrf_exempt
 def basic_informations_by_id(request, id):
     if request.method == 'DELETE':
@@ -435,18 +524,6 @@ basic_information_info_replace_links_map = {
         'addressPlace': lambda obj: obj[5],
     }
 }
-
-# def replace_page_links(replace_map, parser, obj):
-#     for tag, parameters in replace_map.items():
-#         for name, getter in parameters.items():
-#             tags = parser.find_all(tag, {'itemprop': name})
-#             if len(tags) == 1:
-#                 print(getter(obj))
-#                 tags[0].a.href = str(getter(obj))
-#             else:
-#                 pass
-#     return parser
-
 
 basic_information_info_row_template = \
     '<tr itemprop="basic_information">' \
@@ -520,9 +597,6 @@ def foundersFormat(request):
         return JsonResponse(founder_format(), safe=False)
 
 
-from datetime import datetime
-
-
 @csrf_exempt
 def founders_by_id(request, id):
     if request.method == 'DELETE':
@@ -576,18 +650,6 @@ founder_info_replace_links_map = {
     }
 }
 
-# def replace_page_links(replace_map, parser, obj):
-#     for tag, parameters in replace_map.items():
-#         for name, getter in parameters.items():
-#             tags = parser.find_all(tag, {'itemprop': name})
-#             if len(tags) == 1:
-#                 print(getter(obj))
-#                 tags[0].a.href = str(getter(obj))
-#             else:
-#                 pass
-#     return parser
-
-
 founder_info_row_template = \
     '<tr itemprop="uchred">' \
     '<td itemprop="nameUchred"></td>' \
@@ -606,7 +668,7 @@ def founders_publish(request):
 
         file = 'EmployeeApp/parser/pages/basic_information/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'id': "uchredLaw"})
+        tables = page_parser.find_all('table', {'itemprop': "uchredLaw"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
@@ -620,6 +682,262 @@ def founders_publish(request):
             row = bs4.BeautifulSoup(founder_info_row_template)
             replace_page_elements(founder_info_replace_map, row, values)
             replace_page_links(founder_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ФИЛИАЛЫ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
+
+def filiation_to_list(row):
+    return [row.id, row.name, row.address, row.work_time, row.telephone, row.email, row.website]
+
+
+def filiation_format():
+    return ['id', 'name', 'address', 'work_time', 'telephone', 'email', 'website']
+
+
+@csrf_exempt
+def filiations(request):
+    if request.method == 'GET':
+        a = Filiations.objects.all()
+        a = [filiation_to_list(item) for item in a]
+        return JsonResponse({
+            'format': filiation_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def filiationsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(filiation_format(), safe=False)
+
+
+@csrf_exempt
+def filiations_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Filiations.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Filiations(
+            name=req_json['name'],
+            address=req_json['address'],
+            work_time=req_json['work_time'],
+            telephone=req_json['telephone'],
+            email=req_json['email'],
+            website=req_json['website'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Filiations.objects.get(id=id)
+        obj = Filiations(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            work_time=req_json['work_time'],
+            telephone=req_json['telephone'],
+            email=req_json['email'],
+            website=req_json['website'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+filiation_info_replace_map = {
+    'td': {
+        'nameFil': lambda obj: obj[0],
+        'addressFil': lambda obj: obj[1],
+        'workTimeFil': lambda obj: obj[2],
+        'telephoneFil': lambda obj: obj[3],
+        'emailFil': lambda obj: obj[4],
+    }
+}
+
+filiation_info_replace_links_map = {
+    'td': {
+        'websiteFil': lambda obj: obj[5],
+    }
+}
+
+filiation_info_row_template = \
+    '<tr itemprop="fil">' \
+    '<td itemprop="nameFil"></td>' \
+    '<td itemprop="addressFil"></td>' \
+    '<td itemprop="workTimeFil"></td>' \
+    '<td itemprop="telephoneFil"></td>' \
+    '<td itemprop="emailFil"></td>' \
+    '<td itemprop="websiteFil"><a href="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def filiations_publish(request):
+    if request.method == 'GET':
+        filiations_information = Filiations.objects.all()
+
+        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "filInfo"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'fil'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(filiations_information):
+            values = filiation_to_list(item)[1:]
+            row = bs4.BeautifulSoup(filiation_info_row_template)
+            replace_page_elements(filiation_info_replace_map, row, values)
+            replace_page_links(filiation_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ПРЕДСТАВИТЕЛЬСТВО ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
+
+def representation_to_list(row):
+    return [row.id, row.name, row.address, row.work_time, row.telephone, row.email, row.website]
+
+
+def representation_format():
+    return ['id', 'name', 'address', 'work_time', 'telephone', 'email', 'website']
+
+
+@csrf_exempt
+def representations(request):
+    if request.method == 'GET':
+        a = Representations.objects.all()
+        a = [representation_to_list(item) for item in a]
+        return JsonResponse({
+            'format': representation_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def representationsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(representation_format(), safe=False)
+
+
+@csrf_exempt
+def representations_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Representations.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Representations(
+            name=req_json['name'],
+            address=req_json['address'],
+            work_time=req_json['work_time'],
+            telephone=req_json['telephone'],
+            email=req_json['email'],
+            website=req_json['website'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Representations.objects.get(id=id)
+        obj = Representations(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            work_time=req_json['work_time'],
+            telephone=req_json['telephone'],
+            email=req_json['email'],
+            website=req_json['website'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+representation_info_replace_map = {
+    'td': {
+        'nameRep': lambda obj: obj[0],
+        'addressRep': lambda obj: obj[1],
+        'workTimeRep': lambda obj: obj[2],
+        'telephoneRep': lambda obj: obj[3],
+        'emailRep': lambda obj: obj[4],
+    }
+}
+
+representation_info_replace_links_map = {
+    'td': {
+        'websiteRep': lambda obj: obj[5],
+    }
+}
+
+representation_info_row_template = \
+    '<tr itemprop="rep">' \
+    '<td itemprop="nameRep"></td>' \
+    '<td itemprop="addressRep"></td>' \
+    '<td itemprop="workTimeRep"></td>' \
+    '<td itemprop="telephoneRep"></td>' \
+    '<td itemprop="emailRep"></td>' \
+    '<td itemprop="websiteRep"><a href="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def representations_publish(request):
+    if request.method == 'GET':
+        representations_information = Representations.objects.all()
+
+        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "repInfo"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'rep'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(representations_information):
+            values = representation_to_list(item)[1:]
+            row = bs4.BeautifulSoup(representation_info_row_template)
+            replace_page_elements(representation_info_replace_map, row, values)
+            replace_page_links(representation_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

@@ -229,17 +229,22 @@ class BasicInformations(models.Model):
 #         db_table = 'filial_leaders'
 #
 #
-# class Filiations(models.Model):
-#     name = models.CharField(blank=True, null=True)
-#     address = models.CharField(blank=True, null=True)
-#     off_site = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'filiations'
+class Filiations(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    off_site = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    work_time = models.CharField(blank=True, null=True, max_length=1000)
+    telephone = models.CharField(blank=True, null=True, max_length=1000)
+    email = models.CharField(blank=True, null=True, max_length=1000)
+    website = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'filiations'
+
+
 #
 #
 
@@ -254,8 +259,23 @@ class Founders(models.Model):
     owner = models.IntegerField(blank=True, null=True, max_length=1000)
 
     class Meta:
-
         db_table = 'founders'
+
+
+class Representations(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    work_time = models.CharField(blank=True, null=True, max_length=1000)
+    telephone = models.CharField(blank=True, null=True, max_length=1000)
+    email = models.CharField(blank=True, null=True, max_length=1000)
+    website = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'representations'
+
 
 #
 #
@@ -362,17 +382,17 @@ class Founders(models.Model):
 #         db_table = 'libraries'
 #
 #
-# class Managements(models.Model):
-#     name = models.CharField(blank=True, null=True, max_length=100)
-#     fio = models.CharField(blank=True, null=True, max_length=100)
-#     regulation = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'managements'
+class Managements(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    fio = models.CharField(blank=True, null=True, max_length=1000)
+    regulation = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+
+        db_table = 'managements'
 #
 #
 # class Meals(models.Model):

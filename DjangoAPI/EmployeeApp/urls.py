@@ -31,5 +31,20 @@ urlpatterns = [
                   url(r'^founders/([1-9][0-9]*)$', views.founders_by_id),
                   url(r'^founders/publish/$', views.founders_publish),
 
+                  url(r'^filiations/$', views.filiations),
+                  url(r'^filiations/format/$', views.filiationsFormat),
+                  url(r'^filiations/([1-9][0-9]*)$', views.filiations_by_id),
+                  url(r'^filiations/publish/$', views.filiations_publish),
+
+                  url(r'^representations/$', views.representations),
+                  url(r'^representations/format/$', views.representationsFormat),
+                  url(r'^representations/([1-9][0-9]*)$', views.representations_by_id),
+                  url(r'^representations/publish/$', views.representations_publish),
+
+                  url(r'^managements/$', views.managements),
+                  url(r'^managements/format/$', views.managementsFormat),
+                  url(r'^managements/([1-9][0-9]*)$', views.managements_by_id),
+                  url(r'^managements/publish/$', views.managements_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

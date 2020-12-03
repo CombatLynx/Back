@@ -236,6 +236,10 @@ class Filiations(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
+    work_time = models.CharField(blank=True, null=True)
+    telephone = models.CharField(blank=True, null=True)
+    email = models.CharField(blank=True, null=True)
+    website = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -453,6 +457,22 @@ class RefugeesOvzs(models.Model):
     class Meta:
         managed = False
         db_table = 'refugees_ovzs'
+
+
+class Representations(models.Model):
+    name = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    work_time = models.CharField(blank=True, null=True)
+    telephone = models.CharField(blank=True, null=True)
+    email = models.CharField(blank=True, null=True)
+    website = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'representations'
 
 
 class RoomNums(models.Model):

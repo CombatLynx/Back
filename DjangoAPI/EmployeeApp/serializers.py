@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders
+from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
+    Founders, Filiations, Representations, Managements
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -81,4 +82,43 @@ class FoundersSerializer(serializers.ModelSerializer):
             'phones',
             'email',
             'off_site'
+        )
+
+
+class FiliationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Filiations
+        fields = (
+            'id',
+            'name',
+            'address',
+            'work_time',
+            'telephone',
+            'email',
+            'website'
+        )
+
+
+class RepresentationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Representations
+        fields = (
+            'id',
+            'name',
+            'address',
+            'work_time',
+            'telephone',
+            'email',
+            'website'
+        )
+
+
+class ManagementsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Managements
+        fields = (
+            'id',
+            'name',
+            'fio',
+            'regulation'
         )
