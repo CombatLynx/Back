@@ -391,8 +391,9 @@ class Managements(models.Model):
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
-
         db_table = 'managements'
+
+
 #
 #
 # class Meals(models.Model):
@@ -709,42 +710,44 @@ class Subdivisions(models.Model):
 #         db_table = 'users'
 #
 #
-# class Vacs(models.Model):
-#     code = models.CharField(blank=True, null=True, max_length=100)
-#     name = models.CharField(blank=True, null=True, max_length=100)
-#     spec = models.CharField(blank=True, null=True, max_length=100)
-#     level = models.CharField(blank=True, null=True, max_length=100)
-#     kurs = models.CharField(blank=True, null=True, max_length=100)
-#     form = models.CharField(blank=True, null=True, max_length=100)
-#     federal = models.CharField(blank=True, null=True, max_length=100)
-#     sub = models.CharField(blank=True, null=True, max_length=100)
-#     place = models.CharField(blank=True, null=True, max_length=100)
-#     fis = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
+class Vacs(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    spec = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    kurs = models.CharField(blank=True, null=True, max_length=1000)
+    form = models.CharField(blank=True, null=True, max_length=1000)
+    federal = models.CharField(blank=True, null=True, max_length=1000)
+    sub = models.CharField(blank=True, null=True, max_length=1000)
+    place = models.CharField(blank=True, null=True, max_length=1000)
+    fis = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'vacs'
+
+
 #
-#     class Meta:
 #
-#         db_table = 'vacs'
-#
-#
-# class Volumes(models.Model):
-#     federal = models.CharField(blank=True, null=True, max_length=100)
-#     sub = models.CharField(blank=True, null=True, max_length=100)
-#     place = models.CharField(blank=True, null=True, max_length=100)
-#     fis = models.CharField(blank=True, null=True, max_length=100)
-#     money = models.CharField(blank=True, null=True, max_length=100)
-#     moneyfile = models.CharField(blank=True, null=True, max_length=100)
-#     plan = models.CharField(blank=True, null=True, max_length=100)
-#     info = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'volumes'
+class Volumes(models.Model):
+    federal = models.CharField(blank=True, null=True, max_length=1000)
+    sub = models.CharField(blank=True, null=True, max_length=1000)
+    place = models.CharField(blank=True, null=True, max_length=1000)
+    fis = models.CharField(blank=True, null=True, max_length=1000)
+    money = models.CharField(blank=True, null=True, max_length=1000)
+    moneyfile = models.CharField(blank=True, null=True, max_length=1000)
+    plan = models.CharField(blank=True, null=True, max_length=1000)
+    info = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'volumes'
+
+
 #
 #
 # class YearVolumes(models.Model):

@@ -4,7 +4,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
-    Filiations, Representations, Managements
+    Filiations, Representations, Managements, Volumes, Vacs
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
@@ -938,6 +938,285 @@ def representations_publish(request):
             row = bs4.BeautifulSoup(representation_info_row_template)
             replace_page_elements(representation_info_replace_map, row, values)
             replace_page_links(representation_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ОБЪЕМ ОБРАЗОВАТЕЛЬНОЙ ДЕЯТЕЛЬНОСТИ ---------------------------------
+
+def volume_to_list(row):
+    return [row.id, row.federal, row.sub, row.place, row.fis, row.money, row.moneyfile, row.plan, row.info]
+
+
+def volume_format():
+    return ['id', 'federal', 'sub', 'place', 'fis', 'money', 'moneyfile', 'plan', 'info']
+
+
+@csrf_exempt
+def volumes(request):
+    if request.method == 'GET':
+        a = Volumes.objects.all()
+        a = [volume_to_list(item) for item in a]
+        return JsonResponse({
+            'format': volume_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def volumesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(volume_format(), safe=False)
+
+
+@csrf_exempt
+def volumes_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Volumes.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Volumes(
+            federal=req_json['federal'],
+            sub=req_json['sub'],
+            place=req_json['place'],
+            fis=req_json['fis'],
+            money=req_json['money'],
+            moneyfile=req_json['moneyfile'],
+            plan=req_json['plan'],
+            info=req_json['info'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Volumes.objects.get(id=id)
+        obj = Volumes(
+            id=int(id),
+            federal=req_json['federal'],
+            sub=req_json['sub'],
+            place=req_json['place'],
+            fis=req_json['fis'],
+            money=req_json['money'],
+            moneyfile=req_json['moneyfile'],
+            plan=req_json['plan'],
+            info=req_json['info'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+volume_info_replace_map = {
+    'td': {
+        'finBFVolume': lambda obj: obj[0],
+        'finBRVolume': lambda obj: obj[1],
+        'finBMVolume': lambda obj: obj[2],
+        'finPVolume': lambda obj: obj[3],
+    }
+}
+
+volume_info_replace_links_map = {
+    'td': {
+        'finYear': lambda obj: obj[4],
+        'finPost': lambda obj: obj[5],
+        'finRas': lambda obj: obj[6],
+    }
+}
+
+volume_info_row_template = \
+    '<tr itemprop="volume">' \
+    '<td itemprop="finBFVolume"></td>' \
+    '<td itemprop="finBRVolume"></td>' \
+    '<td itemprop="finBMVolume"></td>' \
+    '<td itemprop="finPVolume"></td>' \
+    '<td itemprop="finYear"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="finPost"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="finRas">a href="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def volumes_publish(request):
+    if request.method == 'GET':
+        volumes_information = Volumes.objects.all()
+
+        file = 'EmployeeApp/parser/pages/budget/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "volumes"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'volume'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(volumes_information):
+            values = volume_to_list(item)[1:]
+            row = bs4.BeautifulSoup(volume_info_row_template)
+            replace_page_elements(volume_info_replace_map, row, values)
+            replace_page_links(volume_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ВАКАНТНЫЕ МЕСТА ДЛЯ ПРИЁМА (ПЕРЕВОДА) ---------------------------------
+
+def vac_to_list(row):
+    return [row.id, row.code, row.name, row.spec, row.level, row.kurs, row.form, row.federal, row.sub, row.place, row.fis]
+
+
+def vac_format():
+    return ['id', 'code', 'name', 'spec', 'level', 'kurs', 'form', 'federal', 'sub', 'place', 'fis']
+
+
+@csrf_exempt
+def vacs(request):
+    if request.method == 'GET':
+        a = Vacs.objects.all()
+        a = [vac_to_list(item) for item in a]
+        return JsonResponse({
+            'format': vac_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def vacsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(vac_format(), safe=False)
+
+
+@csrf_exempt
+def vacs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Vacs.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Vacs(
+            code=req_json['code'],
+            name=req_json['name'],
+            spec=req_json['spec'],
+            level=req_json['level'],
+            kurs=req_json['kurs'],
+            form=req_json['form'],
+            federal=req_json['federal'],
+            sub=req_json['sub'],
+            place=req_json['place'],
+            fis=req_json['fis'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Vacs.objects.get(id=id)
+        obj = Vacs(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            spec=req_json['spec'],
+            level=req_json['level'],
+            kurs=req_json['kurs'],
+            form=req_json['form'],
+            federal=req_json['federal'],
+            sub=req_json['sub'],
+            place=req_json['place'],
+            fis=req_json['fis'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+vac_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'eduLevel': lambda obj: obj[2],
+        'eduCourse': lambda obj: obj[3],
+        'eduForm': lambda obj: obj[4],
+        'numberBFVacant': lambda obj: obj[5],
+        'numberBRVacant': lambda obj: obj[6],
+        'numberBMVacant': lambda obj: obj[7],
+        'numberPVacant': lambda obj: obj[8],
+    }
+}
+
+# vac_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
+
+vac_info_row_template = \
+    '<tr itemprop="vac">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="eduLevel"></td>' \
+    '<td itemprop="eduCourse"></td>' \
+    '<td itemprop="eduForm"></td>' \
+    '<td itemprop="numberBFVacant"></td>' \
+    '<td itemprop="numberBRVacant"></td>' \
+    '<td itemprop="numberBMVacant"></td>' \
+    '<td itemprop="numberPVacant"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def vacs_publish(request):
+    if request.method == 'GET':
+        vacs_information = Vacs.objects.all()
+
+        file = 'EmployeeApp/parser/pages/vacant/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "vacant"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'vac'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(vacs_information):
+            values = vac_to_list(item)[1:]
+            row = bs4.BeautifulSoup(vac_info_row_template)
+            replace_page_elements(vac_info_replace_map, row, values)
+            # replace_page_links(vac_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

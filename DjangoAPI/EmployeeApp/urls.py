@@ -46,5 +46,15 @@ urlpatterns = [
                   url(r'^managements/([1-9][0-9]*)$', views.managements_by_id),
                   url(r'^managements/publish/$', views.managements_publish),
 
+                  url(r'^volumes/$', views.volumes),
+                  url(r'^volumes/format/$', views.volumesFormat),
+                  url(r'^volumes/([1-9][0-9]*)$', views.volumes_by_id),
+                  url(r'^volumes/publish/$', views.volumes_publish),
+
+                  url(r'^vacs/$', views.vacs),
+                  url(r'^vacs/format/$', views.vacsFormat),
+                  url(r'^vacs/([1-9][0-9]*)$', views.vacs_by_id),
+                  url(r'^vacs/publish/$', views.vacs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
