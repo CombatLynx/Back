@@ -4,7 +4,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
-    Filiations, Representations, Managements, Volumes, Vacs
+    Filiations, Representations, Managements, Volumes, Vacs, Leaders
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
@@ -1083,11 +1083,11 @@ def volumes_publish(request):
 # ------------------------- ВАКАНТНЫЕ МЕСТА ДЛЯ ПРИЁМА (ПЕРЕВОДА) ---------------------------------
 
 def vac_to_list(row):
-    return [row.id, row.code, row.name, row.spec, row.level, row.kurs, row.form, row.federal, row.sub, row.place, row.fis]
+    return [row.id, row.code, row.spec, row.level, row.kurs, row.form, row.federal, row.sub, row.place, row.fis]
 
 
 def vac_format():
-    return ['id', 'code', 'name', 'spec', 'level', 'kurs', 'form', 'federal', 'sub', 'place', 'fis']
+    return ['id', 'code', 'spec', 'level', 'kurs', 'form', 'federal', 'sub', 'place', 'fis']
 
 
 @csrf_exempt
@@ -1123,7 +1123,6 @@ def vacs_by_id(request, id):
         req_json = JSONParser().parse(request)
         obj = Vacs(
             code=req_json['code'],
-            name=req_json['name'],
             spec=req_json['spec'],
             level=req_json['level'],
             kurs=req_json['kurs'],
@@ -1143,7 +1142,6 @@ def vacs_by_id(request, id):
         obj = Vacs(
             id=int(id),
             code=req_json['code'],
-            name=req_json['name'],
             spec=req_json['spec'],
             level=req_json['level'],
             kurs=req_json['kurs'],
@@ -1216,6 +1214,130 @@ def vacs_publish(request):
             values = vac_to_list(item)[1:]
             row = bs4.BeautifulSoup(vac_info_row_template)
             replace_page_elements(vac_info_replace_map, row, values)
+            # replace_page_links(vac_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------ РУКОВОДСТВО. ПЕДАГОГИЧЕСКИЙ (НАУЧНО-ПЕДАГОГИЧЕСКИЙ) СОСТАВ -------------------------------
+# ------------------------- ИНФОРМАЦИЯ ОБ АДМИНИСТРАЦИИ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
+
+def leader_to_list(row):
+    return [row.id, row.fio, row.post, row.telephone, row.email]
+
+
+def leader_format():
+    return ['id', 'fio', 'post', 'telephone', 'email']
+
+
+@csrf_exempt
+def leaders(request):
+    if request.method == 'GET':
+        a = Leaders.objects.all()
+        a = [leader_to_list(item) for item in a]
+        return JsonResponse({
+            'format': leader_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def leadersFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(leader_format(), safe=False)
+
+
+@csrf_exempt
+def leaders_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Leaders.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Leaders(
+            fio=req_json['fio'],
+            post=req_json['post'],
+            phone=req_json['phone'],
+            address=req_json['address'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Leaders.objects.get(id=id)
+        obj = Leaders(
+            id=int(id),
+            fio=req_json['fio'],
+            post=req_json['post'],
+            phone=req_json['phone'],
+            address=req_json['address'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+leader_info_replace_map = {
+    'td': {
+        'fio': lambda obj: obj[0],
+        'post': lambda obj: obj[1],
+        'telephone': lambda obj: obj[2],
+        'email': lambda obj: obj[3],
+    }
+}
+
+# vac_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
+
+leader_info_row_template = \
+    '<tr itemprop="leader">' \
+    '<td itemprop="fio"></td>' \
+    '<td itemprop="post"></td>' \
+    '<td itemprop="telephone"></td>' \
+    '<td itemprop="email"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def leaders_publish(request):
+    if request.method == 'GET':
+        leaders_information = Leaders.objects.all()
+
+        file = 'EmployeeApp/parser/pages/employees/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "rucovodstvo"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'leader'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(leaders_information):
+            values = leader_to_list(item)[1:]
+            row = bs4.BeautifulSoup(leader_info_row_template)
+            replace_page_elements(leader_info_replace_map, row, values)
             # replace_page_links(vac_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling

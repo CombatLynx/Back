@@ -353,18 +353,18 @@ class Representations(models.Model):
 #         db_table = 'jobs'
 #
 #
-# class Leaders(models.Model):
-#     fio = models.CharField(blank=True, null=True)
-#     post = models.CharField(blank=True, null=True)
-#     phone = models.CharField(blank=True, null=True)
-#     address = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'leaders'
+class Leaders(models.Model):
+    fio = models.CharField(blank=True, null=True, max_length=1000)
+    post = models.CharField(blank=True, null=True, max_length=1000)
+    phone = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+
+        db_table = 'leaders'
 #
 #
 # class Libraries(models.Model):
@@ -712,7 +712,6 @@ class Subdivisions(models.Model):
 #
 class Vacs(models.Model):
     code = models.CharField(blank=True, null=True, max_length=1000)
-    name = models.CharField(blank=True, null=True, max_length=1000)
     spec = models.CharField(blank=True, null=True, max_length=1000)
     level = models.CharField(blank=True, null=True, max_length=1000)
     kurs = models.CharField(blank=True, null=True, max_length=1000)
@@ -726,6 +725,7 @@ class Vacs(models.Model):
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
+
         db_table = 'vacs'
 
 

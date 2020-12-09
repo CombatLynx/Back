@@ -708,7 +708,6 @@ class Users(models.Model):
 
 class Vacs(models.Model):
     code = models.CharField(blank=True, null=True)
-    name = models.CharField(blank=True, null=True)
     spec = models.CharField(blank=True, null=True)
     level = models.CharField(blank=True, null=True)
     kurs = models.CharField(blank=True, null=True)
@@ -724,6 +723,26 @@ class Vacs(models.Model):
     class Meta:
         managed = False
         db_table = 'vacs'
+
+
+class VacsDefolt(models.Model):
+    code = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    spec = models.CharField(blank=True, null=True)
+    level = models.CharField(blank=True, null=True)
+    kurs = models.CharField(blank=True, null=True)
+    form = models.CharField(blank=True, null=True)
+    federal = models.CharField(blank=True, null=True)
+    sub = models.CharField(blank=True, null=True)
+    place = models.CharField(blank=True, null=True)
+    fis = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'vacs_defolt'
 
 
 class Volumes(models.Model):
