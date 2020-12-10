@@ -4,7 +4,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
-    Filiations, Representations, Managements, Volumes, Vacs, Leaders
+    Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
@@ -1338,6 +1338,288 @@ def leaders_publish(request):
             values = leader_to_list(item)[1:]
             row = bs4.BeautifulSoup(leader_info_row_template)
             replace_page_elements(leader_info_replace_map, row, values)
+            # replace_page_links(vac_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------ РУКОВОДСТВО. ПЕДАГОГИЧЕСКИЙ (НАУЧНО-ПЕДАГОГИЧЕСКИЙ) СОСТАВ -------------------------------
+# ----------------------ИНФОРМАЦИЯ О РУКОВОДИТЕЛЯХ ФИЛИАЛОВ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ-----------------
+
+def filialLeader_to_list(row):
+    return [row.id, row.name, row.fio, row.post, row.phone, row.address]
+
+
+def filialLeader_format():
+    return ['id', 'name', 'fio', 'post', 'phone', 'address']
+
+
+@csrf_exempt
+def filialLeaders(request):
+    if request.method == 'GET':
+        a = FilialLeaders.objects.all()
+        a = [filialLeader_to_list(item) for item in a]
+        return JsonResponse({
+            'format': filialLeader_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def filialLeadersFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(filialLeader_format(), safe=False)
+
+
+@csrf_exempt
+def filialLeaders_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = FilialLeaders.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = FilialLeaders(
+            name=req_json['name'],
+            fio=req_json['fio'],
+            post=req_json['post'],
+            phone=req_json['phone'],
+            address=req_json['address'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = FilialLeaders.objects.get(id=id)
+        obj = FilialLeaders(
+            id=int(id),
+            name=req_json['name'],
+            fio=req_json['fio'],
+            post=req_json['post'],
+            phone=req_json['phone'],
+            address=req_json['address'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+filialLeader_info_replace_map = {
+    'td': {
+        'nameFil': lambda obj: obj[0],
+        'fio': lambda obj: obj[1],
+        'post': lambda obj: obj[2],
+        'telephone': lambda obj: obj[3],
+        'email': lambda obj: obj[4],
+    }
+}
+
+# vac_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
+
+filialLeader_info_row_template = \
+    '<tr itemprop="rucovodstvoFil">' \
+    '<td itemprop="nameFil"></td>' \
+    '<td itemprop="fio"></td>' \
+    '<td itemprop="post"></td>' \
+    '<td itemprop="telephone"></td>' \
+    '<td itemprop="email"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def filialLeaders_publish(request):
+    if request.method == 'GET':
+        filialLeaders_information = FilialLeaders.objects.all()
+
+        file = 'EmployeeApp/parser/pages/employees/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "filialLeaders"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'rucovodstvoFil'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(filialLeaders_information):
+            values = filialLeader_to_list(item)[1:]
+            row = bs4.BeautifulSoup(filialLeader_info_row_template)
+            replace_page_elements(filialLeader_info_replace_map, row, values)
+            # replace_page_links(vac_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------ РУКОВОДСТВО. ПЕДАГОГИЧЕСКИЙ (НАУЧНО-ПЕДАГОГИЧЕСКИЙ) СОСТАВ -------------------------------
+# ----------ИНФОРМАЦИЯ О ПЕРСОНАЛЬНОМ СОСТАВЕ ПЕДАГОГИЧЕСКИХ РАБОТНИКОВ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ-----------------
+
+def teacher_to_list(row):
+    return [row.id, row.fio, row.post, row.dicipline, row.edulevel, row.qual, row.level, row.tittitle, row.naimnapr,
+            row.levelup, row.allyears, row.scpecyears]
+
+
+def teacher_format():
+    return ['id', 'fio', 'post', 'dicipline', 'edulevel', 'qual', 'level', 'tittitle', 'naimnapr', 'levelup',
+            'allyears', 'scpecyears']
+
+
+@csrf_exempt
+def teachers(request):
+    if request.method == 'GET':
+        a = Teachers.objects.all()
+        a = [teacher_to_list(item) for item in a]
+        return JsonResponse({
+            'format': teacher_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def teachersFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(teacher_format(), safe=False)
+
+
+@csrf_exempt
+def teachers_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Teachers.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Teachers(
+            fio=req_json['fio'],
+            post=req_json['post'],
+            dicipline=req_json['dicipline'],
+            edulevel=req_json['edulevel'],
+            qual=req_json['qual'],
+            level=req_json['level'],
+            tittitle=req_json['tittitle'],
+            naimnapr=req_json['naimnapr'],
+            levelup=req_json['levelup'],
+            allyears=req_json['allyears'],
+            scpecyears=req_json['scpecyears'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Teachers.objects.get(id=id)
+        obj = Teachers(
+            id=int(id),
+            fio=req_json['fio'],
+            post=req_json['post'],
+            dicipline=req_json['dicipline'],
+            edulevel=req_json['edulevel'],
+            qual=req_json['qual'],
+            level=req_json['level'],
+            tittitle=req_json['tittitle'],
+            naimnapr=req_json['naimnapr'],
+            levelup=req_json['levelup'],
+            allyears=req_json['allyears'],
+            scpecyears=req_json['scpecyears'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+teacher_info_replace_map = {
+    'td': {
+        'fio': lambda obj: obj[0],
+        'post': lambda obj: obj[1],
+        'teachingDiscipline': lambda obj: obj[2],
+        'teachingLevel': lambda obj: obj[3],
+        'teachingQual': lambda obj: obj[4],
+        'degree': lambda obj: obj[5],
+        'academStat': lambda obj: obj[6],
+        'employeeQualification': lambda obj: obj[7],
+        'profDevelopment': lambda obj: obj[8],
+        'genExperience': lambda obj: obj[9],
+        'specExperience': lambda obj: obj[10],
+    }
+}
+
+# vac_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
+
+teacher_info_row_template = \
+    '<tr itemprop="teachingStaff">' \
+    '<td itemprop="fio"></td>' \
+    '<td itemprop="post"></td>' \
+    '<td itemprop="teachingDiscipline"></td>' \
+    '<td itemprop="teachingLevel"></td>' \
+    '<td itemprop="teachingQual"></td>' \
+    '<td itemprop="degree"></td>' \
+    '<td itemprop="academStat"></td>' \
+    '<td itemprop="employeeQualification"></td>' \
+    '<td itemprop="profDevelopment"></td>' \
+    '<td itemprop="genExperience"></td>' \
+    '<td itemprop="specExperience"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def teachers_publish(request):
+    if request.method == 'GET':
+        teachers_information = Teachers.objects.all()
+
+        file = 'EmployeeApp/parser/pages/employees/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "teacher"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'teachingStaff'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(teachers_information):
+            values = teacher_to_list(item)[1:]
+            row = bs4.BeautifulSoup(teacher_info_row_template)
+            replace_page_elements(teacher_info_replace_map, row, values)
             # replace_page_links(vac_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling

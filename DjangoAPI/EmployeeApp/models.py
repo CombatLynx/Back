@@ -214,19 +214,20 @@ class BasicInformations(models.Model):
 #         db_table = 'federals'
 #
 #
-# class FilialLeaders(models.Model):
-#     name = models.CharField(blank=True, null=True)
-#     fio = models.CharField(blank=True, null=True)
-#     post = models.CharField(blank=True, null=True)
-#     phone = models.CharField(blank=True, null=True)
-#     address = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'filial_leaders'
+class FilialLeaders(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    fio = models.CharField(blank=True, null=True, max_length=1000)
+    post = models.CharField(blank=True, null=True, max_length=1000)
+    phone = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'filial_leaders'
+
+
 #
 #
 class Filiations(models.Model):
@@ -363,8 +364,9 @@ class Leaders(models.Model):
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
-
         db_table = 'leaders'
+
+
 #
 #
 # class Libraries(models.Model):
@@ -614,27 +616,26 @@ class Subdivisions(models.Model):
         db_table = 'subdivisions'
 
 
-#
-# class Teachers(models.Model):
-#     fio = models.CharField(blank=True, null=True, max_length=100)
-#     post = models.CharField(blank=True, null=True, max_length=100)
-#     dicipline = models.CharField(blank=True, null=True, max_length=100)
-#     edulevel = models.CharField(blank=True, null=True, max_length=100)
-#     qual = models.CharField(blank=True, null=True, max_length=100)
-#     level = models.CharField(blank=True, null=True, max_length=100)
-#     tittitle = models.CharField(blank=True, null=True, max_length=100)
-#     naimnapr = models.CharField(blank=True, null=True, max_length=100)
-#     levelup = models.CharField(blank=True, null=True, max_length=100)
-#     allyears = models.CharField(blank=True, null=True, max_length=100)
-#     scpecyears = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'teachers'
-#
+class Teachers(models.Model):
+    fio = models.CharField(blank=True, null=True, max_length=1000)
+    post = models.CharField(blank=True, null=True, max_length=1000)
+    dicipline = models.CharField(blank=True, null=True, max_length=1000)
+    edulevel = models.CharField(blank=True, null=True, max_length=1000)
+    qual = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    tittitle = models.CharField(blank=True, null=True, max_length=1000)
+    naimnapr = models.CharField(blank=True, null=True, max_length=1000)
+    levelup = models.CharField(blank=True, null=True, max_length=1000)
+    allyears = models.CharField(blank=True, null=True, max_length=1000)
+    scpecyears = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'teachers'
+
+
 #
 # class TransferResults(models.Model):
 #     code = models.CharField(blank=True, null=True, max_length=100)
@@ -725,7 +726,6 @@ class Vacs(models.Model):
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
-
         db_table = 'vacs'
 
 
