@@ -4,7 +4,7 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
-    Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders
+    Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
@@ -1227,11 +1227,11 @@ def vacs_publish(request):
 # ------------------------- ИНФОРМАЦИЯ ОБ АДМИНИСТРАЦИИ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
 
 def leader_to_list(row):
-    return [row.id, row.fio, row.post, row.telephone, row.email]
+    return [row.id, row.fio, row.post, row.phone, row.address]
 
 
 def leader_format():
-    return ['id', 'fio', 'post', 'telephone', 'email']
+    return ['id', 'fio', 'post', 'phone', 'address']
 
 
 @csrf_exempt
@@ -1309,7 +1309,7 @@ leader_info_replace_map = {
 # }
 
 leader_info_row_template = \
-    '<tr itemprop="leader">' \
+    '<tr itemprop="rucovodstvo">' \
     '<td itemprop="fio"></td>' \
     '<td itemprop="post"></td>' \
     '<td itemprop="telephone"></td>' \
@@ -1325,11 +1325,11 @@ def leaders_publish(request):
 
         file = 'EmployeeApp/parser/pages/employees/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "rucovodstvo"})
+        tables = page_parser.find_all('table', {'itemprop': "rucov"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'leader'})
+        rows = table.find_all('tr', {'itemprop': 'rucovodstvo'})
 
         for row in rows:
             row.extract()
@@ -1338,6 +1338,130 @@ def leaders_publish(request):
             values = leader_to_list(item)[1:]
             row = bs4.BeautifulSoup(leader_info_row_template)
             replace_page_elements(leader_info_replace_map, row, values)
+            # replace_page_links(vac_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------ РУКОВОДСТВО. ПЕДАГОГИЧЕСКИЙ (НАУЧНО-ПЕДАГОГИЧЕСКИЙ) СОСТАВ -------------------------------
+# ------------------------- ИНФОРМАЦИЯ ОБ АДМИНИСТРАЦИИ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ЗАМЕСТИТЕЛИ------------------------
+
+def leadersTwo_to_list(row):
+    return [row.id, row.fio, row.post, row.phone, row.address]
+
+
+def leadersTwo_format():
+    return ['id', 'fio', 'post', 'phone', 'address']
+
+
+@csrf_exempt
+def leadersTwos(request):
+    if request.method == 'GET':
+        a = Leaderstwo.objects.all()
+        a = [leadersTwo_to_list(item) for item in a]
+        return JsonResponse({
+            'format': leadersTwo_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def leadersTwosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(leadersTwo_format(), safe=False)
+
+
+@csrf_exempt
+def leadersTwos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Leaderstwo.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Leaderstwo(
+            fio=req_json['fio'],
+            post=req_json['post'],
+            phone=req_json['phone'],
+            address=req_json['address'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Leaderstwo.objects.get(id=id)
+        obj = Leaderstwo(
+            id=int(id),
+            fio=req_json['fio'],
+            post=req_json['post'],
+            phone=req_json['phone'],
+            address=req_json['address'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+leadersTwo_info_replace_map = {
+    'td': {
+        'fio': lambda obj: obj[0],
+        'post': lambda obj: obj[1],
+        'telephone': lambda obj: obj[2],
+        'email': lambda obj: obj[3],
+    }
+}
+
+# vac_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
+
+leadersTwo_info_row_template = \
+    '<tr itemprop="rucovodstvoZam">' \
+    '<td itemprop="fio"></td>' \
+    '<td itemprop="post"></td>' \
+    '<td itemprop="telephone"></td>' \
+    '<td itemprop="email"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def leadersTwos_publish(request):
+    if request.method == 'GET':
+        leadersTwos_information = Leaderstwo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/employees/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "rucovZam"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'rucovodstvoZam'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(leadersTwos_information):
+            values = leadersTwo_to_list(item)[1:]
+            row = bs4.BeautifulSoup(leadersTwo_info_row_template)
+            replace_page_elements(leadersTwo_info_replace_map, row, values)
             # replace_page_links(vac_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling

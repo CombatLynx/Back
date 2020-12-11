@@ -55,16 +55,26 @@ urlpatterns = [
                   url(r'^vacs/format/$', views.vacsFormat),
                   url(r'^vacs/([1-9][0-9]*)$', views.vacs_by_id),
                   url(r'^vacs/publish/$', views.vacs_publish),
+                  # ---------------------------------------------------------
+                  url(r'^leaders/$', views.leaders),
+                  url(r'^leaders/format/$', views.leadersFormat),
+                  url(r'^leaders/([1-9][0-9]*)$', views.leaders_by_id),
+                  url(r'^leaders/publish/$', views.leaders_publish),
 
-                  url(r'^teachers/$', views.teachers),
-                  url(r'^teachers/format/$', views.teachersFormat),
-                  url(r'^teachers/([1-9][0-9]*)$', views.teachers_by_id),
-                  url(r'^teachers/publish/$', views.teachers_publish),
+                  url(r'^leadersTwo/$', views.leadersTwos),
+                  url(r'^leadersTwo/format/$', views.leadersTwosFormat),
+                  url(r'^leadersTwo/([1-9][0-9]*)$', views.leadersTwos_by_id),
+                  url(r'^leadersTwo/publish/$', views.leadersTwos_publish),
 
                   url(r'^filialLeaders/$', views.filialLeaders),
                   url(r'^filialLeaders/format/$', views.filialLeadersFormat),
                   url(r'^filialLeaders/([1-9][0-9]*)$', views.filialLeaders_by_id),
                   url(r'^filialLeaders/publish/$', views.filialLeaders_publish),
+
+                  url(r'^teachers/$', views.teachers),
+                  url(r'^teachers/format/$', views.teachersFormat),
+                  url(r'^teachers/([1-9][0-9]*)$', views.teachers_by_id),
+                  url(r'^teachers/publish/$', views.teachers_publish),
 
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

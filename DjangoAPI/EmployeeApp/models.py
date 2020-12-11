@@ -361,10 +361,23 @@ class Leaders(models.Model):
     address = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True)
+    owner = models.IntegerField(blank=True, null=True, max_length=1000)
 
     class Meta:
         db_table = 'leaders'
+
+
+class Leaderstwo(models.Model):
+    fio = models.CharField(blank=True, null=True, max_length=1000)
+    post = models.CharField(blank=True, null=True, max_length=1000)
+    phone = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'leadersTwo'
 
 
 #

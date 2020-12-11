@@ -349,6 +349,20 @@ class Leaders(models.Model):
         db_table = 'leaders'
 
 
+class Leaderstwo(models.Model):
+    fio = models.CharField(blank=True, null=True)
+    post = models.CharField(blank=True, null=True)
+    phone = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'leadersTwo'
+
+
 class Libraries(models.Model):
     types = models.CharField(blank=True, null=True)
     address = models.CharField(blank=True, null=True)
