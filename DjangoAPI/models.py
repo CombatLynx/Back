@@ -415,6 +415,7 @@ class PaidServices(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
+    docnew = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False

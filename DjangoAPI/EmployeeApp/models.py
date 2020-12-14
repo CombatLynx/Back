@@ -427,18 +427,18 @@ class Managements(models.Model):
 #         db_table = 'meals'
 #
 #
-# class PaidServices(models.Model):
-#     info = models.CharField(blank=True, null=True, max_length=100)
-#     dogpaid = models.CharField(blank=True, null=True, max_length=100)
-#     doc = models.CharField(blank=True, null=True, max_length=100)
-#     order = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'paid_services'
+class PaidServices(models.Model):
+    info = models.CharField(blank=True, null=True, max_length=1000)
+    dogpaid = models.CharField(blank=True, null=True, max_length=1000)
+    doc = models.CharField(blank=True, null=True, max_length=1000)
+    order = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    docnew = models.CharField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'paid_services'
 #
 #
 # class Practices(models.Model):
@@ -570,16 +570,15 @@ class Managements(models.Model):
 #         db_table = 'sports'
 #
 #
-# class StandartCopies(models.Model):
-#     filename = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#     name = models.CharField(blank=True, null=True, max_length=100)
-#
-#     class Meta:
-#
-#         db_table = 'standart_copies'
+class StandartCopies(models.Model):
+    filename = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'standart_copies'
 #
 #
 # class StudentNumbers(models.Model):

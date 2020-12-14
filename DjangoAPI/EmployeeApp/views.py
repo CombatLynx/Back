@@ -4,7 +4,9 @@ from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
-    Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo
+    Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
+    StandartCopies, PaidServices
+
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
 
@@ -1745,6 +1747,241 @@ def teachers_publish(request):
             row = bs4.BeautifulSoup(teacher_info_row_template)
             replace_page_elements(teacher_info_replace_map, row, values)
             # replace_page_links(vac_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ОБРАЗОВАТЕЛЬНЫЕ СТАНДАРТЫ ---------------------------------
+
+def standartCopie_to_list(row):
+    return [row.id, row.name, row.filename]
+
+
+def standartCopie_format():
+    return ['id', 'name', 'filename']
+
+
+@csrf_exempt
+def standartCopies(request):
+    if request.method == 'GET':
+        a = StandartCopies.objects.all()
+        a = [standartCopie_to_list(item) for item in a]
+        return JsonResponse({
+            'format': standartCopie_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def standartCopiesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(standartCopie_format(), safe=False)
+
+
+@csrf_exempt
+def standartCopies_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = StandartCopies.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = StandartCopies(
+            name=req_json['name'],
+            filename=req_json['filename'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = StandartCopies.objects.get(id=id)
+        obj = StandartCopies(
+            id=int(id),
+            name=req_json['name'],
+            filename=req_json['filename'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+standartCopie_info_replace_map = {
+    'td': {
+        'eduFedDoc': lambda obj: obj[0],
+    }
+}
+
+standartCopie_info_replace_links_map = {
+    'td': {
+        'eduStandartDoc': lambda obj: obj[1],
+    }
+}
+
+standartCopie_info_row_template = \
+    '<tr itemprop="standart">' \
+    '<td itemprop="eduFedDoc"></td>' \
+    '<td itemprop="eduStandartDoc"><a href="" download="">Положение</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def standartCopies_publish(request):
+    if request.method == 'GET':
+        standartCopies_information = StandartCopies.objects.all()
+
+        file = 'EmployeeApp/parser/pages/eduStandarts/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "eduStandarts"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'standart'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(standartCopies_information):
+            values = volume_to_list(item)[1:]
+            row = bs4.BeautifulSoup(standartCopie_info_row_template)
+            replace_page_elements(standartCopie_info_replace_map, row, values)
+            replace_page_links(standartCopie_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ ---------------------------------
+
+def paidService_to_list(row):
+    return [row.id, row.info, row.dogpaid, row.doc, row.order, row.docnew]
+
+
+def paidService_format():
+    return ['id', 'info', 'dogpaid', 'doc', 'order', 'docnew']
+
+
+@csrf_exempt
+def paidServices(request):
+    if request.method == 'GET':
+        a = PaidServices.objects.all()
+        a = [paidService_to_list(item) for item in a]
+        return JsonResponse({
+            'format': paidService_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def paidServicesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(paidService_format(), safe=False)
+
+
+@csrf_exempt
+def paidServices_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = PaidServices.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = PaidServices(
+            info=req_json['info'],
+            dogpaid=req_json['dogpaid'],
+            doc=req_json['doc'],
+            order=req_json['order'],
+            docnew=req_json['docnew'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = StandartCopies.objects.get(id=id)
+        obj = PaidServices(
+            id=int(id),
+            info=req_json['info'],
+            dogpaid=req_json['dogpaid'],
+            doc=req_json['doc'],
+            order=req_json['order'],
+            docnew=req_json['docnew'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+paidService_info_replace_map = {
+    'td': {
+        'paidEdu': lambda obj: obj[0],
+    }
+}
+
+paidService_info_replace_links_map = {
+    'td': {
+        'paidParents': lambda obj: obj[1],
+        'paidParents': lambda obj: obj[2],
+        'paidParents': lambda obj: obj[3],
+        'paidParents': lambda obj: obj[4],
+    }
+}
+
+paidService_info_row_template = \
+    '<tr itemprop="paid">' \
+    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def paidServices_publish(request):
+    if request.method == 'GET':
+        paidServices_information = PaidServices.objects.all()
+
+        file = 'EmployeeApp/parser/pages/paid_edu/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "paidEdu"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'paid'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(paidServices_information):
+            values = volume_to_list(item)[1:]
+            row = bs4.BeautifulSoup(paidService_info_row_template)
+            replace_page_elements(paidService_info_replace_map, row, values)
+            replace_page_links(paidService_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

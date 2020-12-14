@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
-    Leaderstwo
+    Leaderstwo, StandartCopies, PaidServices
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -207,4 +207,26 @@ class FilialLeadersSerializer(serializers.ModelSerializer):
             'post',
             'phone',
             'address'
+        )
+
+
+class StandartCopiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StandartCopies
+        fields = (
+            'id',
+            'name',
+            'filename'
+        )
+
+
+class PaidServicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaidServices
+        fields = (
+            'id',
+            'info',
+            'dogpaid',
+            'doc',
+            'order'
         )

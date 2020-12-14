@@ -76,5 +76,16 @@ urlpatterns = [
                   url(r'^teachers/([1-9][0-9]*)$', views.teachers_by_id),
                   url(r'^teachers/publish/$', views.teachers_publish),
 
+                  url(r'^standartCopies/$', views.standartCopies),
+                  url(r'^standartCopies/format/$', views.standartCopiesFormat),
+                  url(r'^standartCopies/([1-9][0-9]*)$', views.standartCopies_by_id),
+                  url(r'^standartCopies/publish/$', views.standartCopies_publish),
+
+                  url(r'^paidServices/$', views.paidServices),
+                  url(r'^paidServices/format/$', views.paidServicesFormat),
+                  url(r'^paidServices/([1-9][0-9]*)$', views.paidServices_by_id),
+                  url(r'^paidServices/publish/$', views.paidServices_publish),
+
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
