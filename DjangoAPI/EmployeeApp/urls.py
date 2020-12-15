@@ -86,6 +86,5 @@ urlpatterns = [
                   url(r'^paidServices/([1-9][0-9]*)$', views.paidServices_by_id),
                   url(r'^paidServices/publish/$', views.paidServices_publish),
 
-
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

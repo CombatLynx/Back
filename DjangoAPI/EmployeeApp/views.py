@@ -1921,7 +1921,7 @@ def paidServices_by_id(request, id):
         return HttpResponse(200)
     elif request.method == 'PUT':
         req_json = JSONParser().parse(request)
-        obj_old = StandartCopies.objects.get(id=id)
+        obj_old = PaidServices.objects.get(id=id)
         obj = PaidServices(
             id=int(id),
             info=req_json['info'],
