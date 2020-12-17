@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
-    Leaderstwo, StandartCopies, PaidServices
+    Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -229,4 +229,27 @@ class PaidServicesSerializer(serializers.ModelSerializer):
             'dogpaid',
             'doc',
             'order'
+        )
+
+
+class InternationaldogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Internationaldog
+        fields = (
+            'id',
+            'state_name',
+            'org_name',
+            'dog_reg'
+        )
+
+
+class InternationalaccrSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Internationalaccr
+        fields = (
+            'id',
+            'edu_code',
+            'edu_name',
+            'org_name',
+            'date_end'
         )

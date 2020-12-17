@@ -5,7 +5,7 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
-    StandartCopies, PaidServices
+    StandartCopies, PaidServices, Internationaldog, Internationalaccr
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -1982,6 +1982,253 @@ def paidServices_publish(request):
             row = bs4.BeautifulSoup(paidService_info_row_template)
             replace_page_elements(paidService_info_replace_map, row, values)
             replace_page_links(paidService_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------- Международное сотрудничество  -------------------------------------------
+# -----Информация о заключенных и планируемых к заключению договорах с иностранными и (или) международными
+# -------------------------------организациями по вопросам образования и науки---------------------------------
+
+def internationalDog_to_list(row):
+    return [row.id, row.state_name, row.org_name, row.dog_reg]
+
+
+def internationalDog_format():
+    return ['id', 'state_name', 'org_name', 'dog_reg']
+
+
+@csrf_exempt
+def internationalDogs(request):
+    if request.method == 'GET':
+        a = Internationaldog.objects.all()
+        a = [internationalDog_to_list(item) for item in a]
+        return JsonResponse({
+            'format': internationalDog_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def internationalDogsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(internationalDog_format(), safe=False)
+
+
+@csrf_exempt
+def internationalDogs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Internationaldog.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Internationaldog(
+            state_name=req_json['state_name'],
+            org_name=req_json['org_name'],
+            dog_reg=req_json['dog_reg'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Internationaldog.objects.get(id=id)
+        obj = Internationaldog(
+            id=int(id),
+            state_name=req_json['state_name'],
+            org_name=req_json['org_name'],
+            dog_reg=req_json['dog_reg'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+internationalDog_info_replace_map = {
+    'td': {
+        'stateName': lambda obj: obj[0],
+        'orgName': lambda obj: obj[1],
+        'dogReg': lambda obj: obj[2],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+internationalDog_info_row_template = \
+    '<tr itemprop="internationalDog">' \
+    '<td itemprop="stateName"></td>' \
+    '<td itemprop="orgName"></td>' \
+    '<td itemprop="dogReg"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def internationalDogs_publish(request):
+    if request.method == 'GET':
+        internationalDogs_information = Internationaldog.objects.all()
+
+        file = 'EmployeeApp/parser/pages/international/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "internationalD"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'internationalDog'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(internationalDogs_information):
+            values = volume_to_list(item)[1:]
+            row = bs4.BeautifulSoup(internationalDog_info_row_template)
+            replace_page_elements(internationalDog_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------- Международное сотрудничество  -------------------------------------------
+# ----------------------------- Информация о международной аккредитации ---------------------------------------
+
+def internationalAccr_to_list(row):
+    return [row.id, row.edu_code, row.edu_name, row.org_name, row.date_end]
+
+
+def internationalAccr_format():
+    return ['id', 'edu_code', 'edu_name', 'org_name', 'date_end']
+
+
+@csrf_exempt
+def internationalAccrs(request):
+    if request.method == 'GET':
+        a = Internationalaccr.objects.all()
+        a = [internationalAccr_to_list(item) for item in a]
+        return JsonResponse({
+            'format': internationalAccr_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def internationalAccrsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(internationalAccr_format(), safe=False)
+
+
+@csrf_exempt
+def internationalAccrs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Internationalaccr.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Internationalaccr(
+            edu_code=req_json['edu_code'],
+            edu_name=req_json['edu_name'],
+            org_name=req_json['org_name'],
+            date_end=req_json['date_end'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Internationalaccr.objects.get(id=id)
+        obj = Internationalaccr(
+            id=int(id),
+            edu_code=req_json['edu_code'],
+            edu_name=req_json['edu_name'],
+            org_name=req_json['org_name'],
+            date_end=req_json['date_end'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+internationalAccr_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'orgName': lambda obj: obj[2],
+        'dateEnd': lambda obj: obj[3],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+internationalAccr_info_row_template = \
+    '<tr itemprop="internationalAccr">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="orgName"></td>' \
+    '<td itemprop="dateEnd"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def internationalAccrs_publish(request):
+    if request.method == 'GET':
+        internationalAccrs_information = Internationalaccr.objects.all()
+
+        file = 'EmployeeApp/parser/pages/international/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "internationalA"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'internationalAccr'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(internationalAccrs_information):
+            values = volume_to_list(item)[1:]
+            row = bs4.BeautifulSoup(internationalAccr_info_row_template)
+            replace_page_elements(internationalAccr_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

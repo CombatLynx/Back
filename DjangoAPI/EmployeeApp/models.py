@@ -222,7 +222,7 @@ class FilialLeaders(models.Model):
     address = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'filial_leaders'
@@ -323,7 +323,30 @@ class Representations(models.Model):
 #
 #         db_table = 'inf_systems'
 #
-#
+class Internationalaccr(models.Model):
+    edu_code = models.CharField(blank=True, null=True, max_length=1000)
+    edu_name = models.CharField(blank=True, null=True, max_length=1000)
+    org_name = models.CharField(blank=True, null=True, max_length=1000)
+    date_end = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'internationalAccr'
+
+
+class Internationaldog(models.Model):
+    state_name = models.CharField(blank=True, null=True, max_length=1000)
+    org_name = models.CharField(blank=True, null=True, max_length=1000)
+    dog_reg = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'internationalDog'
+
 # class Invalides(models.Model):
 #     info = models.CharField(blank=True, null=True)
 #     ovz = models.CharField(blank=True, null=True)

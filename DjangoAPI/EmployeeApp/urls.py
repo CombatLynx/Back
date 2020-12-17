@@ -86,5 +86,15 @@ urlpatterns = [
                   url(r'^paidServices/([1-9][0-9]*)$', views.paidServices_by_id),
                   url(r'^paidServices/publish/$', views.paidServices_publish),
 
+                  url(r'^internationalDogs/$', views.internationalDogs),
+                  url(r'^internationalDogs/format/$', views.internationalDogsFormat),
+                  url(r'^internationalDogs/([1-9][0-9]*)$', views.internationalDogs_by_id),
+                  url(r'^internationalDogs/publish/$', views.internationalDogs_publish),
+
+                  url(r'^internationalAccrs/$', views.internationalAccrs),
+                  url(r'^internationalAccrs/format/$', views.internationalAccrsFormat),
+                  url(r'^internationalAccrs/([1-9][0-9]*)$', views.internationalAccrs_by_id),
+                  url(r'^internationalAccrs/publish/$', views.internationalAccrs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

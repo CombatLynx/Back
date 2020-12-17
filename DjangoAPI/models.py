@@ -305,6 +305,33 @@ class InfSystems(models.Model):
         db_table = 'inf_systems'
 
 
+class Internationalaccr(models.Model):
+    edu_code = models.CharField(blank=True, null=True)
+    edu_name = models.CharField(blank=True, null=True)
+    org_name = models.CharField(blank=True, null=True)
+    date_end = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'internationalAccr'
+
+
+class Internationaldog(models.Model):
+    state_name = models.CharField(blank=True, null=True)
+    org_name = models.CharField(blank=True, null=True)
+    dog_reg = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'internationalDog'
+
+
 class Invalides(models.Model):
     info = models.CharField(blank=True, null=True)
     ovz = models.CharField(blank=True, null=True)
