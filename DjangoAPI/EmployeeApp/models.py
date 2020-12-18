@@ -851,6 +851,9 @@ class Employees(models.Model):
 #     BIfaxes = models.CharField(max_length=1000)
 #     BIemail = models.CharField(max_length=1000)
 #     BIaddressPlace = models.CharField(max_length=1000)
+#
+#     class Meta:
+#         db_table = 'basic_informations'
 
 
 class DepartmentsInformation(models.Model):

@@ -149,7 +149,7 @@ def publish_basic_information(request):
         body_json = JSONParser().parse(request)
         id = body_json['id']
         information = BasicInformations.objects.get(BIid=id)
-        file = 'EmployeeApp/parser/pages/basic_information/index.php'
+        file = 'EmployeeApp/parser/pages/basic_information/index.html'
         page_parser = read_page(file)
         new_page = str(replace_page_elements(basic_information_replace_map, page_parser, information))
         write_page(file, new_page)
@@ -162,17 +162,6 @@ def SaveFile(request):
     file_name = default_storage.save(file.name, file)
 
     return JsonResponse(file_name, safe=False)
-
-
-def fill_json(keys, values, json):
-    for i, name in enumerate(keys):
-        json[name] = values[i]
-    return json
-
-
-def get_department_table_header():
-    header_row = DepartmentsInformation.objects.get(DIid=0)
-    return header_row.DIrow.split('\t')
 
 
 # ------------------------- ОРГАНЫ УПРАВЛЕНИЯ ОБРАЗОВАТЕЛЬНОЙ ОРГАНИЗАЦИИ ---------------------------------
@@ -2100,7 +2089,7 @@ def internationalDogs_publish(request):
             row.extract()
         last_tr = table.tr
         for index, item in enumerate(internationalDogs_information):
-            values = volume_to_list(item)[1:]
+            values = internationalDog_to_list(item)[1:]
             row = bs4.BeautifulSoup(internationalDog_info_row_template)
             replace_page_elements(internationalDog_info_replace_map, row, values)
             # replace_page_links(internationalDog_info_replace_links_map, row, values)
@@ -2225,7 +2214,7 @@ def internationalAccrs_publish(request):
             row.extract()
         last_tr = table.tr
         for index, item in enumerate(internationalAccrs_information):
-            values = volume_to_list(item)[1:]
+            values = internationalAccr_to_list(item)[1:]
             row = bs4.BeautifulSoup(internationalAccr_info_row_template)
             replace_page_elements(internationalAccr_info_replace_map, row, values)
             # replace_page_links(internationalDog_info_replace_links_map, row, values)
