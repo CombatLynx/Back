@@ -96,5 +96,35 @@ urlpatterns = [
                   url(r'^internationalAccrs/([1-9][0-9]*)$', views.internationalAccrs_by_id),
                   url(r'^internationalAccrs/publish/$', views.internationalAccrs_publish),
 
+                  url(r'^specCabs/$', views.specCabs),
+                  url(r'^specCabs/format/$', views.specCabsFormat),
+                  url(r'^specCabs/([1-9][0-9]*)$', views.specCabs_by_id),
+                  url(r'^specCabs/publish/$', views.specCabs_publish),
+
+                  url(r'^specPracs/$', views.specPracs),
+                  url(r'^specPracs/format/$', views.specPracsFormat),
+                  url(r'^specPracs/([1-9][0-9]*)$', views.specPracs_by_id),
+                  url(r'^specPracs/publish/$', views.specPracs_publish),
+
+                  url(r'^specLibs/$', views.specLibs),
+                  url(r'^specLibs/format/$', views.specLibsFormat),
+                  url(r'^specLibs/([1-9][0-9]*)$', views.specLibs_by_id),
+                  url(r'^specLibs/publish/$', views.specLibs_publish),
+
+                  url(r'^specSports/$', views.specSports),
+                  url(r'^specSports/format/$', views.specSportsFormat),
+                  url(r'^specSports/([1-9][0-9]*)$', views.specSports_by_id),
+                  url(r'^specSports/publish/$', views.specSports_publish),
+
+                  url(r'^specMeals/$', views.specMeals),
+                  url(r'^specMeals/format/$', views.specMealsFormat),
+                  url(r'^specMeals/([1-9][0-9]*)$', views.specMeals_by_id),
+                  url(r'^specMeals/publish/$', views.specMeals_publish),
+
+                  url(r'^specHealths/$', views.specHealths),
+                  url(r'^specHealths/format/$', views.specHealthsFormat),
+                  url(r'^specHealths/([1-9][0-9]*)$', views.specHealths_by_id),
+                  url(r'^specHealths/publish/$', views.specHealths_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

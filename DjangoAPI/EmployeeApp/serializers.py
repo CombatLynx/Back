@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
-    Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr
+    Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
+    SpecSport, SpecMeal, SpecHealth
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -252,4 +253,80 @@ class InternationalaccrSerializer(serializers.ModelSerializer):
             'edu_name',
             'org_name',
             'date_end'
+        )
+
+
+class SpecCabSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecCab
+        fields = (
+            'id',
+            'address',
+            'name',
+            'osn',
+            'ovz'
+        )
+
+
+class SpecPracSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecPrac
+        fields = (
+            'id',
+            'address',
+            'name',
+            'osn',
+            'ovz'
+        )
+
+
+class SpecLibSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecLib
+        fields = (
+            'id',
+            'name',
+            'address',
+            'sq',
+            'cnt',
+            'ovz'
+        )
+
+
+class SpecSportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecSport
+        fields = (
+            'id',
+            'name',
+            'address',
+            'sq',
+            'cnt',
+            'ovz'
+        )
+
+
+class SpecMealSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecMeal
+        fields = (
+            'id',
+            'name',
+            'address',
+            'sq',
+            'cnt',
+            'ovz'
+        )
+
+
+class SpecHealthSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SpecHealth
+        fields = (
+            'id',
+            'name',
+            'address',
+            'sq',
+            'cnt',
+            'ovz'
         )

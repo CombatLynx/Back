@@ -309,7 +309,7 @@ class Internationalaccr(models.Model):
     edu_code = models.CharField(blank=True, null=True)
     edu_name = models.CharField(blank=True, null=True)
     org_name = models.CharField(blank=True, null=True)
-    date_end = models.DateTimeField(blank=True, null=True)
+    date_end = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
@@ -577,6 +577,94 @@ class Sections(models.Model):
     class Meta:
         managed = False
         db_table = 'sections'
+
+
+class SpecCab(models.Model):
+    address = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    osn = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'spec_cab'
+
+
+class SpecHealth(models.Model):
+    name = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    sq = models.CharField(blank=True, null=True)
+    cnt = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'spec_health'
+
+
+class SpecLib(models.Model):
+    name = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    sq = models.CharField(blank=True, null=True)
+    cnt = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'spec_lib'
+
+
+class SpecMeal(models.Model):
+    name = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    sq = models.CharField(blank=True, null=True)
+    cnt = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'spec_meal'
+
+
+class SpecPrac(models.Model):
+    address = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    osn = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'spec_prac'
+
+
+class SpecSport(models.Model):
+    name = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    sq = models.CharField(blank=True, null=True)
+    cnt = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'spec_sport'
 
 
 class Sports(models.Model):

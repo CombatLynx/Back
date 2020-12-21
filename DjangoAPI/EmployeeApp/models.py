@@ -80,6 +80,86 @@ class BasicInformations(models.Model):
         db_table = 'basic_informations'
 
 
+class SpecCab(models.Model):
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    osn = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'spec_cab'
+
+
+class SpecPrac(models.Model):
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    osn = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'spec_prac'
+
+
+class SpecLib(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    sq = models.CharField(blank=True, null=True, max_length=1000)
+    cnt = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'spec_lib'
+
+
+class SpecSport(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    sq = models.CharField(blank=True, null=True, max_length=1000)
+    cnt = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'spec_sport'
+
+
+class SpecMeal(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    sq = models.CharField(blank=True, null=True, max_length=1000)
+    cnt = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'spec_meal'
+
+
+class SpecHealth(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    sq = models.CharField(blank=True, null=True, max_length=1000)
+    cnt = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'spec_health'
 #
 # class Db2(models.Model):
 #     code = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -236,7 +316,7 @@ class Filiations(models.Model):
     off_site = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
     work_time = models.CharField(blank=True, null=True, max_length=1000)
     telephone = models.CharField(blank=True, null=True, max_length=1000)
     email = models.CharField(blank=True, null=True, max_length=1000)
@@ -257,7 +337,7 @@ class Founders(models.Model):
     off_site = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'founders'
@@ -272,7 +352,7 @@ class Representations(models.Model):
     website = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'representations'
@@ -347,6 +427,7 @@ class Internationaldog(models.Model):
     class Meta:
         db_table = 'internationalDog'
 
+
 # class Invalides(models.Model):
 #     info = models.CharField(blank=True, null=True)
 #     ovz = models.CharField(blank=True, null=True)
@@ -384,7 +465,7 @@ class Leaders(models.Model):
     address = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'leaders'
@@ -397,7 +478,7 @@ class Leaderstwo(models.Model):
     address = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    owner = models.IntegerField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
         db_table = 'leadersTwo'
@@ -462,6 +543,8 @@ class PaidServices(models.Model):
 
     class Meta:
         db_table = 'paid_services'
+
+
 #
 #
 # class Practices(models.Model):
@@ -602,6 +685,8 @@ class StandartCopies(models.Model):
 
     class Meta:
         db_table = 'standart_copies'
+
+
 #
 #
 # class StudentNumbers(models.Model):

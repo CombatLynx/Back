@@ -5,7 +5,8 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
-    StandartCopies, PaidServices, Internationaldog, Internationalaccr
+    StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
+    SpecMeal, SpecHealth
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -2217,6 +2218,772 @@ def internationalAccrs_publish(request):
             values = internationalAccr_to_list(item)[1:]
             row = bs4.BeautifulSoup(internationalAccr_info_row_template)
             replace_page_elements(internationalAccr_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# --------------------------- Сведения о специально оборудованных учебных кабинетах ---------------------------
+
+def specCab_to_list(row):
+    return [row.id, row.address, row.name, row.osn, row.ovz]
+
+
+def specCab_format():
+    return ['id', 'address', 'name', 'osn', 'ovz']
+
+
+@csrf_exempt
+def specCabs(request):
+    if request.method == 'GET':
+        a = SpecCab.objects.all()
+        a = [specCab_to_list(item) for item in a]
+        return JsonResponse({
+            'format': specCab_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def specCabsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(specCab_format(), safe=False)
+
+
+@csrf_exempt
+def specCabs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SpecCab.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SpecCab(
+            address=req_json['address'],
+            name=req_json['name'],
+            osn=req_json['osn'],
+            ovz=req_json['ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SpecCab.objects.get(id=id)
+        obj = SpecCab(
+            id=int(id),
+            address=req_json['address'],
+            name=req_json['name'],
+            osn=req_json['osn'],
+            ovz=req_json['ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+specCab_info_replace_map = {
+    'td': {
+        'addressCab': lambda obj: obj[0],
+        'nameCab': lambda obj: obj[1],
+        'osnCab': lambda obj: obj[2],
+        'ovzCab': lambda obj: obj[3],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+specCab_info_row_template = \
+    '<tr itemprop="purposeCab">' \
+    '<td itemprop="addressCab"></td>' \
+    '<td itemprop="nameCab"></td>' \
+    '<td itemprop="osnCab"></td>' \
+    '<td itemprop="ovzCab"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def specCabs_publish(request):
+    if request.method == 'GET':
+        specCabs_information = SpecCab.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "cab"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposeCab'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(specCabs_information):
+            values = specCab_to_list(item)[1:]
+            row = bs4.BeautifulSoup(specCab_info_row_template)
+            replace_page_elements(specCab_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ----------------------- Сведения о приспособленных объектах для проведения практических занятий -------------
+
+def specPrac_to_list(row):
+    return [row.id, row.address, row.name, row.osn, row.ovz]
+
+
+def specPrac_format():
+    return ['id', 'address', 'name', 'osn', 'ovz']
+
+
+@csrf_exempt
+def specPracs(request):
+    if request.method == 'GET':
+        a = SpecPrac.objects.all()
+        a = [specPrac_to_list(item) for item in a]
+        return JsonResponse({
+            'format': specPrac_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def specPracsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(specPrac_format(), safe=False)
+
+
+@csrf_exempt
+def specPracs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SpecPrac.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SpecPrac(
+            address=req_json['address'],
+            name=req_json['name'],
+            osn=req_json['osn'],
+            ovz=req_json['ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SpecPrac.objects.get(id=id)
+        obj = SpecPrac(
+            id=int(id),
+            address=req_json['address'],
+            name=req_json['name'],
+            osn=req_json['osn'],
+            ovz=req_json['ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+specPrac_info_replace_map = {
+    'td': {
+        'addressPrac': lambda obj: obj[0],
+        'namePrac': lambda obj: obj[1],
+        'osnPrac': lambda obj: obj[2],
+        'ovzPrac': lambda obj: obj[3],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+specPrac_info_row_template = \
+    '<tr itemprop="purposePrac">' \
+    '<td itemprop="addressPrac"></td>' \
+    '<td itemprop="namePrac"></td>' \
+    '<td itemprop="osnPrac"></td>' \
+    '<td itemprop="ovzPrac"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def specPracs_publish(request):
+    if request.method == 'GET':
+        specPracs_information = SpecPrac.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "prac"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposePrac'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(specPracs_information):
+            values = specPrac_to_list(item)[1:]
+            row = bs4.BeautifulSoup(specPrac_info_row_template)
+            replace_page_elements(specPrac_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ----------------------- -----------------Сведения о библиотеке ----------------------------------------------
+
+def specLib_to_list(row):
+    return [row.id, row.name, row.address, row.sq, row.cnt, row.ovz]
+
+
+def specLib_format():
+    return ['id', 'name', 'address', 'sq', 'cnt', 'ovz']
+
+
+@csrf_exempt
+def specLibs(request):
+    if request.method == 'GET':
+        a = SpecLib.objects.all()
+        a = [specLib_to_list(item) for item in a]
+        return JsonResponse({
+            'format': specLib_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def specLibsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(specLib_format(), safe=False)
+
+
+@csrf_exempt
+def specLibs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SpecLib.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SpecLib(
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SpecLib.objects.get(id=id)
+        obj = SpecLib(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+specLib_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+        'objOvz': lambda obj: obj[4],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+specLib_info_row_template = \
+    '<tr itemprop="purposeLibr">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '<td itemprop="objOvz"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def specLibs_publish(request):
+    if request.method == 'GET':
+        specLibs_information = SpecLib.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "lib"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposeLibr'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(specLibs_information):
+            values = specLib_to_list(item)[1:]
+            row = bs4.BeautifulSoup(specLib_info_row_template)
+            replace_page_elements(specLib_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ---------------------------------- Сведения об объектах спорта ----------------------------------------------
+
+def specSport_to_list(row):
+    return [row.id, row.name, row.address, row.sq, row.cnt, row.ovz]
+
+
+def specSport_format():
+    return ['id', 'name', 'address', 'sq', 'cnt', 'ovz']
+
+
+@csrf_exempt
+def specSports(request):
+    if request.method == 'GET':
+        a = SpecSport.objects.all()
+        a = [specSport_to_list(item) for item in a]
+        return JsonResponse({
+            'format': specSport_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def specSportsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(specSport_format(), safe=False)
+
+
+@csrf_exempt
+def specSports_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SpecSport.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SpecSport(
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SpecSport.objects.get(id=id)
+        obj = SpecSport(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+specSport_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+        'objOvz': lambda obj: obj[4],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+specSport_info_row_template = \
+    '<tr itemprop="purposeSport">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '<td itemprop="objOvz"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def specSports_publish(request):
+    if request.method == 'GET':
+        specSports_information = SpecSport.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "sport"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposeSport'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(specSports_information):
+            values = specSport_to_list(item)[1:]
+            row = bs4.BeautifulSoup(specSport_info_row_template)
+            replace_page_elements(specSport_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ---------------------------------- Сведения об условиях питания обучающихся ---------------------------------
+
+def specMeal_to_list(row):
+    return [row.id, row.name, row.address, row.sq, row.cnt, row.ovz]
+
+
+def specMeal_format():
+    return ['id', 'name', 'address', 'sq', 'cnt', 'ovz']
+
+
+@csrf_exempt
+def specMeals(request):
+    if request.method == 'GET':
+        a = SpecMeal.objects.all()
+        a = [specMeal_to_list(item) for item in a]
+        return JsonResponse({
+            'format': specMeal_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def specMealsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(specMeal_format(), safe=False)
+
+
+@csrf_exempt
+def specMeals_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SpecMeal.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SpecMeal(
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SpecMeal.objects.get(id=id)
+        obj = SpecMeal(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+specMeal_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+        'objOvz': lambda obj: obj[4],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+specMeal_info_row_template = \
+    '<tr itemprop="meals">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '<td itemprop="objOvz"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def specMeals_publish(request):
+    if request.method == 'GET':
+        specMeals_information = SpecMeal.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "meal"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'meals'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(specMeals_information):
+            values = specMeal_to_list(item)[1:]
+            row = bs4.BeautifulSoup(specMeal_info_row_template)
+            replace_page_elements(specMeal_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ---------------------------- Сведения об условиях охраны здоровья обучающихся -------------------------------
+
+def specHealth_to_list(row):
+    return [row.id, row.name, row.address, row.sq, row.cnt, row.ovz]
+
+
+def specHealth_format():
+    return ['id', 'name', 'address', 'sq', 'cnt', 'ovz']
+
+
+@csrf_exempt
+def specHealths(request):
+    if request.method == 'GET':
+        a = SpecHealth.objects.all()
+        a = [specHealth_to_list(item) for item in a]
+        return JsonResponse({
+            'format': specHealth_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def specHealthsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(specHealth_format(), safe=False)
+
+
+@csrf_exempt
+def specHealths_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SpecHealth.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SpecHealth(
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SpecHealth.objects.get(id=id)
+        obj = SpecHealth(
+            id=int(id),
+            name=req_json['name'],
+            address=req_json['address'],
+            sq=req_json['sq'],
+            cnt=req_json['cnt'],
+            ovz=req_json['ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+specHealth_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+        'objOvz': lambda obj: obj[4],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+specHealth_info_row_template = \
+    '<tr itemprop="health">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '<td itemprop="objOvz"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def specHealths_publish(request):
+    if request.method == 'GET':
+        specHealths_information = SpecHealth.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "heal"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'health'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(specHealths_information):
+            values = specHealth_to_list(item)[1:]
+            row = bs4.BeautifulSoup(specHealth_info_row_template)
+            replace_page_elements(specHealth_info_replace_map, row, values)
             # replace_page_links(internationalDog_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
