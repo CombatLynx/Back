@@ -126,5 +126,20 @@ urlpatterns = [
                   url(r'^specHealths/([1-9][0-9]*)$', views.specHealths_by_id),
                   url(r'^specHealths/publish/$', views.specHealths_publish),
 
+                  url(r'^ovzs/$', views.ovzs),
+                  url(r'^ovzs/format/$', views.ovzsFormat),
+                  url(r'^ovzs/([1-9][0-9]*)$', views.ovzs_by_id),
+                  url(r'^ovzs/publish/$', views.ovzs_publish),
+
+                  url(r'^linkOvzs/$', views.linkOvzs),
+                  url(r'^linkOvzs/format/$', views.linkOvzsFormat),
+                  url(r'^linkOvzs/([1-9][0-9]*)$', views.linkOvzs_by_id),
+                  url(r'^linkOvzs/publish/$', views.linkOvzs_publish),
+
+                  url(r'^ovzTwos/$', views.ovzTwos),
+                  url(r'^ovzTwos/format/$', views.ovzTwosFormat),
+                  url(r'^ovzTwos/([1-9][0-9]*)$', views.ovzTwos_by_id),
+                  url(r'^ovzTwos/publish/$', views.ovzTwos_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

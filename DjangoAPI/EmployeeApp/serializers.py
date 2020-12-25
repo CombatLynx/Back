@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
-    SpecSport, SpecMeal, SpecHealth
+    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -329,4 +329,37 @@ class SpecHealthSerializer(serializers.ModelSerializer):
             'sq',
             'cnt',
             'ovz'
+        )
+
+
+class OvzSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ovz
+        fields = (
+            'id',
+            'facil_ovz',
+            'ovz',
+            'net_ovz'
+        )
+
+
+class LinkOvzSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LinkOvz
+        fields = (
+            'id',
+            'link_ovz',
+            'name_link'
+        )
+
+
+class OvzTwoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OvzTwo
+        fields = (
+            'id',
+            'tech',
+            'hostel_inter',
+            'hostel_num',
+            'inter'
         )

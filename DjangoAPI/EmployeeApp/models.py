@@ -160,6 +160,8 @@ class SpecHealth(models.Model):
 
     class Meta:
         db_table = 'spec_health'
+
+
 #
 # class Db2(models.Model):
 #     code = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -358,7 +360,42 @@ class Representations(models.Model):
         db_table = 'representations'
 
 
-#
+class Ovz(models.Model):
+    facil_ovz = models.CharField(blank=True, null=True, max_length=1000)
+    ovz = models.CharField(blank=True, null=True, max_length=1000)
+    net_ovz = models.CharField(blank=True, null=True, max_length=1000)
+    owner = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'ovz'
+
+
+class OvzTwo(models.Model):
+    tech = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_inter = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_num = models.CharField(blank=True, null=True, max_length=1000)
+    inter = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'ovz_two'
+
+
+class LinkOvz(models.Model):
+    link_ovz = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name_link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'link_ovz'
+
+
 #
 # class GosAccreditations(models.Model):
 #     code = models.CharField(blank=True, null=True)

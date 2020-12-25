@@ -6,7 +6,7 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
-    SpecMeal, SpecHealth
+    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -1038,7 +1038,7 @@ volume_info_row_template = \
     '<td itemprop="finPVolume"></td>' \
     '<td itemprop="finYear"><a href="" download="">Положение</a></td>' \
     '<td itemprop="finPost"><a href="" download="">Положение</a></td>' \
-    '<td itemprop="finRas">a href="">Ссылка</a></td>' \
+    '<td itemprop="finRas"><a href="">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -2985,6 +2985,362 @@ def specHealths_publish(request):
             row = bs4.BeautifulSoup(specHealth_info_row_template)
             replace_page_elements(specHealth_info_replace_map, row, values)
             # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ---------------------------------------------- Сведения -----------------------------------------------------
+
+def ovz_to_list(row):
+    return [row.id, row.facil_ovz, row.ovz, row.net_ovz]
+
+
+def ovz_format():
+    return ['id', 'facil_ovz', 'ovz', 'net_ovz']
+
+
+@csrf_exempt
+def ovzs(request):
+    if request.method == 'GET':
+        a = Ovz.objects.all()
+        a = [ovz_to_list(item) for item in a]
+        return JsonResponse({
+            'format': ovz_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def ovzsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(ovz_format(), safe=False)
+
+
+@csrf_exempt
+def ovzs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Ovz.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Ovz(
+            facil_ovz=req_json['facil_ovz'],
+            ovz=req_json['ovz'],
+            net_ovz=req_json['net_ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Ovz.objects.get(id=id)
+        obj = Ovz(
+            id=int(id),
+            facil_ovz=req_json['facil_ovz'],
+            ovz=req_json['ovz'],
+            net_ovz=req_json['net_ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+ovz_info_replace_map = {
+    'td': {
+        'purposeFacilOvz': lambda obj: obj[0],
+        'ovz': lambda obj: obj[1],
+        'comNetOvz': lambda obj: obj[2],
+    }
+}
+
+# internationalDog_info_replace_links_map = {
+#     'td': {
+#         'paidParents': lambda obj: obj[1],
+#         'paidParents': lambda obj: obj[2],
+#         'paidParents': lambda obj: obj[3],
+#         'paidParents': lambda obj: obj[4],
+#     }
+# }
+
+ovz_info_row_template = \
+    '<tr itemprop="ovztr">' \
+    '<td itemprop="purposeFacilOvz"></td>' \
+    '<td itemprop="ovz"></td>' \
+    '<td itemprop="comNetOvz"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def ovzs_publish(request):
+    if request.method == 'GET':
+        ovzs_information = Ovz.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ovz"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'ovztr'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(ovzs_information):
+            values = ovz_to_list(item)[1:]
+            row = bs4.BeautifulSoup(ovz_info_row_template)
+            replace_page_elements(ovz_info_replace_map, row, values)
+            # replace_page_links(internationalDog_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# ---------------------- Ссылки на перечень электронных образовательных ресурсов ------------------------------
+
+def linkOvz_to_list(row):
+    return [row.id, row.name_link, row.link_ovz]
+
+
+def linkOvz_format():
+    return ['id', 'name_link', 'link_ovz']
+
+
+@csrf_exempt
+def linkOvzs(request):
+    if request.method == 'GET':
+        a = LinkOvz.objects.all()
+        a = [linkOvz_to_list(item) for item in a]
+        return JsonResponse({
+            'format': linkOvz_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def linkOvzsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(linkOvz_format(), safe=False)
+
+
+@csrf_exempt
+def linkOvzs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = LinkOvz.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = LinkOvz(
+            name_link=req_json['name_link'],
+            link_ovz=req_json['link_ovz'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = LinkOvz.objects.get(id=id)
+        obj = LinkOvz(
+            id=int(id),
+            name_link=req_json['name_link'],
+            link_ovz=req_json['link_ovz'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+linkOvz_info_replace_map = {
+    'td': {
+        'nameLink': lambda obj: obj[0],
+    }
+}
+
+linkOvz_info_replace_links_map = {
+    'td': {
+        'link': lambda obj: obj[1],
+    }
+}
+
+linkOvz_info_row_template = \
+    '<tr itemprop="erListOvz">' \
+    '<td itemprop="nameLink"></td>' \
+    '<td itemprop="link"><a href="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def linkOvzs_publish(request):
+    if request.method == 'GET':
+        linkOvzs_information = LinkOvz.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "links"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'erListOvz'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(linkOvzs_information):
+            values = linkOvz_to_list(item)[1:]
+            row = bs4.BeautifulSoup(linkOvz_info_row_template)
+            replace_page_elements(linkOvz_info_replace_map, row, values)
+            replace_page_links(linkOvz_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------------------------- Доступная среда  ------------------------------------------------
+# --------------------------------------------- Сведения 2 ----------------------------------------------------
+
+def ovzTwo_to_list(row):
+    return [row.id, row.tech, row.hostel_inter, row.hostel_num, row.inter]
+
+
+def ovzTwo_format():
+    return ['id', 'tech', 'hostel_inter', 'hostel_num', 'inter']
+
+
+@csrf_exempt
+def ovzTwos(request):
+    if request.method == 'GET':
+        a = OvzTwo.objects.all()
+        a = [ovzTwo_to_list(item) for item in a]
+        return JsonResponse({
+            'format': ovzTwo_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def ovzTwosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(ovzTwo_format(), safe=False)
+
+
+@csrf_exempt
+def ovzTwos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = OvzTwo.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = OvzTwo(
+            tech=req_json['tech'],
+            hostel_inter=req_json['hostel_inter'],
+            hostel_num=req_json['hostel_num'],
+            inter=req_json['inter'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = OvzTwo.objects.get(id=id)
+        obj = OvzTwo(
+            id=int(id),
+            tech=req_json['tech'],
+            hostel_inter=req_json['hostel_inter'],
+            hostel_num=req_json['hostel_num'],
+            inter=req_json['inter'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+ovzTwo_info_replace_map = {
+    'td': {
+        'techOvz': lambda obj: obj[0],
+        'hostelInterOvz': lambda obj: obj[1],
+        'hostelNumOvz': lambda obj: obj[2],
+        'interNumOvz': lambda obj: obj[3],
+    }
+}
+
+# ovzTwo_info_replace_links_map = {
+#     'td': {
+#         'link': lambda obj: obj[1],
+#     }
+# }
+
+ovzTwo_info_row_template = \
+    '<tr itemprop="ovzTwo">' \
+    '<td itemprop="techOvz"></td>' \
+    '<td itemprop="hostelInterOvz"></td>' \
+    '<td itemprop="hostelNumOvz"></td>' \
+    '<td itemprop="interNumOvz"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def ovzTwos_publish(request):
+    if request.method == 'GET':
+        ovzTwos_information = OvzTwo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ovzTwos"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'ovzTwo'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(ovzTwos_information):
+            values = ovzTwo_to_list(item)[1:]
+            row = bs4.BeautifulSoup(ovzTwo_info_row_template)
+            replace_page_elements(ovzTwo_info_replace_map, row, values)
+            # replace_page_links(ovzTwo_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

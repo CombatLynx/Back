@@ -405,6 +405,18 @@ class Libraries(models.Model):
         db_table = 'libraries'
 
 
+class LinkOvz(models.Model):
+    link_ovz = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name_link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'link_ovz'
+
+
 class Managements(models.Model):
     name = models.CharField(blank=True, null=True)
     fio = models.CharField(blank=True, null=True)
@@ -432,6 +444,33 @@ class Meals(models.Model):
     class Meta:
         managed = False
         db_table = 'meals'
+
+
+class Ovz(models.Model):
+    facil_ovz = models.CharField(blank=True, null=True)
+    ovz = models.CharField(blank=True, null=True)
+    net_ovz = models.CharField(blank=True, null=True)
+    owner = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'ovz'
+
+
+class OvzTwo(models.Model):
+    tech = models.CharField(blank=True, null=True)
+    hostel_inter = models.CharField(blank=True, null=True)
+    hostel_num = models.CharField(blank=True, null=True)
+    inter = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'ovz_two'
 
 
 class PaidServices(models.Model):
