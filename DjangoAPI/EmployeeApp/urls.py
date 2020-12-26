@@ -141,5 +141,10 @@ urlpatterns = [
                   url(r'^ovzTwos/([1-9][0-9]*)$', views.ovzTwos_by_id),
                   url(r'^ovzTwos/publish/$', views.ovzTwos_publish),
 
+                  url(r'^grants/$', views.grants),
+                  url(r'^grants/format/$', views.grantsFormat),
+                  url(r'^grants/([1-9][0-9]*)$', views.grants_by_id),
+                  url(r'^grants/publish/$', views.grants_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

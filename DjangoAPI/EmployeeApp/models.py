@@ -413,15 +413,14 @@ class LinkOvz(models.Model):
 #         db_table = 'gos_accreditations'
 #
 #
-# class Grants(models.Model):
-#     filename = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'grants'
+class Grants(models.Model):
+    filename = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'grants'
 #
 #
 # class InfSystems(models.Model):

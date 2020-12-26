@@ -6,7 +6,7 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
-    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo
+    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -3341,6 +3341,123 @@ def ovzTwos_publish(request):
             row = bs4.BeautifulSoup(ovzTwo_info_row_template)
             replace_page_elements(ovzTwo_info_replace_map, row, values)
             # replace_page_links(ovzTwo_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- Стипендии и иные виды материальной поддержки ---------------------------------
+# --- ЛОКАЛЬНЫЕ НОРМАТИВНЫЕ АКТЫ, КОТОРЫМИ РЕГЛАМЕНТИРУЮТСЯ НАЛИЧИЕ И УСЛОВИЯ ПРЕДОСТАВЛЕНИЯ СТИПЕНДИЙ ---
+
+def grant_to_list(row):
+    return [row.id, row.filename]
+
+
+def grant_format():
+    return ['id', 'filename']
+
+
+@csrf_exempt
+def grants(request):
+    if request.method == 'GET':
+        a = Grants.objects.all()
+        a = [grant_to_list(item) for item in a]
+        return JsonResponse({
+            'format': grant_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def grantsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(grant_format(), safe=False)
+
+
+@csrf_exempt
+def grants_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Grants.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Grants(
+            filename=req_json['filename'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Grants.objects.get(id=id)
+        obj = Grants(
+            id=int(id),
+            filename=req_json['filename'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# grant_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+grant_info_replace_links_map = {
+    'td': {
+        'localAct': lambda obj: obj[0],
+    }
+}
+
+
+grant_info_row_template = \
+    '<tr itemprop="act">' \
+    '<td itemprop="localAct"><a href="" download="">Ссылка на локальный нормативный акт</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def grants_publish(request):
+    if request.method == 'GET':
+        grants_information = Grants.objects.all()
+
+        file = 'EmployeeApp/parser/pages/subdivisions/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'id': "acts"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'act'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(grants_information):
+            values = grant_to_list(item)[1:]
+            row = bs4.BeautifulSoup(grant_info_row_template)
+            # replace_page_elements(grant_info_replace_map, row, values)
+            replace_page_links(grant_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
