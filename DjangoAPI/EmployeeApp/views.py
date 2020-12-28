@@ -150,7 +150,7 @@ def publish_basic_information(request):
         body_json = JSONParser().parse(request)
         id = body_json['id']
         information = BasicInformations.objects.get(BIid=id)
-        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        file = 'EmployeeApp/parser/pages/common/index.html'
         page_parser = read_page(file)
         new_page = str(replace_page_elements(basic_information_replace_map, page_parser, information))
         write_page(file, new_page)
@@ -257,7 +257,7 @@ def managements_publish(request):
     if request.method == 'GET':
         managements_information = Managements.objects.all()
 
-        file = 'EmployeeApp/parser/pages/subdivisions/index.html'
+        file = 'EmployeeApp/parser/pages/struct/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'id': "management"})
         if len(tables) != 1:
@@ -404,7 +404,7 @@ def subdivisions_publish(request):
     if request.method == 'GET':
         departments_information = Subdivisions.objects.all()
 
-        file = 'EmployeeApp/parser/pages/subdivisions/index.html'
+        file = 'EmployeeApp/parser/pages/struct/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'id': "departments"})
         if len(tables) != 1:
@@ -518,7 +518,7 @@ basic_information_info_replace_links_map = {
 }
 
 basic_information_info_row_template = \
-    '<tr itemprop="basic_information">' \
+    '<tr itemprop="common">' \
     '<td itemprop="regDate" style="width: 30%;"></td>' \
     '<td itemprop="address"></td>' \
     '<td itemprop="workTime"></td>' \
@@ -534,13 +534,13 @@ def basic_informations_publish(request):
     if request.method == 'GET':
         basic_informations_information = BasicInformations.objects.all()
 
-        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        file = 'EmployeeApp/parser/pages/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'id': "main_information"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'basic_information'})
+        rows = table.find_all('tr', {'itemprop': 'common'})
 
         for row in rows:
             row.extract()
@@ -658,7 +658,7 @@ def founders_publish(request):
     if request.method == 'GET':
         founders_information = Founders.objects.all()
 
-        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        file = 'EmployeeApp/parser/pages/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "uchredLaw"})
         if len(tables) != 1:
@@ -786,7 +786,7 @@ def filiations_publish(request):
     if request.method == 'GET':
         filiations_information = Filiations.objects.all()
 
-        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        file = 'EmployeeApp/parser/pages/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "filInfo"})
         if len(tables) != 1:
@@ -914,7 +914,7 @@ def representations_publish(request):
     if request.method == 'GET':
         representations_information = Representations.objects.all()
 
-        file = 'EmployeeApp/parser/pages/basic_information/index.html'
+        file = 'EmployeeApp/parser/pages/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "repInfo"})
         if len(tables) != 1:

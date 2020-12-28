@@ -16,10 +16,10 @@ urlpatterns = [
                   url(r'^basicInformations/([0-9]+)$', views.basicInformationApi),
 
                   # url(r'^departmentInformations/publish/$', views.publish_department_information),
-                  url(r'^subdivisions/$', views.subdivisions),
-                  url(r'^subdivisions/format/$', views.subdivisionsFormat),
-                  url(r'^subdivisions/([1-9][0-9]*)$', views.subdivisions_by_id),
-                  url(r'^subdivisions/publish/$', views.subdivisions_publish),
+                  url(r'^struct/$', views.subdivisions),
+                  url(r'^struct/format/$', views.subdivisionsFormat),
+                  url(r'^struct/([1-9][0-9]*)$', views.subdivisions_by_id),
+                  url(r'^struct/publish/$', views.subdivisions_publish),
 
                   url(r'^basic_informations/$', views.basic_informations),
                   url(r'^basic_informations/format/$', views.basic_informationsFormat),

@@ -801,7 +801,7 @@ class Subdivisions(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'subdivisions'
+        db_table = 'struct'
 
 
 class Teachers(models.Model):

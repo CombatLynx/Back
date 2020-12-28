@@ -797,7 +797,7 @@ class Subdivisions(models.Model):
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'subdivisions'
+        db_table = 'struct'
 
 
 class Teachers(models.Model):
