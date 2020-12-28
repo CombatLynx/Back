@@ -8,15 +8,16 @@
 from django.db import models
 
 
-# class Acts(models.Model):
-#     filename = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'acts'
+class Acts(models.Model):
+    filename = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'acts'
+
+
 #
 #
 # class AdmissionResults(models.Model):
@@ -413,6 +414,30 @@ class LinkOvz(models.Model):
 #         db_table = 'gos_accreditations'
 #
 #
+
+class GrantInfo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    grant = models.CharField(blank=True, null=True, max_length=1000)
+    support = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_info = models.CharField(blank=True, null=True, max_length=1000)
+    inter_info = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_ts = models.CharField(blank=True, null=True, max_length=1000)
+    inter_ts = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_ls = models.CharField(blank=True, null=True, max_length=1000)
+    inter_ls = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_num = models.CharField(blank=True, null=True, max_length=1000)
+    inter_num = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_inv = models.CharField(blank=True, null=True, max_length=1000)
+    inter_inv = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_fd = models.CharField(blank=True, null=True, max_length=1000)
+    inter_fd = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'grant_info'
+
+
 class Grants(models.Model):
     filename = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
@@ -421,6 +446,8 @@ class Grants(models.Model):
 
     class Meta:
         db_table = 'grants'
+
+
 #
 #
 # class InfSystems(models.Model):
@@ -476,22 +503,23 @@ class Internationaldog(models.Model):
 #         db_table = 'invalides'
 #
 #
-# class Jobs(models.Model):
-#     code = models.CharField(blank=True, null=True)
-#     name = models.CharField(blank=True, null=True)
-#     numgrad = models.CharField(blank=True, null=True)
-#     numworkgrad = models.CharField(blank=True, null=True)
-#     numgrad1 = models.CharField(blank=True, null=True)
-#     numworkgrad1 = models.CharField(blank=True, null=True)
-#     numgrad2 = models.CharField(blank=True, null=True)
-#     numworkgrad2 = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'jobs'
+class Jobs(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    numgrad = models.CharField(blank=True, null=True, max_length=1000)
+    numworkgrad = models.CharField(blank=True, null=True, max_length=1000)
+    numgrad1 = models.CharField(blank=True, null=True, max_length=1000)
+    numworkgrad1 = models.CharField(blank=True, null=True, max_length=1000)
+    numgrad2 = models.CharField(blank=True, null=True, max_length=1000)
+    numworkgrad2 = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'jobs'
+
+
 #
 #
 class Leaders(models.Model):

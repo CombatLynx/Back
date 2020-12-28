@@ -6,7 +6,7 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
-    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants
+    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -3442,9 +3442,9 @@ def grants_publish(request):
     if request.method == 'GET':
         grants_information = Grants.objects.all()
 
-        file = 'EmployeeApp/parser/pages/subdivisions/index.html'
+        file = 'EmployeeApp/parser/pages/grants/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'id': "acts"})
+        tables = page_parser.find_all('table', {'itemprop': "acts"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
@@ -3458,6 +3458,421 @@ def grants_publish(request):
             row = bs4.BeautifulSoup(grant_info_row_template)
             # replace_page_elements(grant_info_replace_map, row, values)
             replace_page_links(grant_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- Стипендии и иные виды материальной поддержки ---------------------------------
+# ----------------------------------------- Информация ---------------------------------------------------
+
+def grantInfo_to_list(row):
+    return [
+            row.id,
+            row.grant,
+            row.support,
+            row.hostel_info, row.inter_info,
+            row.hostel_ts, row.inter_ts,
+            row.hostel_ls, row.inter_ls,
+            row.hostel_num, row.inter_num,
+            row.hostel_inv, row.inter_inv,
+            row.hostel_fd, row.inter_fd
+            ]
+
+
+def grantInfo_format():
+    return ['id', 'grant', 'support', 'hostel_info', 'inter_info', 'hostel_ts', 'inter_ts', 'hostel_ls', 'inter_ls',
+            'hostel_num', 'inter_num', 'hostel_inv', 'inter_inv', 'hostel_fd', 'inter_fd']
+
+
+@csrf_exempt
+def grantInfos(request):
+    if request.method == 'GET':
+        a = GrantInfo.objects.all()
+        a = [grantInfo_to_list(item) for item in a]
+        return JsonResponse({
+            'format': grantInfo_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def grantInfosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(grantInfo_format(), safe=False)
+
+
+@csrf_exempt
+def grantInfos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = GrantInfo.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = GrantInfo(
+            grant=req_json['grant'],
+            support=req_json['support'],
+            hostel_info=req_json['hostel_info'],
+            inter_info=req_json['inter_info'],
+            hostel_ts=req_json['hostel_ts'],
+            inter_ts=req_json['inter_ts'],
+            hostel_ls=req_json['hostel_ls'],
+            inter_ls=req_json['inter_ls'],
+            hostel_num=req_json['hostel_num'],
+            inter_num=req_json['inter_num'],
+            hostel_inv=req_json['hostel_inv'],
+            inter_inv=req_json['inter_inv'],
+            hostel_fd=req_json['hostel_fd'],
+            inter_fd=req_json['inter_fd'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = GrantInfo.objects.get(id=id)
+        obj = GrantInfo(
+            id=int(id),
+            grant=req_json['grant'],
+            support=req_json['support'],
+            hostel_info=req_json['hostel_info'],
+            inter_info=req_json['inter_info'],
+            hostel_ts=req_json['hostel_ts'],
+            inter_ts=req_json['inter_ts'],
+            hostel_ls=req_json['hostel_ls'],
+            inter_ls=req_json['inter_ls'],
+            hostel_num=req_json['hostel_num'],
+            inter_num=req_json['inter_num'],
+            hostel_inv=req_json['hostel_inv'],
+            inter_inv=req_json['inter_inv'],
+            hostel_fd=req_json['hostel_fd'],
+            inter_fd=req_json['inter_fd'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+grantInfo_info_replace_map = {
+    'td': {
+        'grant': lambda obj: obj[0],
+        'support': lambda obj: obj[1],
+        'hostelInfo': lambda obj: obj[2],
+        'interInfo': lambda obj: obj[3],
+        'hostelTS': lambda obj: obj[4],
+        'interTS': lambda obj: obj[5],
+        'hostelLS': lambda obj: obj[6],
+        'interLS': lambda obj: obj[7],
+        'hostelNum': lambda obj: obj[8],
+        'hostelInv': lambda obj: obj[9],
+        'interInv': lambda obj: obj[10],
+        'hostelFd': lambda obj: obj[11],
+        'interFd': lambda obj: obj[12],
+    }
+}
+
+grantInfo_info_row_template = \
+    '<tr itemprop="infor">' \
+    '<td itemprop="grant"></td>' \
+    '<td itemprop="support"></td>' \
+    '<td itemprop="hostelInfo"></td>' \
+    '<td itemprop="interInfo"></td>' \
+    '<td itemprop="hostelTS"></td>' \
+    '<td itemprop="interTS"></td>' \
+    '<td itemprop="hostelLS"></td>' \
+    '<td id="its"></td>' \
+    '<td itemprop="hostelNum"></td>' \
+    '<td itemprop="hostelInv"></td>' \
+    '<td itemprop="interInv"></td>' \
+    '<td itemprop="hostelFd"></td>' \
+    '<td itemprop="interFd"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def grantInfos_publish(request):
+    if request.method == 'GET':
+        grantInfos_information = GrantInfo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/grants/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "inf"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'infor'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(grantInfos_information):
+            values = grantInfo_to_list(item)[1:]
+            row = bs4.BeautifulSoup(grantInfo_info_row_template)
+            replace_page_elements(grantInfo_info_replace_map, row, values)
+            # replace_page_links(grant_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- Стипендии и иные виды материальной поддержки ---------------------------------
+# --- Копия локального нормативного акта, регламентирующего размер платы за пользование жилым помещением и коммунальные услуги в общежитии ---
+
+def act_to_list(row):
+    return [row.id, row.filename]
+
+
+def act_format():
+    return ['id', 'filename']
+
+
+@csrf_exempt
+def acts(request):
+    if request.method == 'GET':
+        a = Acts.objects.all()
+        a = [act_to_list(item) for item in a]
+        return JsonResponse({
+            'format': act_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def actsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(act_format(), safe=False)
+
+
+@csrf_exempt
+def acts_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Acts.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Acts(
+            filename=req_json['filename'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Acts.objects.get(id=id)
+        obj = Acts(
+            id=int(id),
+            filename=req_json['filename'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# grant_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+act_info_replace_links_map = {
+    'td': {
+        'localAct': lambda obj: obj[0],
+    }
+}
+
+
+act_info_row_template = \
+    '<tr itemprop="local">' \
+    '<td itemprop="localAct"><a href="" download="">Копия локального нормативного акта, регламентирующего размер платы за пользование жилым помещением и коммунальные услуги в общежитии</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def acts_publish(request):
+    if request.method == 'GET':
+        acts_information = Acts.objects.all()
+
+        file = 'EmployeeApp/parser/pages/grants/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "localCopy"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'local'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(acts_information):
+            values = act_to_list(item)[1:]
+            row = bs4.BeautifulSoup(act_info_row_template)
+            # replace_page_elements(grant_info_replace_map, row, values)
+            replace_page_links(act_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- Стипендии и иные виды материальной поддержки ---------------------------------
+# --------------------------- Информация о трудоустройстве выпускников -----------------------------------
+
+def job_to_list(row):
+    return [row.id, row.code, row.name, row.numgrad, row.numworkgrad, row.numgrad1, row.numworkgrad1, row.numgrad2, row.numworkgrad2]
+
+
+def job_format():
+    return ['id', 'code', 'name', 'numgrad', 'numworkgrad', 'numgrad1', 'numworkgrad1', 'numgrad2', 'numworkgrad2']
+
+
+@csrf_exempt
+def jobs(request):
+    if request.method == 'GET':
+        a = Jobs.objects.all()
+        a = [job_to_list(item) for item in a]
+        return JsonResponse({
+            'format': job_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def jobsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(job_format(), safe=False)
+
+
+@csrf_exempt
+def jobs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Jobs.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Jobs(
+            code=req_json['code'],
+            name=req_json['name'],
+            numgrad=req_json['numgrad'],
+            numworkgrad=req_json['numworkgrad'],
+            numgrad1=req_json['numgrad1'],
+            numworkgrad1=req_json['numworkgrad1'],
+            numgrad2=req_json['numgrad2'],
+            numworkgrad2=req_json['numworkgrad2'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Jobs.objects.get(id=id)
+        obj = Jobs(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            numgrad=req_json['numgrad'],
+            numworkgrad=req_json['numworkgrad'],
+            numgrad1=req_json['numgrad1'],
+            numworkgrad1=req_json['numworkgrad1'],
+            numgrad2=req_json['numgrad2'],
+            numworkgrad2=req_json['numworkgrad2'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+job_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'v1': lambda obj: obj[2],
+        't1': lambda obj: obj[3],
+        'v2': lambda obj: obj[4],
+        't2': lambda obj: obj[5],
+        'v3': lambda obj: obj[6],
+        't3': lambda obj: obj[7],
+    }
+}
+
+
+job_info_row_template = \
+    '<tr itemprop="graduateJob">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="v1"></td>' \
+    '<td itemprop="t1"></td>' \
+    '<td itemprop="v2"></td>' \
+    '<td itemprop="t2"></td>' \
+    '<td itemprop="v3"></td>' \
+    '<td itemprop="t3"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def jobs_publish(request):
+    if request.method == 'GET':
+        jobs_information = Jobs.objects.all()
+
+        file = 'EmployeeApp/parser/pages/grants/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "info"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'graduateJob'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(jobs_information):
+            values = job_to_list(item)[1:]
+            row = bs4.BeautifulSoup(job_info_row_template)
+            replace_page_elements(job_info_replace_map, row, values)
+            # replace_page_links(grant_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

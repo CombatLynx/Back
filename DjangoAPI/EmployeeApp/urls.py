@@ -146,5 +146,20 @@ urlpatterns = [
                   url(r'^grants/([1-9][0-9]*)$', views.grants_by_id),
                   url(r'^grants/publish/$', views.grants_publish),
 
+                  url(r'^grantInfos/$', views.grantInfos),
+                  url(r'^grantInfos/format/$', views.grantInfosFormat),
+                  url(r'^grantInfos/([1-9][0-9]*)$', views.grantInfos_by_id),
+                  url(r'^grantInfos/publish/$', views.grantInfos_publish),
+
+                  url(r'^acts/$', views.acts),
+                  url(r'^acts/format/$', views.actsFormat),
+                  url(r'^acts/([1-9][0-9]*)$', views.acts_by_id),
+                  url(r'^acts/publish/$', views.acts_publish),
+
+                  url(r'^jobs/$', views.jobs),
+                  url(r'^jobs/format/$', views.jobsFormat),
+                  url(r'^jobs/([1-9][0-9]*)$', views.jobs_by_id),
+                  url(r'^jobs/publish/$', views.jobs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

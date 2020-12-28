@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
-    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants
+    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -371,4 +371,39 @@ class GrantSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'filename'
+        )
+
+
+class GrantInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GrantInfo
+        fields = (
+            'id',
+            'name',
+            'text'
+        )
+
+
+class ActsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Acts
+        fields = (
+            'id',
+            'filename'
+        )
+
+
+class JobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = (
+            'id',
+            'code',
+            'name',
+            'numgrad',
+            'numworkgrad',
+            'numgrad1',
+            'numworkgrad1',
+            'numgrad2',
+            'numworkgrad2'
         )

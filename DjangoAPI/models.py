@@ -277,6 +277,30 @@ class GosAccreditations(models.Model):
         db_table = 'gos_accreditations'
 
 
+class GrantInfo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    grant = models.CharField(blank=True, null=True)
+    support = models.CharField(blank=True, null=True)
+    hostel_info = models.CharField(blank=True, null=True)
+    inter_info = models.CharField(blank=True, null=True)
+    hostel_ts = models.CharField(blank=True, null=True)
+    inter_ts = models.CharField(blank=True, null=True)
+    hostel_ls = models.CharField(blank=True, null=True)
+    inter_ls = models.CharField(blank=True, null=True)
+    hostel_num = models.CharField(blank=True, null=True)
+    inter_num = models.CharField(blank=True, null=True)
+    hostel_inv = models.CharField(blank=True, null=True)
+    inter_inv = models.CharField(blank=True, null=True)
+    hostel_fd = models.CharField(blank=True, null=True)
+    inter_fd = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'grant_info'
+
+
 class Grants(models.Model):
     filename = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField()
