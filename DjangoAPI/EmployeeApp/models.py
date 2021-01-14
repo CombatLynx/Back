@@ -413,6 +413,19 @@ class GosAccreditations(models.Model):
         db_table = 'gos_accreditations'
 
 
+class Prof(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    name_accr = models.CharField(blank=True, null=True, max_length=1000)
+    time = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'prof'
+
+
 class GrantInfo(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

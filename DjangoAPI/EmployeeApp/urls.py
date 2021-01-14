@@ -166,5 +166,10 @@ urlpatterns = [
                   url(r'^gosAccreditations/([1-9][0-9]*)$', views.gosAccreditations_by_id),
                   url(r'^gosAccreditations/publish/$', views.gosAccreditations_publish),
 
+                  url(r'^profs/$', views.profs),
+                  url(r'^profs/format/$', views.profsFormat),
+                  url(r'^profs/([1-9][0-9]*)$', views.profs_by_id),
+                  url(r'^profs/publish/$', views.profs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
-    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations
+    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -421,4 +421,16 @@ class GosAccreditationSerializer(serializers.ModelSerializer):
             'language',
             'trainterm',
             'column'
+        )
+
+
+class ProfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prof
+        fields = (
+            'id',
+            'code',
+            'name',
+            'name_accr',
+            'time'
         )

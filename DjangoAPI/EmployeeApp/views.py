@@ -6,7 +6,7 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
-    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations
+    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -3986,7 +3986,7 @@ gosAccreditation_info_row_template = \
 @csrf_exempt
 def gosAccreditations_publish(request):
     if request.method == 'GET':
-        gosAccreditations_information = Jobs.objects.all()
+        gosAccreditations_information = GosAccreditations.objects.all()
 
         file = 'EmployeeApp/parser/pages/sveden/education/index.html'
         page_parser = read_page(file)
@@ -4003,6 +4003,123 @@ def gosAccreditations_publish(request):
             values = gosAccreditation_to_list(item)[1:]
             row = bs4.BeautifulSoup(gosAccreditation_info_row_template)
             replace_page_elements(gosAccreditation_info_replace_map, row, values)
+            # replace_page_links(grant_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------------------- ОБРАЗОВАНИЕ -----------------------------------------------------
+# Сведения о профессионально-общественной аккредитации образовательной программы (при наличии)
+
+def prof_to_list(row):
+    return [row.id, row.code, row.name, row.name_accr, row.time]
+
+
+def prof_format():
+    return ['id', 'code', 'name', 'name_accr', 'time']
+
+
+@csrf_exempt
+def profs(request):
+    if request.method == 'GET':
+        a = Prof.objects.all()
+        a = [prof_to_list(item) for item in a]
+        return JsonResponse({
+            'format': prof_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def profsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(prof_format(), safe=False)
+
+
+@csrf_exempt
+def profs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Prof.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Prof(
+            code=req_json['code'],
+            name=req_json['name'],
+            name_accr=req_json['name_accr'],
+            time=req_json['time'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Prof.objects.get(id=id)
+        obj = Prof(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            name_accr=req_json['name_accr'],
+            time=req_json['time'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+prof_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'orgName': lambda obj: obj[2],
+        'dateEnd': lambda obj: obj[3],
+    }
+}
+
+
+prof_info_row_template = \
+    '<tr itemprop="eduPOAccred">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="orgName"></td>' \
+    '<td itemprop="dateEnd"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def profs_publish(request):
+    if request.method == 'GET':
+        profs_information = Prof.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/education/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "prof"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eduPOAccred'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(profs_information):
+            values = prof_to_list(item)[1:]
+            row = bs4.BeautifulSoup(prof_info_row_template)
+            replace_page_elements(prof_info_replace_map, row, values)
             # replace_page_links(grant_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling

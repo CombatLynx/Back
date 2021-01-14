@@ -531,6 +531,20 @@ class Practices(models.Model):
         db_table = 'practices'
 
 
+class Prof(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    name_accr = models.CharField(blank=True, null=True)
+    time = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'prof'
+
+
 class Refugees(models.Model):
     num = models.CharField(blank=True, null=True)
     allsquare = models.CharField(blank=True, null=True)
