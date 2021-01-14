@@ -397,23 +397,21 @@ class LinkOvz(models.Model):
         db_table = 'link_ovz'
 
 
-#
-# class GosAccreditations(models.Model):
-#     code = models.CharField(blank=True, null=True)
-#     name = models.CharField(blank=True, null=True)
-#     level = models.CharField(blank=True, null=True)
-#     expdate = models.CharField(blank=True, null=True)
-#     language = models.CharField(blank=True, null=True)
-#     trainterm = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'gos_accreditations'
-#
-#
+class GosAccreditations(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    expdate = models.CharField(blank=True, null=True, max_length=1000)
+    language = models.CharField(blank=True, null=True, max_length=1000)
+    trainterm = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    column = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'gos_accreditations'
+
 
 class GrantInfo(models.Model):
     created_at = models.DateTimeField()

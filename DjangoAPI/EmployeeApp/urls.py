@@ -161,5 +161,10 @@ urlpatterns = [
                   url(r'^jobs/([1-9][0-9]*)$', views.jobs_by_id),
                   url(r'^jobs/publish/$', views.jobs_publish),
 
+                  url(r'^gosAccreditations/$', views.gosAccreditations),
+                  url(r'^gosAccreditations/format/$', views.gosAccreditationsFormat),
+                  url(r'^gosAccreditations/([1-9][0-9]*)$', views.gosAccreditations_by_id),
+                  url(r'^gosAccreditations/publish/$', views.gosAccreditations_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

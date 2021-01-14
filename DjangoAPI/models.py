@@ -271,6 +271,7 @@ class GosAccreditations(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
+    column = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -801,7 +802,7 @@ class Subdivisions(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'struct'
+        db_table = 'subdivisions'
 
 
 class Teachers(models.Model):
