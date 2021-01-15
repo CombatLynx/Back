@@ -3,7 +3,8 @@ from rest_framework import serializers
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
-    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof
+    SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
+    InfChi
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -433,4 +434,21 @@ class ProfSerializer(serializers.ModelSerializer):
             'name',
             'name_accr',
             'time'
+        )
+
+
+class InfChiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfChi
+        fields = (
+            'id',
+            'code',
+            'name',
+            'level',
+            'form',
+            'number_bf',
+            'number_br',
+            'number_bm',
+            'number_p',
+            'number_f'
         )

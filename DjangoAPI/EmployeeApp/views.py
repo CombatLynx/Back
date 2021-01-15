@@ -6,7 +6,7 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
-    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof
+    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -4120,6 +4120,143 @@ def profs_publish(request):
             values = prof_to_list(item)[1:]
             row = bs4.BeautifulSoup(prof_info_row_template)
             replace_page_elements(prof_info_replace_map, row, values)
+            # replace_page_links(grant_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------------------- ОБРАЗОВАНИЕ -----------------------------------------------------
+# Информация о численности обучающихся по реализуемым образовательным программам по источникам финансирования
+
+def inf_to_list(row):
+    return [row.id, row.code, row.name, row.level, row.form, row.number_bf, row.number_br, row.number_bm, row.number_p, row.number_f]
+
+
+def inf_format():
+    return ['id', 'code', 'name', 'level', 'form', 'number_bf', 'number_br', 'number_bm', 'number_p', 'number_f']
+
+
+@csrf_exempt
+def infs(request):
+    if request.method == 'GET':
+        a = InfChi.objects.all()
+        a = [inf_to_list(item) for item in a]
+        return JsonResponse({
+            'format': inf_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def infsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(inf_format(), safe=False)
+
+
+@csrf_exempt
+def infs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = InfChi.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = InfChi(
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            form=req_json['form'],
+            number_bf=req_json['number_bf'],
+            number_br=req_json['number_br'],
+            number_bm=req_json['number_bm'],
+            number_p=req_json['number_p'],
+            number_f=req_json['number_f'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = InfChi.objects.get(id=id)
+        obj = InfChi(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            form=req_json['form'],
+            number_bf=req_json['number_bf'],
+            number_br=req_json['number_br'],
+            number_bm=req_json['number_bm'],
+            number_p=req_json['number_p'],
+            number_f=req_json['number_f'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+inf_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'eduLevel': lambda obj: obj[2],
+        'eduForm': lambda obj: obj[3],
+        'numberBF': lambda obj: obj[4],
+        'numberBR': lambda obj: obj[5],
+        'numberBM': lambda obj: obj[6],
+        'numberP': lambda obj: obj[7],
+        'numberF': lambda obj: obj[8],
+    }
+}
+
+
+inf_info_row_template = \
+    '<tr itemprop="eduChislen">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="eduLevel"></td>' \
+    '<td itemprop="eduForm"></td>' \
+    '<td itemprop="numberBF"></td>' \
+    '<td itemprop="numberBR"></td>' \
+    '<td itemprop="numberBM"></td>' \
+    '<td itemprop="numberP"></td>' \
+    '<td itemprop="numberF"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def infs_publish(request):
+    if request.method == 'GET':
+        infs_information = InfChi.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/education/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "inf"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eduChislen'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(infs_information):
+            values = inf_to_list(item)[1:]
+            row = bs4.BeautifulSoup(inf_info_row_template)
+            replace_page_elements(inf_info_replace_map, row, values)
             # replace_page_links(grant_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling

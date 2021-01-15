@@ -171,5 +171,10 @@ urlpatterns = [
                   url(r'^profs/([1-9][0-9]*)$', views.profs_by_id),
                   url(r'^profs/publish/$', views.profs_publish),
 
+                  url(r'^infs/$', views.infs),
+                  url(r'^infs/format/$', views.infsFormat),
+                  url(r'^infs/([1-9][0-9]*)$', views.infs_by_id),
+                  url(r'^infs/publish/$', views.infs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -459,6 +459,23 @@ class Grants(models.Model):
         db_table = 'grants'
 
 
+class InfChi(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    form = models.CharField(blank=True, null=True, max_length=1000)
+    number_bf = models.CharField(blank=True, null=True, max_length=1000)
+    number_br = models.CharField(blank=True, null=True, max_length=1000)
+    number_bm = models.CharField(blank=True, null=True, max_length=1000)
+    number_p = models.CharField(blank=True, null=True, max_length=1000)
+    number_f = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'inf_chi'
+
 #
 #
 # class InfSystems(models.Model):
