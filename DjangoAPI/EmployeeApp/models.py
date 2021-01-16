@@ -18,25 +18,40 @@ class Acts(models.Model):
         db_table = 'acts'
 
 
-#
-#
-# class AdmissionResults(models.Model):
-#     code = models.CharField(blank=True, null=True)
-#     name = models.CharField(blank=True, null=True)
-#     level = models.CharField(blank=True, null=True)
-#     studyform = models.CharField(blank=True, null=True)
-#     budgetfederal = models.CharField(blank=True, null=True)
-#     budgetrus = models.CharField(blank=True, null=True)
-#     budgetplace = models.CharField(blank=True, null=True)
-#     budgetfiz = models.CharField(blank=True, null=True)
-#     summ = models.CharField(blank=True, null=True)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'admission_results'
+class AdmissionResults(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    studyform = models.CharField(blank=True, null=True, max_length=1000)
+    budgetfederal = models.CharField(blank=True, null=True, max_length=1000)
+    budgetrus = models.CharField(blank=True, null=True, max_length=1000)
+    budgetplace = models.CharField(blank=True, null=True, max_length=1000)
+    budgetfiz = models.CharField(blank=True, null=True, max_length=1000)
+    summ = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'admission_results'
+
+
+class Perevod(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    form = models.CharField(blank=True, null=True, max_length=1000)
+    out = models.CharField(blank=True, null=True, max_length=1000)
+    to = models.CharField(blank=True, null=True, max_length=1000)
+    res = models.CharField(blank=True, null=True, max_length=1000)
+    exp = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'perevod'
+
 #
 #
 # class ArInternalMetadata(models.Model):
@@ -475,6 +490,7 @@ class InfChi(models.Model):
 
     class Meta:
         db_table = 'inf_chi'
+
 
 #
 #

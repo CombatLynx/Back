@@ -176,5 +176,15 @@ urlpatterns = [
                   url(r'^infs/([1-9][0-9]*)$', views.infs_by_id),
                   url(r'^infs/publish/$', views.infs_publish),
 
+                  url(r'^admiss/$', views.admiss),
+                  url(r'^admiss/format/$', views.admissFormat),
+                  url(r'^admiss/([1-9][0-9]*)$', views.admiss_by_id),
+                  url(r'^admiss/publish/$', views.admiss_publish),
+
+                  url(r'^perevs/$', views.perevs),
+                  url(r'^perevs/format/$', views.perevsFormat),
+                  url(r'^perevs/([1-9][0-9]*)$', views.perevs_by_id),
+                  url(r'^perevs/publish/$', views.perevs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

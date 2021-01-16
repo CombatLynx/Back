@@ -4,7 +4,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
     SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
-    InfChi
+    InfChi, AdmissionResults, Perevod
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -451,4 +451,37 @@ class InfChiSerializer(serializers.ModelSerializer):
             'number_bm',
             'number_p',
             'number_f'
+        )
+
+
+class AdmissionResultsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdmissionResults
+        fields = (
+            'id',
+            'code',
+            'name',
+            'level',
+            'studyform',
+            'budgetfederal',
+            'budgetrus',
+            'budgetplace',
+            'budgetfiz',
+            'summ'
+        )
+
+
+class PerevodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Perevod
+        fields = (
+            'id',
+            'code',
+            'name',
+            'level',
+            'form',
+            'out',
+            'to',
+            'res',
+            'exp'
         )

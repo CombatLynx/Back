@@ -532,6 +532,24 @@ class PaidServices(models.Model):
         db_table = 'paid_services'
 
 
+class Perevod(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    level = models.CharField(blank=True, null=True)
+    form = models.CharField(blank=True, null=True)
+    out = models.CharField(blank=True, null=True)
+    to = models.CharField(blank=True, null=True)
+    res = models.CharField(blank=True, null=True)
+    exp = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'perevod'
+
+
 class Practices(models.Model):
     code = models.CharField(blank=True, null=True)
     name = models.CharField(blank=True, null=True)

@@ -6,7 +6,8 @@ from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequ
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
-    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi
+    SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
+    AdmissionResults, Perevod
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -4262,5 +4263,275 @@ def infs_publish(request):
             last_tr = last_tr.next_sibling
 
         # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------------------- ОБРАЗОВАНИЕ -----------------------------------------------------
+# Информация о результатах приема
+
+def admis_to_list(row):
+    return [row.id, row.code, row.name, row.level, row.studyform, row.budgetfederal, row.budgetrus, row.budgetplace, row.budgetfiz, row.summ]
+
+
+def admis_format():
+    return ['id', 'code', 'name', 'level', 'studyform', 'budgetfederal', 'budgetrus', 'budgetplace', 'budgetfiz', 'summ']
+
+
+@csrf_exempt
+def admiss(request):
+    if request.method == 'GET':
+        a = AdmissionResults.objects.all()
+        a = [admis_to_list(item) for item in a]
+        return JsonResponse({
+            'format': admis_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def admissFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(admis_format(), safe=False)
+
+
+@csrf_exempt
+def admiss_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = AdmissionResults.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = AdmissionResults(
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            studyform=req_json['studyform'],
+            budgetfederal=req_json['budgetfederal'],
+            budgetrus=req_json['budgetrus'],
+            budgetplace=req_json['budgetplace'],
+            budgetfiz=req_json['budgetfiz'],
+            summ=req_json['summ'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = AdmissionResults.objects.get(id=id)
+        obj = AdmissionResults(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            studyform=req_json['studyform'],
+            budgetfederal=req_json['budgetfederal'],
+            budgetrus=req_json['budgetrus'],
+            budgetplace=req_json['budgetplace'],
+            budgetfiz=req_json['budgetfiz'],
+            summ=req_json['summ'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+admis_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'eduLevel': lambda obj: obj[2],
+        'eduForm': lambda obj: obj[3],
+        'numberBF': lambda obj: obj[4],
+        'numberBR': lambda obj: obj[5],
+        'numberBM': lambda obj: obj[6],
+        'numberP': lambda obj: obj[7],
+        'score': lambda obj: obj[8],
+    }
+}
+
+
+admis_info_row_template = \
+    '<tr itemprop="eduPriem">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="eduLevel"></td>' \
+    '<td itemprop="eduForm"></td>' \
+    '<td itemprop="numberBF"></td>' \
+    '<td itemprop="numberBR"></td>' \
+    '<td itemprop="numberBM"></td>' \
+    '<td itemprop="numberP"></td>' \
+    '<td itemprop="score"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def admiss_publish(request):
+    if request.method == 'GET':
+        admiss_information = AdmissionResults.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/education/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "admis"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eduPriem'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(admiss_information):
+            values = admis_to_list(item)[1:]
+            row = bs4.BeautifulSoup(admis_info_row_template)
+            replace_page_elements(admis_info_replace_map, row, values)
+            # replace_page_links(grant_admiso_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_admisormation_replace_map, page_parser, admisormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------------------- ОБРАЗОВАНИЕ -----------------------------------------------------
+# Информация о результатах перевода, восстановления и отчисления
+
+def perev_to_list(row):
+    return [row.id, row.code, row.name, row.level, row.form, row.out, row.to, row.res, row.exp]
+
+
+def perev_format():
+    return ['id', 'code', 'name', 'level', 'form', 'out', 'to', 'res', 'exp']
+
+
+@csrf_exempt
+def perevs(request):
+    if request.method == 'GET':
+        a = Perevod.objects.all()
+        a = [perev_to_list(item) for item in a]
+        return JsonResponse({
+            'format': perev_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def perevsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(perev_format(), safe=False)
+
+
+@csrf_exempt
+def perevs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Perevod.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Perevod(
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            form=req_json['form'],
+            out=req_json['out'],
+            to=req_json['to'],
+            res=req_json['res'],
+            exp=req_json['exp'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Perevod.objects.get(id=id)
+        obj = Perevod(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            form=req_json['form'],
+            out=req_json['out'],
+            to=req_json['to'],
+            res=req_json['res'],
+            exp=req_json['exp'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+perev_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'eduLevel': lambda obj: obj[2],
+        'eduForm': lambda obj: obj[3],
+        'numberOut': lambda obj: obj[4],
+        'numberTo': lambda obj: obj[5],
+        'numberRes': lambda obj: obj[6],
+        'numberExp': lambda obj: obj[7],
+    }
+}
+
+
+perev_info_row_template = \
+    '<tr itemprop="eduPerevod">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="eduLevel"></td>' \
+    '<td itemprop="eduForm"></td>' \
+    '<td itemprop="numberOut"></td>' \
+    '<td itemprop="numberTo"></td>' \
+    '<td itemprop="numberRes"></td>' \
+    '<td itemprop="numberExp"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def perevs_publish(request):
+    if request.method == 'GET':
+        perevs_information = Perevod.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/education/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "perevod"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eduPerevod'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(perevs_information):
+            values = perev_to_list(item)[1:]
+            row = bs4.BeautifulSoup(perev_info_row_template)
+            replace_page_elements(perev_info_replace_map, row, values)
+            # replace_page_links(grant_perevo_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_perevormation_replace_map, page_parser, perevormation)
         write_page(file, str(page_parser))
         return HttpResponse("OK")
