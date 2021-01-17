@@ -7,7 +7,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
-    AdmissionResults, Perevod
+    AdmissionResults, Perevod, Obraz
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -4533,5 +4533,155 @@ def perevs_publish(request):
             last_tr = last_tr.next_sibling
 
         # new_page = replace_page_elements(basic_perevormation_replace_map, page_parser, perevormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------------------------------------- ОБРАЗОВАНИЕ -----------------------------------------------------
+# Информация об образовательной программе
+
+def obraz_to_list(row):
+    return [row.id, row.code, row.name, row.level, row.form, row.main, row.plan, row.annot, row.shed, row.method, row.pr, row.el]
+
+
+def obraz_format():
+    return ['id', 'code', 'name', 'level', 'form', 'main', 'plan', 'annot', 'shed', 'method', 'pr', 'el']
+
+
+@csrf_exempt
+def obrazs(request):
+    if request.method == 'GET':
+        a = Obraz.objects.all()
+        a = [obraz_to_list(item) for item in a]
+        return JsonResponse({
+            'format': obraz_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def obrazsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(obraz_format(), safe=False)
+
+
+@csrf_exempt
+def obrazs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Obraz.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Obraz(
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            form=req_json['form'],
+            main=req_json['main'],
+            plan=req_json['plan'],
+            annot=req_json['annot'],
+            shed=req_json['shed'],
+            method=req_json['method'],
+            pr=req_json['pr'],
+            el=req_json['el'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Obraz.objects.get(id=id)
+        obj = Obraz(
+            id=int(id),
+            code=req_json['code'],
+            name=req_json['name'],
+            level=req_json['level'],
+            form=req_json['form'],
+            main=req_json['main'],
+            plan=req_json['plan'],
+            annot=req_json['annot'],
+            shed=req_json['shed'],
+            method=req_json['method'],
+            pr=req_json['pr'],
+            el=req_json['el'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+obraz_info_replace_map = {
+    'td': {
+        'eduCode': lambda obj: obj[0],
+        'eduName': lambda obj: obj[1],
+        'eduLevel': lambda obj: obj[2],
+        'eduForm': lambda obj: obj[3],
+        'eduEl': lambda obj: obj[10],
+    }
+}
+
+
+obraz_info_replace_links_map = {
+    'td': {
+        'opMain': lambda obj: obj[4],
+        'educationPlan': lambda obj: obj[5],
+        'educationAnnotation': lambda obj: obj[6],
+        'educationShedule': lambda obj: obj[7],
+        'methodology': lambda obj: obj[8],
+        'eduPr': lambda obj: obj[9],
+    }
+}
+
+obraz_info_row_template = \
+    '<tr itemprop="eduOp">' \
+    '<td itemprop="eduCode"></td>' \
+    '<td itemprop="eduName"></td>' \
+    '<td itemprop="eduLevel"></td>' \
+    '<td itemprop="eduForm"></td>' \
+    '<td itemprop="opMain"><a href="">Ссылка</a></td>' \
+    '<td itemprop="educationPlan"><a href="">Ссылка</a></td>' \
+    '<td itemprop="educationAnnotation"><a href="">Ссылка</a></td>' \
+    '<td itemprop="educationShedule"><a href="">Ссылка</a></td>' \
+    '<td itemprop="methodology"><a href="">Ссылка</a></td>' \
+    '<td itemprop="eduPr"><a href="">Ссылка</a></td>' \
+    '<td itemprop="eduEl"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def obrazs_publish(request):
+    if request.method == 'GET':
+        obrazs_information = Obraz.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/education/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "obraz"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eduOp'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(obrazs_information):
+            values = obraz_to_list(item)[1:]
+            row = bs4.BeautifulSoup(obraz_info_row_template)
+            replace_page_elements(obraz_info_replace_map, row, values)
+            replace_page_links(obraz_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_obrazormation_replace_map, page_parser, obrazormation)
         write_page(file, str(page_parser))
         return HttpResponse("OK")

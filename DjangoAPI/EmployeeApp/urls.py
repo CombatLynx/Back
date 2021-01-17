@@ -186,5 +186,10 @@ urlpatterns = [
                   url(r'^perevs/([1-9][0-9]*)$', views.perevs_by_id),
                   url(r'^perevs/publish/$', views.perevs_publish),
 
+                  url(r'^obrazs/$', views.obrazs),
+                  url(r'^obrazs/format/$', views.obrazsFormat),
+                  url(r'^obrazs/([1-9][0-9]*)$', views.obrazs_by_id),
+                  url(r'^obrazs/publish/$', views.obrazs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

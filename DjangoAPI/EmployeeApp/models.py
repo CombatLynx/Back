@@ -36,6 +36,26 @@ class AdmissionResults(models.Model):
         db_table = 'admission_results'
 
 
+class Obraz(models.Model):
+    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    form = models.CharField(blank=True, null=True, max_length=1000)
+    main = models.CharField(blank=True, null=True, max_length=1000)
+    plan = models.CharField(blank=True, null=True, max_length=1000)
+    annot = models.CharField(blank=True, null=True, max_length=1000)
+    shed = models.CharField(blank=True, null=True, max_length=1000)
+    method = models.CharField(blank=True, null=True, max_length=1000)
+    pr = models.CharField(blank=True, null=True, max_length=1000)
+    el = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'obraz'
+
+
 class Perevod(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()

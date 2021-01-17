@@ -490,6 +490,27 @@ class Meals(models.Model):
         db_table = 'meals'
 
 
+class Obraz(models.Model):
+    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    code = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    level = models.CharField(blank=True, null=True)
+    form = models.CharField(blank=True, null=True)
+    main = models.CharField(blank=True, null=True)
+    plan = models.CharField(blank=True, null=True)
+    annot = models.CharField(blank=True, null=True)
+    shed = models.CharField(blank=True, null=True)
+    method = models.CharField(blank=True, null=True)
+    pr = models.CharField(blank=True, null=True)
+    el = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'obraz'
+
+
 class Ovz(models.Model):
     facil_ovz = models.CharField(blank=True, null=True)
     ovz = models.CharField(blank=True, null=True)
