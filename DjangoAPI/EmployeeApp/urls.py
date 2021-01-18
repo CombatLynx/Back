@@ -191,5 +191,15 @@ urlpatterns = [
                   url(r'^obrazs/([1-9][0-9]*)$', views.obrazs_by_id),
                   url(r'^obrazs/publish/$', views.obrazs_publish),
 
+                  url(r'^practics/$', views.practics),
+                  url(r'^practics/format/$', views.practicsFormat),
+                  url(r'^practics/([1-9][0-9]*)$', views.practics_by_id),
+                  url(r'^practics/publish/$', views.practics_publish),
+
+                  url(r'^sciencs/$', views.sciencs),
+                  url(r'^sciencs/format/$', views.sciencsFormat),
+                  url(r'^sciencs/([1-9][0-9]*)$', views.sciencs_by_id),
+                  url(r'^sciencs/publish/$', views.sciencs_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

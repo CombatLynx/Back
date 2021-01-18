@@ -72,6 +72,7 @@ class Perevod(models.Model):
     class Meta:
         db_table = 'perevod'
 
+
 #
 #
 # class ArInternalMetadata(models.Model):
@@ -673,24 +674,30 @@ class PaidServices(models.Model):
         db_table = 'paid_services'
 
 
-#
-#
-# class Practices(models.Model):
-#     code = models.CharField(blank=True, null=True, max_length=100)
-#     name = models.CharField(blank=True, null=True, max_length=100)
-#     year = models.CharField(blank=True, null=True, max_length=100)
-#     profile = models.CharField(blank=True, null=True, max_length=100)
-#     studyforms = models.CharField(blank=True, null=True, max_length=100)
-#     learn = models.CharField(blank=True, null=True, max_length=100)
-#     production = models.CharField(blank=True, null=True, max_length=100)
-#     beforediplom = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'practices'
+class Practices(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    year = models.CharField(blank=True, null=True, max_length=1000)
+    profile = models.CharField(blank=True, null=True, max_length=1000)
+    studyforms = models.CharField(blank=True, null=True, max_length=1000)
+    learn = models.CharField(blank=True, null=True, max_length=1000)
+    production = models.CharField(blank=True, null=True, max_length=1000)
+    beforediplom = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    opis_obraz = models.CharField(blank=True, null=True, max_length=1000)
+    uch_plan = models.CharField(blank=True, null=True, max_length=1000)
+    annot_link = models.CharField(blank=True, null=True, max_length=1000)
+    calend_link = models.CharField(blank=True, null=True, max_length=1000)
+    norm_doc = models.CharField(blank=True, null=True, max_length=1000)
+    inf_pract = models.CharField(blank=True, null=True, max_length=1000)
+    inf_isp = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'practices'
+
+
 #
 #
 # class Refugees(models.Model):
@@ -751,31 +758,34 @@ class PaidServices(models.Model):
 #         db_table = 'schema_migrations'
 #
 #
-# class ScienceResults(models.Model):
-#     code = models.CharField(blank=True, null=True, max_length=100)
-#     name = models.CharField(blank=True, null=True, max_length=100)
-#     listdirections = models.CharField(blank=True, null=True, max_length=100)
-#     information = models.CharField(blank=True, null=True, max_length=100)
-#     title = models.CharField(blank=True, null=True, max_length=100)
-#     npr = models.CharField(blank=True, null=True, max_length=100)
-#     numstudents = models.CharField(blank=True, null=True, max_length=100)
-#     nummono = models.CharField(blank=True, null=True, max_length=100)
-#     numvac = models.CharField(blank=True, null=True, max_length=100)
-#     numforeign = models.CharField(blank=True, null=True, max_length=100)
-#     numlastrus = models.CharField(blank=True, null=True, max_length=100)
-#     numlastforeign = models.CharField(blank=True, null=True, max_length=100)
-#     patentrus = models.CharField(blank=True, null=True, max_length=100)
-#     patentforeign = models.CharField(blank=True, null=True, max_length=100)
-#     numsvidrus = models.CharField(blank=True, null=True, max_length=100)
-#     numsvidforeign = models.CharField(blank=True, null=True, max_length=100)
-#     volume = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'science_results'
+class ScienceResults(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    listdirections = models.CharField(blank=True, null=True, max_length=1000)
+    information = models.CharField(blank=True, null=True, max_length=1000)
+    title = models.CharField(blank=True, null=True, max_length=1000)
+    npr = models.CharField(blank=True, null=True, max_length=1000)
+    numstudents = models.CharField(blank=True, null=True, max_length=1000)
+    nummono = models.CharField(blank=True, null=True, max_length=1000)
+    numvac = models.CharField(blank=True, null=True, max_length=1000)
+    numforeign = models.CharField(blank=True, null=True, max_length=1000)
+    numlastrus = models.CharField(blank=True, null=True, max_length=1000)
+    numlastforeign = models.CharField(blank=True, null=True, max_length=1000)
+    patentrus = models.CharField(blank=True, null=True, max_length=1000)
+    patentforeign = models.CharField(blank=True, null=True, max_length=1000)
+    numsvidrus = models.CharField(blank=True, null=True, max_length=1000)
+    numsvidforeign = models.CharField(blank=True, null=True, max_length=1000)
+    volume = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    level = models.CharField(blank=True, null=True, max_length=1000)
+    result_nir = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'science_results'
+
+
 #
 #
 # class Sections(models.Model):

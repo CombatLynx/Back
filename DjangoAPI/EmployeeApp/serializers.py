@@ -4,7 +4,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
     SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
-    InfChi, AdmissionResults, Perevod, Obraz
+    InfChi, AdmissionResults, Perevod, Obraz, Practices, ScienceResults
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -503,4 +503,37 @@ class ObrazSerializer(serializers.ModelSerializer):
             'method',
             'pr',
             'el'
+        )
+
+
+class PracticesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Practices
+        fields = (
+            'id',
+            'code',
+            'name',
+            'profile',
+            'studyforms',
+            'opis_obraz',
+            'uch_plan',
+            'annot_link',
+            'calend_link',
+            'norm_doc',
+            'inf_pract',
+            'inf_isp'
+        )
+
+
+class ScienceResultsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScienceResults
+        fields = (
+            'id',
+            'code',
+            'name',
+            'level',
+            'listdirections',
+            'result_nir',
+            'information'
         )

@@ -583,6 +583,13 @@ class Practices(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
+    opis_obraz = models.CharField(blank=True, null=True)
+    uch_plan = models.CharField(blank=True, null=True)
+    annot_link = models.CharField(blank=True, null=True)
+    calend_link = models.CharField(blank=True, null=True)
+    norm_doc = models.CharField(blank=True, null=True)
+    inf_pract = models.CharField(blank=True, null=True)
+    inf_isp = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -698,6 +705,8 @@ class ScienceResults(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
+    level = models.CharField(blank=True, null=True)
+    result_nir = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
