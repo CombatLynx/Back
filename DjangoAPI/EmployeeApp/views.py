@@ -7,7 +7,8 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
-    AdmissionResults, Perevod, Obraz, Practices, ScienceResults
+    AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, Sports, \
+    Meals, Health
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -4959,6 +4960,854 @@ def sciencs_publish(request):
             row = bs4.BeautifulSoup(scienc_info_row_template)
             replace_page_elements(scienc_info_replace_map, row, values)
             replace_page_links(scienc_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения о каждом месте осуществления образовательной деятельности, в том числе не указываемых в соответствии с частью
+# 4 статьи 91 Федерального закона от 29.12.2012 N 273-ФЗ "Об образовании в Российской Федерации"
+# (Собрание законодательства Российской Федерации, 2012, N 53, ст. 7598; 2019, N 49, ст. 6962) в приложении к лицензии на
+# осуществление образовательной деятельности
+
+def svedOrg_to_list(row):
+    return [row.id, row.number, row.address]
+
+
+def svedOrg_format():
+    return ['id', 'number', 'address']
+
+
+@csrf_exempt
+def svedOrgs(request):
+    if request.method == 'GET':
+        a = SvedOrg.objects.all()
+        a = [svedOrg_to_list(item) for item in a]
+        return JsonResponse({
+            'format': svedOrg_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def svedOrgsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(svedOrg_format(), safe=False)
+
+
+@csrf_exempt
+def svedOrgs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SvedOrg.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SvedOrg(
+            number=req_json['number'],
+            address=req_json['address'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SvedOrg.objects.get(id=id)
+        obj = SvedOrg(
+            id=int(id),
+            number=req_json['number'],
+            address=req_json['address'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+svedOrg_info_replace_map = {
+    'td': {
+        'number': lambda obj: obj[0],
+        'address': lambda obj: obj[1],
+    }
+}
+
+
+# svedOrg_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+svedOrg_info_row_template = \
+    '<tr itemprop="addressPlace">' \
+    '<td itemprop="number"></td>' \
+    '<td itemprop="address"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def svedOrgs_publish(request):
+    if request.method == 'GET':
+        svedOrgs_information = SvedOrg.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "svedOrg"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'addressPlace'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(svedOrgs_information):
+            values = svedOrg_to_list(item)[1:]
+            row = bs4.BeautifulSoup(svedOrg_info_row_template)
+            replace_page_elements(svedOrg_info_replace_map, row, values)
+            # replace_page_links(svedOrg_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения о наличии оборудованных учебных кабинетов
+
+def facilit_to_list(row):
+    return [row.id, row.address, row.special_premises, row.equipment]
+
+
+def facilit_format():
+    return ['id', 'address', 'special_premises', 'equipment']
+
+
+@csrf_exempt
+def facilits(request):
+    if request.method == 'GET':
+        a = Facilities.objects.all()
+        a = [facilit_to_list(item) for item in a]
+        return JsonResponse({
+            'format': facilit_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def facilitsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(facilit_format(), safe=False)
+
+
+@csrf_exempt
+def facilits_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Facilities.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Facilities(
+            address=req_json['address'],
+            special_premises=req_json['special_premises'],
+            equipment=req_json['equipment'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Facilities.objects.get(id=id)
+        obj = Facilities(
+            id=int(id),
+            address=req_json['address'],
+            special_premises=req_json['special_premises'],
+            equipment=req_json['equipment'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+facilit_info_replace_map = {
+    'td': {
+        'addressCab': lambda obj: obj[0],
+        'nameCab': lambda obj: obj[1],
+        'osnCab': lambda obj: obj[2],
+    }
+}
+
+
+# facilit_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+facilit_info_row_template = \
+    '<tr itemprop="purposeCab">' \
+    '<td itemprop="addressCab"></td>' \
+    '<td itemprop="nameCab"></td>' \
+    '<td itemprop="osnCab"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def facilits_publish(request):
+    if request.method == 'GET':
+        facilits_information = Facilities.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "purCab"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposeCab'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(facilits_information):
+            values = facilit_to_list(item)[1:]
+            row = bs4.BeautifulSoup(facilit_info_row_template)
+            replace_page_elements(facilit_info_replace_map, row, values)
+            # replace_page_links(facilit_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения о наличии объектов для проведения практических занятий
+
+def objPract_to_list(row):
+    return [row.id, row.address, row.name, row.pract]
+
+
+def objPract_format():
+    return ['id', 'address', 'name', 'pract']
+
+
+@csrf_exempt
+def objPracts(request):
+    if request.method == 'GET':
+        a = ObjPract.objects.all()
+        a = [objPract_to_list(item) for item in a]
+        return JsonResponse({
+            'format': objPract_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def objPractsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(objPract_format(), safe=False)
+
+
+@csrf_exempt
+def objPracts_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = ObjPract.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = ObjPract(
+            address=req_json['address'],
+            name=req_json['name'],
+            pract=req_json['pract'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = ObjPract.objects.get(id=id)
+        obj = ObjPract(
+            id=int(id),
+            address=req_json['address'],
+            name=req_json['name'],
+            pract=req_json['pract'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+objPract_info_replace_map = {
+    'td': {
+        'addressPrac': lambda obj: obj[0],
+        'namePrac': lambda obj: obj[1],
+        'osnPrac': lambda obj: obj[2],
+    }
+}
+
+
+# objPract_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+objPract_info_row_template = \
+    '<tr itemprop="purposePrac">' \
+    '<td itemprop="addressPrac"></td>' \
+    '<td itemprop="namePrac"></td>' \
+    '<td itemprop="osnPrac"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def objPracts_publish(request):
+    if request.method == 'GET':
+        objPracts_information = ObjPract.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "purposePr"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposePrac'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(objPracts_information):
+            values = objPract_to_list(item)[1:]
+            row = bs4.BeautifulSoup(objPract_info_row_template)
+            replace_page_elements(objPract_info_replace_map, row, values)
+            # replace_page_links(objPract_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения наличии библиотек
+
+def librare_to_list(row):
+    return [row.id, row.types, row.address, row.square, row.sits]
+
+
+def librare_format():
+    return ['id', 'types', 'address', 'square', 'sits']
+
+
+@csrf_exempt
+def librares(request):
+    if request.method == 'GET':
+        a = Libraries.objects.all()
+        a = [librare_to_list(item) for item in a]
+        return JsonResponse({
+            'format': librare_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def libraresFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(librare_format(), safe=False)
+
+
+@csrf_exempt
+def librares_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Libraries.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Libraries(
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Libraries.objects.get(id=id)
+        obj = Libraries(
+            id=int(id),
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+librare_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+    }
+}
+
+
+# librare_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+librare_info_row_template = \
+    '<tr itemprop="purposeLibr">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def librares_publish(request):
+    if request.method == 'GET':
+        librares_information = Libraries.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "purposeLib"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposeLibr'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(librares_information):
+            values = librare_to_list(item)[1:]
+            row = bs4.BeautifulSoup(librare_info_row_template)
+            replace_page_elements(librare_info_replace_map, row, values)
+            # replace_page_links(librare_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения о наличии объектов спорта
+
+def sport_to_list(row):
+    return [row.id, row.types, row.address, row.square, row.sits]
+
+
+def sport_format():
+    return ['id', 'types', 'address', 'square', 'sits']
+
+
+@csrf_exempt
+def sports(request):
+    if request.method == 'GET':
+        a = Sports.objects.all()
+        a = [sport_to_list(item) for item in a]
+        return JsonResponse({
+            'format': sport_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def sportsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(sport_format(), safe=False)
+
+
+@csrf_exempt
+def sports_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Sports.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Sports(
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Sports.objects.get(id=id)
+        obj = Sports(
+            id=int(id),
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+sport_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+    }
+}
+
+
+# sport_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+sport_info_row_template = \
+    '<tr itemprop="purposeSport">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def sports_publish(request):
+    if request.method == 'GET':
+        sports_information = Sports.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "purposeSp"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'purposeSport'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(sports_information):
+            values = sport_to_list(item)[1:]
+            row = bs4.BeautifulSoup(sport_info_row_template)
+            replace_page_elements(sport_info_replace_map, row, values)
+            # replace_page_links(sport_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения об условиях питания обучающихся
+
+def meal_to_list(row):
+    return [row.id, row.types, row.address, row.square, row.sits]
+
+
+def meal_format():
+    return ['id', 'types', 'address', 'square', 'sits']
+
+
+@csrf_exempt
+def meals(request):
+    if request.method == 'GET':
+        a = Meals.objects.all()
+        a = [meal_to_list(item) for item in a]
+        return JsonResponse({
+            'format': meal_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def mealsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(meal_format(), safe=False)
+
+
+@csrf_exempt
+def meals_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Meals.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Meals(
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Meals.objects.get(id=id)
+        obj = Meals(
+            id=int(id),
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+meal_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+    }
+}
+
+
+# meal_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+meal_info_row_template = \
+    '<tr itemprop="meals">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def meals_publish(request):
+    if request.method == 'GET':
+        meals_information = Meals.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "mealsss"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'meals'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(meals_information):
+            values = meal_to_list(item)[1:]
+            row = bs4.BeautifulSoup(meal_info_row_template)
+            replace_page_elements(meal_info_replace_map, row, values)
+            # replace_page_links(meal_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -------------------- Материально-техническое обеспечение и оснащенность образовательного процесса -------------------
+# Сведения об условиях охраны здоровья обучающихся
+
+def healt_to_list(row):
+    return [row.id, row.types, row.address, row.square, row.sits]
+
+
+def healt_format():
+    return ['id', 'types', 'address', 'square', 'sits']
+
+
+@csrf_exempt
+def healts(request):
+    if request.method == 'GET':
+        a = Health.objects.all()
+        a = [healt_to_list(item) for item in a]
+        return JsonResponse({
+            'format': healt_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def healtsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(healt_format(), safe=False)
+
+
+@csrf_exempt
+def healts_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Health.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Health(
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Health.objects.get(id=id)
+        obj = Health(
+            id=int(id),
+            types=req_json['types'],
+            address=req_json['address'],
+            square=req_json['square'],
+            sits=req_json['sits'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+healt_info_replace_map = {
+    'td': {
+        'objName': lambda obj: obj[0],
+        'objAddress': lambda obj: obj[1],
+        'objSq': lambda obj: obj[2],
+        'objCnt': lambda obj: obj[3],
+    }
+}
+
+
+# healt_info_replace_links_map = {
+#     'td': {
+#         'resultNir': lambda obj: obj[4],
+#     }
+# }
+
+healt_info_row_template = \
+    '<tr itemprop="health">' \
+    '<td itemprop="objName"></td>' \
+    '<td itemprop="objAddress"></td>' \
+    '<td itemprop="objSq"></td>' \
+    '<td itemprop="objCnt"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def healts_publish(request):
+    if request.method == 'GET':
+        healts_information = Health.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "healtsss"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'health'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(healts_information):
+            values = healt_to_list(item)[1:]
+            row = bs4.BeautifulSoup(healt_info_row_template)
+            replace_page_elements(healt_info_replace_map, row, values)
+            # replace_page_links(healt_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

@@ -201,5 +201,40 @@ urlpatterns = [
                   url(r'^sciencs/([1-9][0-9]*)$', views.sciencs_by_id),
                   url(r'^sciencs/publish/$', views.sciencs_publish),
 
+                  url(r'^svedOrgs/$', views.svedOrgs),
+                  url(r'^svedOrgs/format/$', views.svedOrgsFormat),
+                  url(r'^svedOrgs/([1-9][0-9]*)$', views.svedOrgs_by_id),
+                  url(r'^svedOrgs/publish/$', views.svedOrgs_publish),
+
+                  url(r'^facilits/$', views.facilits),
+                  url(r'^facilits/format/$', views.facilitsFormat),
+                  url(r'^facilits/([1-9][0-9]*)$', views.facilits_by_id),
+                  url(r'^facilits/publish/$', views.facilits_publish),
+
+                  url(r'^objPracts/$', views.objPracts),
+                  url(r'^objPracts/format/$', views.objPractsFormat),
+                  url(r'^objPracts/([1-9][0-9]*)$', views.objPracts_by_id),
+                  url(r'^objPracts/publish/$', views.objPracts_publish),
+
+                  url(r'^librares/$', views.librares),
+                  url(r'^librares/format/$', views.libraresFormat),
+                  url(r'^librares/([1-9][0-9]*)$', views.librares_by_id),
+                  url(r'^librares/publish/$', views.librares_publish),
+
+                  url(r'^sports/$', views.sports),
+                  url(r'^sports/format/$', views.sportsFormat),
+                  url(r'^sports/([1-9][0-9]*)$', views.sports_by_id),
+                  url(r'^sports/publish/$', views.sports_publish),
+
+                  url(r'^meals/$', views.meals),
+                  url(r'^meals/format/$', views.mealsFormat),
+                  url(r'^meals/([1-9][0-9]*)$', views.meals_by_id),
+                  url(r'^meals/publish/$', views.meals_publish),
+
+                  url(r'^healts/$', views.healts),
+                  url(r'^healts/format/$', views.healtsFormat),
+                  url(r'^healts/([1-9][0-9]*)$', views.healts_by_id),
+                  url(r'^healts/publish/$', views.healts_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

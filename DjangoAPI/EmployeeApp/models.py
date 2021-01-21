@@ -56,6 +56,18 @@ class Obraz(models.Model):
         db_table = 'obraz'
 
 
+class ObjPract(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    pract = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'obj_pract'
+
+
 class Perevod(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
@@ -613,21 +625,20 @@ class Leaderstwo(models.Model):
         db_table = 'leadersTwo'
 
 
-#
-#
-# class Libraries(models.Model):
-#     types = models.CharField(blank=True, null=True, max_length=100)
-#     address = models.CharField(blank=True, null=True, max_length=100)
-#     square = models.CharField(blank=True, null=True, max_length=100)
-#     sits = models.CharField(blank=True, null=True, max_length=100)
-#     fitness = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'libraries'
+class Libraries(models.Model):
+    types = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    square = models.CharField(blank=True, null=True, max_length=1000)
+    sits = models.CharField(blank=True, null=True, max_length=1000)
+    fitness = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'libraries'
+
+
 #
 #
 class Managements(models.Model):
@@ -642,23 +653,36 @@ class Managements(models.Model):
         db_table = 'managements'
 
 
-#
-#
-# class Meals(models.Model):
-#     types = models.CharField(blank=True, null=True, max_length=100)
-#     address = models.CharField(blank=True, null=True, max_length=100)
-#     square = models.CharField(blank=True, null=True, max_length=100)
-#     sits = models.CharField(blank=True, null=True, max_length=100)
-#     fitness = models.CharField(blank=True, null=True, max_length=100)
-#     filename = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'meals'
-#
+class Meals(models.Model):
+    types = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    square = models.CharField(blank=True, null=True, max_length=1000)
+    sits = models.CharField(blank=True, null=True, max_length=1000)
+    fitness = models.CharField(blank=True, null=True, max_length=1000)
+    filename = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'meals'
+
+
+class Health(models.Model):
+    types = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    square = models.CharField(blank=True, null=True, max_length=1000)
+    sits = models.CharField(blank=True, null=True, max_length=1000)
+    fitness = models.CharField(blank=True, null=True, max_length=1000)
+    filename = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'health'
+
+
 #
 class PaidServices(models.Model):
     info = models.CharField(blank=True, null=True, max_length=1000)
@@ -786,6 +810,33 @@ class ScienceResults(models.Model):
         db_table = 'science_results'
 
 
+class Facilities(models.Model):
+    code = models.CharField(blank=True, null=True, max_length=1000)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    specialty = models.CharField(blank=True, null=True, max_length=1000)
+    special_premises = models.CharField(blank=True, null=True, max_length=1000)
+    equipment = models.CharField(blank=True, null=True, max_length=1000)
+    fitness = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'facilities'
+
+
+class SvedOrg(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    number = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'sved_org'
+
+
 #
 #
 # class Sections(models.Model):
@@ -799,19 +850,20 @@ class ScienceResults(models.Model):
 #         db_table = 'sections'
 #
 #
-# class Sports(models.Model):
-#     types = models.CharField(blank=True, null=True, max_length=100)
-#     address = models.CharField(blank=True, null=True, max_length=100)
-#     square = models.CharField(blank=True, null=True, max_length=100)
-#     sits = models.CharField(blank=True, null=True, max_length=100)
-#     fitness = models.CharField(blank=True, null=True, max_length=100)
-#     created_at = models.DateTimeField()
-#     updated_at = models.DateTimeField()
-#     owner = models.IntegerField(blank=True, null=True)
-#
-#     class Meta:
-#
-#         db_table = 'sports'
+class Sports(models.Model):
+    types = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    square = models.CharField(blank=True, null=True, max_length=1000)
+    sits = models.CharField(blank=True, null=True, max_length=1000)
+    fitness = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'sports'
+
+
 #
 #
 class StandartCopies(models.Model):

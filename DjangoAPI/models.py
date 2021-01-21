@@ -197,6 +197,7 @@ class Facilities(models.Model):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     owner = models.IntegerField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -311,6 +312,22 @@ class Grants(models.Model):
     class Meta:
         managed = False
         db_table = 'grants'
+
+
+class Health(models.Model):
+    types = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    square = models.CharField(blank=True, null=True)
+    sits = models.CharField(blank=True, null=True)
+    fitness = models.CharField(blank=True, null=True)
+    filename = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'health'
 
 
 class InfChi(models.Model):
@@ -488,6 +505,19 @@ class Meals(models.Model):
     class Meta:
         managed = False
         db_table = 'meals'
+
+
+class ObjPract(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    pract = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'obj_pract'
 
 
 class Obraz(models.Model):
@@ -884,6 +914,18 @@ class Subdivisions(models.Model):
     class Meta:
         managed = False
         db_table = 'subdivisions'
+
+
+class SvedOrg(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    number = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'sved_org'
 
 
 class Teachers(models.Model):
