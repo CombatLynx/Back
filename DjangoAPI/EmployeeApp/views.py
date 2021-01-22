@@ -5064,7 +5064,7 @@ def svedOrgs_publish(request):
 
         file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "svedOrg"})
+        tables = page_parser.find_all('table', {'itemprop': "place"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
@@ -5896,7 +5896,7 @@ one_info_replace_links_map = {
 one_info_row_template = \
     '<tr itemprop="facil">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="purposeFacil"><a href=" "></td>' \
+    '<td itemprop="purposeFacil"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -6010,7 +6010,7 @@ two_info_replace_links_map = {
 two_info_row_template = \
     '<tr itemprop="net">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="comNet"><a href=" "></td>' \
+    '<td itemprop="comNet"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -6124,7 +6124,7 @@ three_info_replace_links_map = {
 three_info_row_template = \
     '<tr itemprop="eios">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="purposeEios"><a href=" "></td>' \
+    '<td itemprop="purposeEios"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -6238,7 +6238,7 @@ four_info_replace_links_map = {
 four_info_row_template = \
     '<tr itemprop="own">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="eoisOwn"><a href=" "></td>' \
+    '<td itemprop="eoisOwn"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -6352,7 +6352,7 @@ five_info_replace_links_map = {
 five_info_row_template = \
     '<tr itemprop="side">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="eoisSide"><a href=" "></td>' \
+    '<td itemprop="eoisSide"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -6466,7 +6466,7 @@ six_info_replace_links_map = {
 six_info_row_template = \
     '<tr itemprop="bd">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="bdec"><a href=" "></td>' \
+    '<td itemprop="bdec"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -6580,7 +6580,7 @@ seven_info_replace_links_map = {
 seven_info_row_template = \
     '<tr itemprop="erList">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="link"><a href=" "></td>' \
+    '<td itemprop="link"><a href=" ">Ссылка</a></td>' \
     '</tr>'
 
 
