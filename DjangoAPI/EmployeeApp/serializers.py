@@ -5,7 +5,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
     SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
     InfChi, AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, \
-    Sports, Meals, Health
+    Sports, Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -617,4 +617,74 @@ class HealthSerializer(serializers.ModelSerializer):
             'address',
             'square',
             'sits'
+        )
+
+
+class TableOneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableOne
+        fields = (
+            'id',
+            'name',
+            'link'
+        )
+
+
+class TableTwoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableTwo
+        fields = (
+            'id',
+            'name',
+            'link'
+        )
+
+
+class TableThreeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableThree
+        fields = (
+            'id',
+            'name',
+            'link'
+        )
+
+
+class TableFourSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableFour
+        fields = (
+            'id',
+            'name',
+            'link'
+        )
+
+
+class TableFiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableFive
+        fields = (
+            'id',
+            'name',
+            'link'
+        )
+
+
+class TableSixSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableSix
+        fields = (
+            'id',
+            'name',
+            'link'
+        )
+
+
+class TableSevenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TableSeven
+        fields = (
+            'id',
+            'name',
+            'link'
         )

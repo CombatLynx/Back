@@ -236,5 +236,40 @@ urlpatterns = [
                   url(r'^healts/([1-9][0-9]*)$', views.healts_by_id),
                   url(r'^healts/publish/$', views.healts_publish),
 
+                  url(r'^ones/$', views.ones),
+                  url(r'^ones/format/$', views.onesFormat),
+                  url(r'^ones/([1-9][0-9]*)$', views.ones_by_id),
+                  url(r'^ones/publish/$', views.ones_publish),
+
+                  url(r'^twos/$', views.twos),
+                  url(r'^twos/format/$', views.twosFormat),
+                  url(r'^twos/([1-9][0-9]*)$', views.twos_by_id),
+                  url(r'^twos/publish/$', views.twos_publish),
+
+                  url(r'^threes/$', views.threes),
+                  url(r'^threes/format/$', views.threesFormat),
+                  url(r'^threes/([1-9][0-9]*)$', views.threes_by_id),
+                  url(r'^threes/publish/$', views.threes_publish),
+
+                  url(r'^fours/$', views.fours),
+                  url(r'^fours/format/$', views.foursFormat),
+                  url(r'^fours/([1-9][0-9]*)$', views.fours_by_id),
+                  url(r'^fours/publish/$', views.fours_publish),
+
+                  url(r'^fives/$', views.fives),
+                  url(r'^fives/format/$', views.fivesFormat),
+                  url(r'^fives/([1-9][0-9]*)$', views.fives_by_id),
+                  url(r'^fives/publish/$', views.fives_publish),
+
+                  url(r'^sixs/$', views.sixs),
+                  url(r'^sixs/format/$', views.sixsFormat),
+                  url(r'^sixs/([1-9][0-9]*)$', views.sixs_by_id),
+                  url(r'^sixs/publish/$', views.sixs_publish),
+
+                  url(r'^sevens/$', views.sevens),
+                  url(r'^sevens/format/$', views.sevensFormat),
+                  url(r'^sevens/([1-9][0-9]*)$', views.sevens_by_id),
+                  url(r'^sevens/publish/$', views.sevens_publish),
+
                   url(r'^SaveFile$', views.SaveFile)
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

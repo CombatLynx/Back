@@ -722,6 +722,81 @@ class Practices(models.Model):
         db_table = 'practices'
 
 
+class TableFive(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_five'
+
+
+class TableFour(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_four'
+
+
+class TableOne(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_one'
+
+
+class TableSeven(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_seven'
+
+
+class TableSix(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_six'
+
+
+class TableThree(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_three'
+
+
+class TableTwo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, max_length=1000)
+    link = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'table_two'
 #
 #
 # class Refugees(models.Model):

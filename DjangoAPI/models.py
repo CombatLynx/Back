@@ -928,6 +928,90 @@ class SvedOrg(models.Model):
         db_table = 'sved_org'
 
 
+class TableFive(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_five'
+
+
+class TableFour(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_four'
+
+
+class TableOne(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_one'
+
+
+class TableSeven(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_seven'
+
+
+class TableSix(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_six'
+
+
+class TableThree(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_three'
+
+
+class TableTwo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'table_two'
+
+
 class Teachers(models.Model):
     fio = models.CharField(blank=True, null=True)
     post = models.CharField(blank=True, null=True)

@@ -8,7 +8,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
     AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, Sports, \
-    Meals, Health
+    Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -2080,7 +2080,7 @@ def internationalDogs_publish(request):
     if request.method == 'GET':
         internationalDogs_information = Internationaldog.objects.all()
 
-        file = 'EmployeeApp/parser/pages/international/index.html'
+        file = 'EmployeeApp/parser/pages/inter/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "internationalD"})
         if len(tables) != 1:
@@ -2205,7 +2205,7 @@ def internationalAccrs_publish(request):
     if request.method == 'GET':
         internationalAccrs_information = Internationalaccr.objects.all()
 
-        file = 'EmployeeApp/parser/pages/international/index.html'
+        file = 'EmployeeApp/parser/pages/inter/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "internationalA"})
         if len(tables) != 1:
@@ -5812,5 +5812,803 @@ def healts_publish(request):
             last_tr = last_tr.next_sibling
 
         # new_page = replace_page_elements(basic_sciencormation_replace_map, page_parser, sciencormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Сведения о наличии средств обучения и воспитания
+
+def one_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def one_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def ones(request):
+    if request.method == 'GET':
+        a = TableOne.objects.all()
+        a = [one_to_list(item) for item in a]
+        return JsonResponse({
+            'format': one_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def onesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(one_format(), safe=False)
+
+
+@csrf_exempt
+def ones_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableOne.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableOne(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableOne.objects.get(id=id)
+        obj = TableOne(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+one_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+one_info_replace_links_map = {
+    'td': {
+         'purposeFacil': lambda obj: obj[1],
+    }
+}
+
+one_info_row_template = \
+    '<tr itemprop="facil">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="purposeFacil"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def ones_publish(request):
+    if request.method == 'GET':
+        ones_information = TableOne.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "facil"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'facil'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(ones_information):
+            values = one_to_list(item)[1:]
+            row = bs4.BeautifulSoup(one_info_row_template)
+            replace_page_elements(one_info_replace_map, row, values)
+            replace_page_links(one_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_oneormation_replace_map, page_parser, oneormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Сведения о доступе к информационным системам и информационно-телекоммуникационным сетям
+
+def two_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def two_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def twos(request):
+    if request.method == 'GET':
+        a = TableTwo.objects.all()
+        a = [two_to_list(item) for item in a]
+        return JsonResponse({
+            'format': two_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def twosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(two_format(), safe=False)
+
+
+@csrf_exempt
+def twos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableTwo.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableTwo(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableTwo.objects.get(id=id)
+        obj = TableTwo(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+two_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+two_info_replace_links_map = {
+    'td': {
+         'comNet': lambda obj: obj[1],
+    }
+}
+
+two_info_row_template = \
+    '<tr itemprop="net">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="comNet"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def twos_publish(request):
+    if request.method == 'GET':
+        twos_information = TableTwo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "net"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'net'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(twos_information):
+            values = two_to_list(item)[1:]
+            row = bs4.BeautifulSoup(two_info_row_template)
+            replace_page_elements(two_info_replace_map, row, values)
+            replace_page_links(two_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_twoormation_replace_map, page_parser, twoormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Наличие в образовательной организации электронной информационно-образовательной среды
+
+def three_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def three_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def threes(request):
+    if request.method == 'GET':
+        a = TableThree.objects.all()
+        a = [three_to_list(item) for item in a]
+        return JsonResponse({
+            'format': three_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def threesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(three_format(), safe=False)
+
+
+@csrf_exempt
+def threes_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableThree.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableThree(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableThree.objects.get(id=id)
+        obj = TableThree(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+three_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+three_info_replace_links_map = {
+    'td': {
+         'purposeEios': lambda obj: obj[1],
+    }
+}
+
+three_info_row_template = \
+    '<tr itemprop="eios">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="purposeEios"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def threes_publish(request):
+    if request.method == 'GET':
+        threes_information = TableThree.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "eios"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eios'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(threes_information):
+            values = three_to_list(item)[1:]
+            row = bs4.BeautifulSoup(three_info_row_template)
+            replace_page_elements(three_info_replace_map, row, values)
+            replace_page_links(three_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_threeormation_replace_map, page_parser, threeormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Наличие собственных электронных образовательных и информационных ресурсов
+
+def four_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def four_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def fours(request):
+    if request.method == 'GET':
+        a = TableFour.objects.all()
+        a = [four_to_list(item) for item in a]
+        return JsonResponse({
+            'format': four_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def foursFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(four_format(), safe=False)
+
+
+@csrf_exempt
+def fours_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableFour.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableFour(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableFour.objects.get(id=id)
+        obj = TableFour(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+four_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+four_info_replace_links_map = {
+    'td': {
+         'eoisOwn': lambda obj: obj[1],
+    }
+}
+
+four_info_row_template = \
+    '<tr itemprop="own">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="eoisOwn"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def fours_publish(request):
+    if request.method == 'GET':
+        fours_information = TableFour.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "own"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'own'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(fours_information):
+            values = four_to_list(item)[1:]
+            row = bs4.BeautifulSoup(four_info_row_template)
+            replace_page_elements(four_info_replace_map, row, values)
+            replace_page_links(four_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_fourormation_replace_map, page_parser, fourormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Наличие сторонних электронных образовательных и информационных ресурсов
+
+def five_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def five_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def fives(request):
+    if request.method == 'GET':
+        a = TableFive.objects.all()
+        a = [five_to_list(item) for item in a]
+        return JsonResponse({
+            'format': five_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def fivesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(five_format(), safe=False)
+
+
+@csrf_exempt
+def fives_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableFive.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableFive(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableFive.objects.get(id=id)
+        obj = TableFive(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+five_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+five_info_replace_links_map = {
+    'td': {
+         'eoisSide': lambda obj: obj[1],
+    }
+}
+
+five_info_row_template = \
+    '<tr itemprop="side">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="eoisSide"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def fives_publish(request):
+    if request.method == 'GET':
+        fives_information = TableFive.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "side"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'side'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(fives_information):
+            values = five_to_list(item)[1:]
+            row = bs4.BeautifulSoup(five_info_row_template)
+            replace_page_elements(five_info_replace_map, row, values)
+            replace_page_links(five_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_fiveormation_replace_map, page_parser, fiveormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Наличие базы данных электронного каталога
+
+def six_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def six_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def sixs(request):
+    if request.method == 'GET':
+        a = TableSix.objects.all()
+        a = [six_to_list(item) for item in a]
+        return JsonResponse({
+            'format': six_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def sixsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(six_format(), safe=False)
+
+
+@csrf_exempt
+def sixs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableSix.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableSix(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableSix.objects.get(id=id)
+        obj = TableSix(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+six_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+six_info_replace_links_map = {
+    'td': {
+         'bdec': lambda obj: obj[1],
+    }
+}
+
+six_info_row_template = \
+    '<tr itemprop="bd">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="bdec"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def sixs_publish(request):
+    if request.method == 'GET':
+        sixs_information = TableSix.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "bd"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'bd'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(sixs_information):
+            values = six_to_list(item)[1:]
+            row = bs4.BeautifulSoup(six_info_row_template)
+            replace_page_elements(six_info_replace_map, row, values)
+            replace_page_links(six_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sixormation_replace_map, page_parser, sixormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ----------------- МАТЕРИАЛЬНО-ТЕХНИЧЕСКОЕ ОБЕСПЕЧЕНИЕ И ОСНАЩЁННОСТЬ ОБРАЗОВАТЕЛЬНОГО ПРОЦЕССА ----------------------
+# Ссылки на перечень электронных образовательных ресурсов
+
+def seven_to_list(row):
+    return [row.id, row.name, row.link]
+
+
+def seven_format():
+    return ['id', 'name', 'link']
+
+
+@csrf_exempt
+def sevens(request):
+    if request.method == 'GET':
+        a = TableSeven.objects.all()
+        a = [seven_to_list(item) for item in a]
+        return JsonResponse({
+            'format': seven_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def sevensFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(seven_format(), safe=False)
+
+
+@csrf_exempt
+def sevens_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = TableSeven.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = TableSeven(
+            name=req_json['name'],
+            link=req_json['link'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = TableSeven.objects.get(id=id)
+        obj = TableSeven(
+            id=int(id),
+            name=req_json['name'],
+            link=req_json['link'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+seven_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+seven_info_replace_links_map = {
+    'td': {
+         'link': lambda obj: obj[1],
+    }
+}
+
+seven_info_row_template = \
+    '<tr itemprop="erList">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="link"><a href=" "></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def sevens_publish(request):
+    if request.method == 'GET':
+        sevens_information = TableSeven.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/objects/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "list"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'erList'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(sevens_information):
+            values = seven_to_list(item)[1:]
+            row = bs4.BeautifulSoup(seven_info_row_template)
+            replace_page_elements(seven_info_replace_map, row, values)
+            replace_page_links(seven_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_sevenormation_replace_map, page_parser, sevenormation)
         write_page(file, str(page_parser))
         return HttpResponse("OK")
