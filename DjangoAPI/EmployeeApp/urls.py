@@ -20,6 +20,8 @@ urlpatterns = [
                   url(r'^subdivisions/format/$', views.subdivisionsFormat),
                   url(r'^subdivisions/([1-9][0-9]*)$', views.subdivisions_by_id),
                   url(r'^subdivisions/publish/$', views.subdivisions_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
 
                   url(r'^basic_informations/$', views.basic_informations),
                   url(r'^basic_informations/format/$', views.basic_informationsFormat),
@@ -30,6 +32,8 @@ urlpatterns = [
                   url(r'^founders/format/$', views.foundersFormat),
                   url(r'^founders/([1-9][0-9]*)$', views.founders_by_id),
                   url(r'^founders/publish/$', views.founders_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
 
                   url(r'^filiations/$', views.filiations),
                   url(r'^filiations/format/$', views.filiationsFormat),

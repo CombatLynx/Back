@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, Founders, \
     Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, Leaderstwo, \
@@ -293,6 +293,10 @@ def subdivision_format():
     return ['id', 'name', 'fio', 'position', 'address', 'off_site', 'email', 'file_url']
 
 
+def subdivision_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'file']
+
+
 @csrf_exempt
 def subdivisions(request):
     if request.method == 'GET':
@@ -300,6 +304,7 @@ def subdivisions(request):
         a = [subdivision_to_list(item) for item in a]
         return JsonResponse({
             'format': subdivision_format(),
+            'types': subdivision_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -308,10 +313,41 @@ def subdivisions(request):
         return HttpResponseBadRequest()
 
 
+uploaded_file_dir = "EmployeeApp/parser/pages/sveden/upload/"
+
+
+def handle_uploaded_file(f):
+    with open(uploaded_file_dir + f.name, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+
+
+import mimetypes
+
+
+@csrf_exempt
+def handle_file(request, filename=None):
+    if request.method == "POST":
+        handle_uploaded_file(request.FILES['upload_file'])
+        return HttpResponse(200)
+    elif request.method == "GET":
+        file_path = uploaded_file_dir + filename
+        file = open(file_path, 'rb')
+        mime_type, _ = mimetypes.guess_type(file_path)
+        response = HttpResponse(file, content_type=mime_type)
+        response['Content-Disposition'] = "attachment; filename=%s" % filename
+        return response
+    else:
+        return HttpResponseNotFound()
+
+
 @csrf_exempt
 def subdivisionsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(subdivision_format(), safe=False)
+        return JsonResponse({
+            "format": subdivision_format(),
+            "types": subdivision_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -371,6 +407,11 @@ department_info_replace_map = {
 department_info_replace_links_map = {
     'td': {
         'site': lambda obj: obj[4],
+    }
+}
+
+department_info_replace_files_map = {
+    'td': {
         'divisionClauseDocLink': lambda obj: obj[6],
     }
 }
@@ -381,8 +422,22 @@ def replace_page_links(replace_map, parser, obj):
         for name, getter in parameters.items():
             tags = parser.find_all(tag, {'itemprop': name})
             if len(tags) == 1:
-                print(getter(obj))
-                tags[0].a.href = str(getter(obj))
+                tags[0].a['href'] = str(getter(obj))
+                tags[0].a.string = str(getter(obj))
+                print(tags[0].a)
+            else:
+                pass
+    return parser
+
+
+def replace_page_files(replace_map, parser, obj):
+    for tag, parameters in replace_map.items():
+        for name, getter in parameters.items():
+            tags = parser.find_all(tag, {'itemprop': name})
+            if len(tags) == 1:
+                tags[0].a['href'] = "../upload/" + str(getter(obj))
+                tags[0].a.string = str(getter(obj))
+                print(tags[0].a)
             else:
                 pass
     return parser
@@ -396,7 +451,7 @@ department_info_row_template = \
     '<td itemprop="addressStr"></td>' \
     '<td itemprop="site"><a href="">Ссылка</a></td>' \
     '<td itemprop="email" style="font-size: 10px !important;"></td>' \
-    '<td itemprop="divisionClauseDocLink"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="divisionClauseDocLink"><a href="" download>Положение</a></td>' \
     '</tr>'
 
 
@@ -406,7 +461,7 @@ def subdivisions_publish(request):
     if request.method == 'GET':
         departments_information = Subdivisions.objects.all()
 
-        file = 'EmployeeApp/parser/pages/struct/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/struct/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'id': "departments"})
         if len(tables) != 1:
@@ -422,6 +477,7 @@ def subdivisions_publish(request):
             row = bs4.BeautifulSoup(department_info_row_template)
             replace_page_elements(department_info_replace_map, row, values)
             replace_page_links(department_info_replace_links_map, row, values)
+            replace_page_files(department_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -570,6 +626,10 @@ def founder_format():
     return ['id', 'name', 'address', 'phones', 'email', 'off_site']
 
 
+def founder_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def founders(request):
     if request.method == 'GET':
@@ -577,6 +637,7 @@ def founders(request):
         a = [founder_to_list(item) for item in a]
         return JsonResponse({
             'format': founder_format(),
+            'types': founder_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -588,7 +649,10 @@ def founders(request):
 @csrf_exempt
 def foundersFormat(request):
     if request.method == 'GET':
-        return JsonResponse(founder_format(), safe=False)
+        return JsonResponse({
+            "format": subdivision_format(),
+            "types": subdivision_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
