@@ -650,8 +650,8 @@ def founders(request):
 def foundersFormat(request):
     if request.method == 'GET':
         return JsonResponse({
-            "format": subdivision_format(),
-            "types": subdivision_format_types(),
+            "format": founder_format(),
+            "types": founder_format_types(),
         }, safe=False)
 
 
@@ -724,7 +724,7 @@ def founders_publish(request):
     if request.method == 'GET':
         founders_information = Founders.objects.all()
 
-        file = 'EmployeeApp/parser/pages/common/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "uchredLaw"})
         if len(tables) != 1:
