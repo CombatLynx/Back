@@ -869,6 +869,18 @@ class StandartCopies(models.Model):
         db_table = 'standart_copies'
 
 
+class StandartCopiestwo(models.Model):
+    filename = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'standart_copiestwo'
+
+
 class StudentNumbers(models.Model):
     code = models.CharField(blank=True, null=True)
     name = models.CharField(blank=True, null=True)

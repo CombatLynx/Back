@@ -8,7 +8,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
     AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, Sports, \
-    Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven
+    Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, StandartCopiestwo
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -698,12 +698,12 @@ founder_info_replace_map = {
         'nameUchred': lambda obj: obj[0],
         'addressUchred': lambda obj: obj[1],
         'telUchred': lambda obj: obj[2],
-        'mailUchred': lambda obj: obj[3],
     }
 }
 
 founder_info_replace_links_map = {
     'td': {
+        'mailUchred': lambda obj: obj[3],
         'websiteUchred': lambda obj: obj[4],
     }
 }
@@ -713,7 +713,7 @@ founder_info_row_template = \
     '<td itemprop="nameUchred"></td>' \
     '<td itemprop="addressUchred"></td>' \
     '<td itemprop="telUchred"></td>' \
-    '<td itemprop="mailUchred"></td>' \
+    '<td itemprop="mailUchred"><a href="">Ссылка</a></td>' \
     '<td itemprop="websiteUchred"><a href="">Ссылка</a></td>' \
     '</tr>'
 
@@ -758,6 +758,10 @@ def filiation_format():
     return ['id', 'name', 'address', 'work_time', 'telephone', 'email', 'website']
 
 
+def filiation_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def filiations(request):
     if request.method == 'GET':
@@ -765,6 +769,7 @@ def filiations(request):
         a = [filiation_to_list(item) for item in a]
         return JsonResponse({
             'format': filiation_format(),
+            'types': filiation_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -776,7 +781,10 @@ def filiations(request):
 @csrf_exempt
 def filiationsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(filiation_format(), safe=False)
+        return JsonResponse({
+            "format": filiation_format(),
+            "types": filiation_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -825,12 +833,12 @@ filiation_info_replace_map = {
         'addressFil': lambda obj: obj[1],
         'workTimeFil': lambda obj: obj[2],
         'telephoneFil': lambda obj: obj[3],
-        'emailFil': lambda obj: obj[4],
     }
 }
 
 filiation_info_replace_links_map = {
     'td': {
+        'emailFil': lambda obj: obj[4],
         'websiteFil': lambda obj: obj[5],
     }
 }
@@ -841,7 +849,7 @@ filiation_info_row_template = \
     '<td itemprop="addressFil"></td>' \
     '<td itemprop="workTimeFil"></td>' \
     '<td itemprop="telephoneFil"></td>' \
-    '<td itemprop="emailFil"></td>' \
+    '<td itemprop="emailFil"><a href="">Ссылка</a></td>' \
     '<td itemprop="websiteFil"><a href="">Ссылка</a></td>' \
     '</tr>'
 
@@ -852,7 +860,7 @@ def filiations_publish(request):
     if request.method == 'GET':
         filiations_information = Filiations.objects.all()
 
-        file = 'EmployeeApp/parser/pages/common/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "filInfo"})
         if len(tables) != 1:
@@ -886,6 +894,10 @@ def representation_format():
     return ['id', 'name', 'address', 'work_time', 'telephone', 'email', 'website']
 
 
+def representation_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def representations(request):
     if request.method == 'GET':
@@ -893,6 +905,7 @@ def representations(request):
         a = [representation_to_list(item) for item in a]
         return JsonResponse({
             'format': representation_format(),
+            'types': representation_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -904,7 +917,10 @@ def representations(request):
 @csrf_exempt
 def representationsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(representation_format(), safe=False)
+        return JsonResponse({
+            "format": representation_format(),
+            "types": representation_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -953,12 +969,12 @@ representation_info_replace_map = {
         'addressRep': lambda obj: obj[1],
         'workTimeRep': lambda obj: obj[2],
         'telephoneRep': lambda obj: obj[3],
-        'emailRep': lambda obj: obj[4],
     }
 }
 
 representation_info_replace_links_map = {
     'td': {
+        'emailRep': lambda obj: obj[4],
         'websiteRep': lambda obj: obj[5],
     }
 }
@@ -969,7 +985,7 @@ representation_info_row_template = \
     '<td itemprop="addressRep"></td>' \
     '<td itemprop="workTimeRep"></td>' \
     '<td itemprop="telephoneRep"></td>' \
-    '<td itemprop="emailRep"></td>' \
+    '<td itemprop="emailRep"><a href="">Ссылка</a></td>' \
     '<td itemprop="websiteRep"><a href="">Ссылка</a></td>' \
     '</tr>'
 
@@ -980,7 +996,7 @@ def representations_publish(request):
     if request.method == 'GET':
         representations_information = Representations.objects.all()
 
-        file = 'EmployeeApp/parser/pages/common/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/common/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "repInfo"})
         if len(tables) != 1:
@@ -1821,6 +1837,10 @@ def standartCopie_format():
     return ['id', 'name', 'filename']
 
 
+def standartCopie_format_types():
+    return ['text', 'text', 'file']
+
+
 @csrf_exempt
 def standartCopies(request):
     if request.method == 'GET':
@@ -1828,6 +1848,7 @@ def standartCopies(request):
         a = [standartCopie_to_list(item) for item in a]
         return JsonResponse({
             'format': standartCopie_format(),
+            'types': standartCopie_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -1839,7 +1860,10 @@ def standartCopies(request):
 @csrf_exempt
 def standartCopiesFormat(request):
     if request.method == 'GET':
-        return JsonResponse(standartCopie_format(), safe=False)
+        return JsonResponse({
+            "format": standartCopie_format(),
+            "types": standartCopie_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -1876,20 +1900,21 @@ def standartCopies_by_id(request, id):
 
 standartCopie_info_replace_map = {
     'td': {
-        'eduFedDoc': lambda obj: obj[0],
+        'name': lambda obj: obj[0],
     }
 }
 
-standartCopie_info_replace_links_map = {
+
+standartCopie_info_replace_files_map = {
     'td': {
-        'eduStandartDoc': lambda obj: obj[1],
+        'file': lambda obj: obj[1],
     }
 }
 
 standartCopie_info_row_template = \
-    '<tr itemprop="standart">' \
-    '<td itemprop="eduFedDoc"></td>' \
-    '<td itemprop="eduStandartDoc"><a href="" download="">Положение</a></td>' \
+    '<tr itemprop="eduFedDoc">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="file"><a href="" download="">Положение</a></td>' \
     '</tr>'
 
 
@@ -1899,22 +1924,143 @@ def standartCopies_publish(request):
     if request.method == 'GET':
         standartCopies_information = StandartCopies.objects.all()
 
-        file = 'EmployeeApp/parser/pages/eduStandarts/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/eduStandarts/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "eduStandarts"})
+        tables = page_parser.find_all('table', {'itemprop': "eduFgos"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'standart'})
+        rows = table.find_all('tr', {'itemprop': 'eduFedDoc'})
 
         for row in rows:
             row.extract()
         last_tr = table.tr
         for index, item in enumerate(standartCopies_information):
-            values = volume_to_list(item)[1:]
+            values = standartCopie_to_list(item)[1:]
             row = bs4.BeautifulSoup(standartCopie_info_row_template)
             replace_page_elements(standartCopie_info_replace_map, row, values)
-            replace_page_links(standartCopie_info_replace_links_map, row, values)
+            replace_page_files(standartCopie_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ОБРАЗОВАТЕЛЬНЫЕ СТАНДАРТЫ 2 ---------------------------------
+
+def standartCopiestwo_to_list(row):
+    return [row.id, row.name, row.filename]
+
+
+def standartCopiestwo_format():
+    return ['id', 'name', 'filename']
+
+
+def standartCopiestwo_format_types():
+    return ['text', 'text', 'file']
+
+
+@csrf_exempt
+def standartCopiestwos(request):
+    if request.method == 'GET':
+        a = StandartCopiestwo.objects.all()
+        a = [standartCopiestwo_to_list(item) for item in a]
+        return JsonResponse({
+            'format': standartCopiestwo_format(),
+            'types': standartCopiestwo_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def standartCopiestwosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": standartCopiestwo_format(),
+            "types": standartCopiestwo_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def standartCopiestwos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = standartCopiestwos.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = StandartCopiestwo(
+            name=req_json['name'],
+            filename=req_json['filename'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = StandartCopiestwo.objects.get(id=id)
+        obj = StandartCopiestwo(
+            id=int(id),
+            name=req_json['name'],
+            filename=req_json['filename'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+standartCopiestwo_info_replace_map = {
+    'td': {
+        'name': lambda obj: obj[0],
+    }
+}
+
+
+standartCopiestwo_info_replace_files_map = {
+    'td': {
+        'file': lambda obj: obj[1],
+    }
+}
+
+standartCopiestwo_info_row_template = \
+    '<tr itemprop="eduStandartDoc">' \
+    '<td itemprop="name"></td>' \
+    '<td itemprop="file"><a href="" download="">Положение</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def standartCopiestwos_publish(request):
+    if request.method == 'GET':
+        standartCopiestwos_information = StandartCopiestwo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/eduStandarts/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "eduDoc"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'eduStandartDoc'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(standartCopiestwos_information):
+            values = standartCopiestwo_to_list(item)[1:]
+            row = bs4.BeautifulSoup(standartCopiestwo_info_row_template)
+            replace_page_elements(standartCopiestwo_info_replace_map, row, values)
+            replace_page_files(standartCopiestwo_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -4613,6 +4759,10 @@ def obraz_format():
     return ['id', 'code', 'name', 'level', 'form', 'main', 'plan', 'annot', 'shed', 'method', 'pr', 'el']
 
 
+def obraz_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def obrazs(request):
     if request.method == 'GET':
@@ -4620,6 +4770,7 @@ def obrazs(request):
         a = [obraz_to_list(item) for item in a]
         return JsonResponse({
             'format': obraz_format(),
+            'types': obraz_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -4631,7 +4782,10 @@ def obrazs(request):
 @csrf_exempt
 def obrazsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(obraz_format(), safe=False)
+        return JsonResponse({
+            "format": obraz_format(),
+            "types": obraz_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -4706,6 +4860,7 @@ obraz_info_replace_links_map = {
     }
 }
 
+
 obraz_info_row_template = \
     '<tr itemprop="eduOp">' \
     '<td itemprop="eduCode"></td>' \
@@ -4763,6 +4918,9 @@ def practic_format():
     return ['id', 'code', 'name', 'profile', 'studyforms', 'opis_obraz', 'uch_plan', 'annot_link', 'calend_link', 'norm_doc', 'inf_pract', 'inf_isp']
 
 
+def practic_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text']
+
 @csrf_exempt
 def practics(request):
     if request.method == 'GET':
@@ -4770,6 +4928,7 @@ def practics(request):
         a = [practic_to_list(item) for item in a]
         return JsonResponse({
             'format': practic_format(),
+            'types': practic_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -4781,7 +4940,10 @@ def practics(request):
 @csrf_exempt
 def practicsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(practic_format(), safe=False)
+        return JsonResponse({
+            "format": practic_format(),
+            "types": practic_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -4862,12 +5024,12 @@ practic_info_row_template = \
     '<td itemprop="eduName"></td>' \
     '<td itemprop="eduLevel"></td>' \
     '<td itemprop="eduForm"></td>' \
-    '<td itemprop="opMain"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="opMain"><a href="">Ссылка</a></td>' \
     '<td itemprop="educationPlan"><a href="">Ссылка</a></td>' \
     '<td itemprop="educationAnnotation"><a href="">Ссылка</a></td>' \
     '<td itemprop="educationShedule"><a href="">Ссылка</a></td>' \
     '<td itemprop="methodology"><a href="">Ссылка</a></td>' \
-    '<td itemprop="eduPr"><a href="" download="">Положение</a></td>' \
+    '<td itemprop="eduPr"><a href="">Ссылка</a></td>' \
     '<td itemprop="eduEl"></td>' \
     '</tr>'
 
@@ -4913,6 +5075,10 @@ def scienc_format():
     return ['id', 'code', 'name', 'level', 'listdirections', 'result_nir', 'information']
 
 
+def scienc_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def sciencs(request):
     if request.method == 'GET':
@@ -4920,6 +5086,7 @@ def sciencs(request):
         a = [scienc_to_list(item) for item in a]
         return JsonResponse({
             'format': scienc_format(),
+            'types': scienc_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -4931,7 +5098,10 @@ def sciencs(request):
 @csrf_exempt
 def sciencsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(scienc_format(), safe=False)
+        return JsonResponse({
+            "format": scienc_format(),
+            "types": scienc_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
