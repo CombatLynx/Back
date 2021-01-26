@@ -1308,6 +1308,9 @@ def leader_format():
     return ['id', 'fio', 'post', 'phone', 'address']
 
 
+def leader_format_types():
+    return ['text', 'text', 'text', 'text', 'text']
+
 @csrf_exempt
 def leaders(request):
     if request.method == 'GET':
@@ -1315,6 +1318,7 @@ def leaders(request):
         a = [leader_to_list(item) for item in a]
         return JsonResponse({
             'format': leader_format(),
+            'types': leader_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -1326,7 +1330,10 @@ def leaders(request):
 @csrf_exempt
 def leadersFormat(request):
     if request.method == 'GET':
-        return JsonResponse(leader_format(), safe=False)
+        return JsonResponse({
+            "format": leader_format(),
+            "types": leader_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -1370,24 +1377,21 @@ leader_info_replace_map = {
         'fio': lambda obj: obj[0],
         'post': lambda obj: obj[1],
         'telephone': lambda obj: obj[2],
-        'email': lambda obj: obj[3],
     }
 }
 
-# vac_info_replace_links_map = {
-#     'td': {
-#         'finYear': lambda obj: obj[4],
-#         'finPost': lambda obj: obj[5],
-#         'finRas': lambda obj: obj[6],
-#     }
-# }
+leader_info_replace_links_map = {
+    'td': {
+        'email': lambda obj: obj[3],
+    }
+}
 
 leader_info_row_template = \
     '<tr itemprop="rucovodstvo">' \
     '<td itemprop="fio"></td>' \
     '<td itemprop="post"></td>' \
     '<td itemprop="telephone"></td>' \
-    '<td itemprop="email"></td>' \
+    '<td itemprop="email"><a href="">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -1397,7 +1401,7 @@ def leaders_publish(request):
     if request.method == 'GET':
         leaders_information = Leaders.objects.all()
 
-        file = 'EmployeeApp/parser/pages/employees/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/employees/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "rucov"})
         if len(tables) != 1:
@@ -1412,7 +1416,7 @@ def leaders_publish(request):
             values = leader_to_list(item)[1:]
             row = bs4.BeautifulSoup(leader_info_row_template)
             replace_page_elements(leader_info_replace_map, row, values)
-            # replace_page_links(vac_info_replace_links_map, row, values)
+            replace_page_links(leader_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -1432,6 +1436,9 @@ def leadersTwo_format():
     return ['id', 'fio', 'post', 'phone', 'address']
 
 
+def leadersTwo_format_types():
+    return ['text', 'text', 'text', 'text', 'text']
+
 @csrf_exempt
 def leadersTwos(request):
     if request.method == 'GET':
@@ -1439,6 +1446,7 @@ def leadersTwos(request):
         a = [leadersTwo_to_list(item) for item in a]
         return JsonResponse({
             'format': leadersTwo_format(),
+            'types': leadersTwo_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -1450,7 +1458,10 @@ def leadersTwos(request):
 @csrf_exempt
 def leadersTwosFormat(request):
     if request.method == 'GET':
-        return JsonResponse(leadersTwo_format(), safe=False)
+        return JsonResponse({
+            "format": leadersTwo_format(),
+            "types": leadersTwo_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -1494,24 +1505,21 @@ leadersTwo_info_replace_map = {
         'fio': lambda obj: obj[0],
         'post': lambda obj: obj[1],
         'telephone': lambda obj: obj[2],
-        'email': lambda obj: obj[3],
     }
 }
 
-# vac_info_replace_links_map = {
-#     'td': {
-#         'finYear': lambda obj: obj[4],
-#         'finPost': lambda obj: obj[5],
-#         'finRas': lambda obj: obj[6],
-#     }
-# }
+leadersTwo_info_replace_links_map = {
+    'td': {
+        'email': lambda obj: obj[3],
+    }
+}
 
 leadersTwo_info_row_template = \
     '<tr itemprop="rucovodstvoZam">' \
     '<td itemprop="fio"></td>' \
     '<td itemprop="post"></td>' \
     '<td itemprop="telephone"></td>' \
-    '<td itemprop="email"></td>' \
+    '<td itemprop="email"><a href="">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -1521,7 +1529,7 @@ def leadersTwos_publish(request):
     if request.method == 'GET':
         leadersTwos_information = Leaderstwo.objects.all()
 
-        file = 'EmployeeApp/parser/pages/employees/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/employees/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "rucovZam"})
         if len(tables) != 1:
@@ -1536,7 +1544,7 @@ def leadersTwos_publish(request):
             values = leadersTwo_to_list(item)[1:]
             row = bs4.BeautifulSoup(leadersTwo_info_row_template)
             replace_page_elements(leadersTwo_info_replace_map, row, values)
-            # replace_page_links(vac_info_replace_links_map, row, values)
+            replace_page_links(leadersTwo_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -1556,6 +1564,10 @@ def filialLeader_format():
     return ['id', 'name', 'fio', 'post', 'phone', 'address']
 
 
+def filialLeader_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def filialLeaders(request):
     if request.method == 'GET':
@@ -1563,6 +1575,7 @@ def filialLeaders(request):
         a = [filialLeader_to_list(item) for item in a]
         return JsonResponse({
             'format': filialLeader_format(),
+            'types': filialLeader_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -1574,7 +1587,10 @@ def filialLeaders(request):
 @csrf_exempt
 def filialLeadersFormat(request):
     if request.method == 'GET':
-        return JsonResponse(filialLeader_format(), safe=False)
+        return JsonResponse({
+            "format": filialLeader_format(),
+            "types": filialLeader_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -1621,17 +1637,14 @@ filialLeader_info_replace_map = {
         'fio': lambda obj: obj[1],
         'post': lambda obj: obj[2],
         'telephone': lambda obj: obj[3],
-        'email': lambda obj: obj[4],
     }
 }
 
-# vac_info_replace_links_map = {
-#     'td': {
-#         'finYear': lambda obj: obj[4],
-#         'finPost': lambda obj: obj[5],
-#         'finRas': lambda obj: obj[6],
-#     }
-# }
+filialLeader_info_replace_links_map = {
+    'td': {
+        'email': lambda obj: obj[4],
+    }
+}
 
 filialLeader_info_row_template = \
     '<tr itemprop="rucovodstvoFil">' \
@@ -1639,7 +1652,7 @@ filialLeader_info_row_template = \
     '<td itemprop="fio"></td>' \
     '<td itemprop="post"></td>' \
     '<td itemprop="telephone"></td>' \
-    '<td itemprop="email"></td>' \
+    '<td itemprop="email"><a href="">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -1649,7 +1662,7 @@ def filialLeaders_publish(request):
     if request.method == 'GET':
         filialLeaders_information = FilialLeaders.objects.all()
 
-        file = 'EmployeeApp/parser/pages/employees/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/employees/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "filialLeaders"})
         if len(tables) != 1:
@@ -1664,7 +1677,7 @@ def filialLeaders_publish(request):
             values = filialLeader_to_list(item)[1:]
             row = bs4.BeautifulSoup(filialLeader_info_row_template)
             replace_page_elements(filialLeader_info_replace_map, row, values)
-            # replace_page_links(vac_info_replace_links_map, row, values)
+            replace_page_links(filialLeader_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -1686,6 +1699,10 @@ def teacher_format():
             'allyears', 'scpecyears']
 
 
+def teacher_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text']
+
+
 @csrf_exempt
 def teachers(request):
     if request.method == 'GET':
@@ -1693,6 +1710,7 @@ def teachers(request):
         a = [teacher_to_list(item) for item in a]
         return JsonResponse({
             'format': teacher_format(),
+            'types': teacher_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -1704,7 +1722,10 @@ def teachers(request):
 @csrf_exempt
 def teachersFormat(request):
     if request.method == 'GET':
-        return JsonResponse(teacher_format(), safe=False)
+        return JsonResponse({
+            "format": teacher_format(),
+            "types": teacher_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -1803,7 +1824,7 @@ def teachers_publish(request):
     if request.method == 'GET':
         teachers_information = Teachers.objects.all()
 
-        file = 'EmployeeApp/parser/pages/employees/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/employees/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "teacher"})
         if len(tables) != 1:
@@ -1965,7 +1986,7 @@ def standartCopiestwo_format_types():
 @csrf_exempt
 def standartCopiestwos(request):
     if request.method == 'GET':
-        a = StandartCopiestwo.objects.all()
+        a = StandartCopies.objects.all()
         a = [standartCopiestwo_to_list(item) for item in a]
         return JsonResponse({
             'format': standartCopiestwo_format(),
@@ -1997,7 +2018,7 @@ def standartCopiestwos_by_id(request, id):
         return HttpResponse(200)
     elif request.method == 'POST':
         req_json = JSONParser().parse(request)
-        obj = StandartCopiestwo(
+        obj = StandartCopies(
             name=req_json['name'],
             filename=req_json['filename'],
             created_at=datetime.today(),
@@ -2007,8 +2028,8 @@ def standartCopiestwos_by_id(request, id):
         return HttpResponse(200)
     elif request.method == 'PUT':
         req_json = JSONParser().parse(request)
-        obj_old = StandartCopiestwo.objects.get(id=id)
-        obj = StandartCopiestwo(
+        obj_old = StandartCopies.objects.get(id=id)
+        obj = StandartCopies(
             id=int(id),
             name=req_json['name'],
             filename=req_json['filename'],
@@ -2043,7 +2064,7 @@ standartCopiestwo_info_row_template = \
 @csrf_exempt
 def standartCopiestwos_publish(request):
     if request.method == 'GET':
-        standartCopiestwos_information = StandartCopiestwo.objects.all()
+        standartCopiestwos_information = StandartCopies.objects.all()
 
         file = 'EmployeeApp/parser/pages/sveden/eduStandarts/index.html'
         page_parser = read_page(file)
