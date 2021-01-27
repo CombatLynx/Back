@@ -1,23 +1,21 @@
-def standartCopiestwo_to_list(row):
-    return [row.id, row.name, row.filename]
+# ФИНАНСОВО-ХОЗЯЙСТВЕННАЯ ДЕЯТЕЛЬНОСТЬ
+# ------------------------- ОБЪЕМ ОБРАЗОВАТЕЛЬНОЙ ДЕЯТЕЛЬНОСТИ ---------------------------------
+
+def rush_to_list(row):
+    return [row.id, row.federal, row.sub, row.place, row.fis]
 
 
-def standartCopiestwo_format():
-    return ['id', 'name', 'filename']
-
-
-def standartCopiestwo_format_types():
-    return ['text', 'text', 'file']
+def rush_format():
+    return ['id', 'federal', 'sub', 'place', 'fis']
 
 
 @csrf_exempt
-def standartCopiestwos(request):
+def rushs(request):
     if request.method == 'GET':
-        a = standartCopiestwos.objects.all()
-        a = [standartCopiestwo_to_list(item) for item in a]
+        a = rushs.objects.all()
+        a = [rush_to_list(item) for item in a]
         return JsonResponse({
-            'format': standartCopiestwo_format(),
-            'types': standartCopiestwo_format_types(),
+            'format': rush_format(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -27,27 +25,26 @@ def standartCopiestwos(request):
 
 
 @csrf_exempt
-def standartCopiestwosFormat(request):
+def rushsFormat(request):
     if request.method == 'GET':
-        return JsonResponse({
-            "format": standartCopiestwo_format(),
-            "types": standartCopiestwo_format_types(),
-        }, safe=False)
+        return JsonResponse(rush_format(), safe=False)
 
 
 @csrf_exempt
-def standartCopiestwos_by_id(request, id):
+def rushs_by_id(request, id):
     if request.method == 'DELETE':
-        obj = standartCopiestwos.objects.get(id=id)
+        obj = rushs.objects.get(id=id)
         if obj is None:
             return HttpResponseBadRequest()
         obj.delete()
         return HttpResponse(200)
     elif request.method == 'POST':
         req_json = JSONParser().parse(request)
-        obj = standartCopiestwos(
-            name=req_json['name'],
-            filename=req_json['filename'],
+        obj = rushs(
+            federal=req_json['federal'],
+            sub=req_json['sub'],
+            place=req_json['place'],
+            fis=req_json['fis'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -55,11 +52,13 @@ def standartCopiestwos_by_id(request, id):
         return HttpResponse(200)
     elif request.method == 'PUT':
         req_json = JSONParser().parse(request)
-        obj_old = standartCopiestwos.objects.get(id=id)
-        obj = standartCopiestwos(
+        obj_old = rushs.objects.get(id=id)
+        obj = rushs(
             id=int(id),
-            name=req_json['name'],
-            filename=req_json['filename'],
+            federal=req_json['federal'],
+            sub=req_json['sub'],
+            place=req_json['place'],
+            fis=req_json['fis'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -67,48 +66,54 @@ def standartCopiestwos_by_id(request, id):
         return HttpResponse(200)
 
 
-standartCopiestwo_info_replace_map = {
+rush_info_replace_map = {
     'td': {
-        'name': lambda obj: obj[0],
+        'finBFrush': lambda obj: obj[0],
+        'finBRrush': lambda obj: obj[1],
+        'finBMrush': lambda obj: obj[2],
+        'finPrush': lambda obj: obj[3],
     }
 }
 
+# rush_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
 
-standartCopiestwo_info_replace_files_map = {
-    'td': {
-        'file': lambda obj: obj[1],
-    }
-}
-
-standartCopiestwo_info_row_template = \
-    '<tr itemprop="eduFedDoc">' \
-    '<td itemprop="name"></td>' \
-    '<td itemprop="file"><a href="" download="">Положение</a></td>' \
+rush_info_row_template = \
+    '<tr itemprop="vol">' \
+    '<td itemprop="finBFrush"></td>' \
+    '<td itemprop="finBRrush"></td>' \
+    '<td itemprop="finBMrush"></td>' \
+    '<td itemprop="finPrush"></td>' \
     '</tr>'
 
 
 # будут проблемы, если оказалось так, что таблица пустая
 @csrf_exempt
-def standartCopiestwos_publish(request):
+def rushs_publish(request):
     if request.method == 'GET':
-        standartCopiestwos_information = standartCopiestwos.objects.all()
+        rushs_information = rushs.objects.all()
 
-        file = 'EmployeeApp/parser/pages/sveden/eduStandarts/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/budget/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "eduFgos"})
+        tables = page_parser.find_all('table', {'itemprop': "rushs"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'eduFedDoc'})
+        rows = table.find_all('tr', {'itemprop': 'vol'})
 
         for row in rows:
             row.extract()
         last_tr = table.tr
-        for index, item in enumerate(standartCopiestwos_information):
-            values = standartCopiestwo_to_list(item)[1:]
-            row = bs4.BeautifulSoup(standartCopiestwo_info_row_template)
-            replace_page_elements(standartCopiestwo_info_replace_map, row, values)
-            replace_page_files(standartCopiestwo_info_replace_files_map, row, values)
+        for index, item in enumerate(rushs_information):
+            values = rush_to_list(item)[1:]
+            row = bs4.BeautifulSoup(rush_info_row_template)
+            replace_page_elements(rush_info_replace_map, row, values)
+            # replace_page_links(rush_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

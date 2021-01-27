@@ -59,6 +59,11 @@ urlpatterns = [
                   url(r'^volumes/([1-9][0-9]*)$', views.volumes_by_id),
                   url(r'^volumes/publish/$', views.volumes_publish),
 
+                  url(r'^rushs/$', views.rushs),
+                  url(r'^rushs/format/$', views.rushsFormat),
+                  url(r'^rushs/([1-9][0-9]*)$', views.rushs_by_id),
+                  url(r'^rushs/publish/$', views.rushs_publish),
+
                   url(r'^vacs/$', views.vacs),
                   url(r'^vacs/format/$', views.vacsFormat),
                   url(r'^vacs/([1-9][0-9]*)$', views.vacs_by_id),
@@ -110,6 +115,8 @@ urlpatterns = [
                   url(r'^paidServices/format/$', views.paidServicesFormat),
                   url(r'^paidServices/([1-9][0-9]*)$', views.paidServices_by_id),
                   url(r'^paidServices/publish/$', views.paidServices_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
 
                   url(r'^internationalDogs/$', views.internationalDogs),
                   url(r'^internationalDogs/format/$', views.internationalDogsFormat),
@@ -170,16 +177,25 @@ urlpatterns = [
                   url(r'^grants/format/$', views.grantsFormat),
                   url(r'^grants/([1-9][0-9]*)$', views.grants_by_id),
                   url(r'^grants/publish/$', views.grants_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
 
                   url(r'^grantInfos/$', views.grantInfos),
                   url(r'^grantInfos/format/$', views.grantInfosFormat),
                   url(r'^grantInfos/([1-9][0-9]*)$', views.grantInfos_by_id),
                   url(r'^grantInfos/publish/$', views.grantInfos_publish),
 
+                  url(r'^grantInfoTwos/$', views.grantInfoTwos),
+                  url(r'^grantInfoTwos/format/$', views.grantInfoTwosFormat),
+                  url(r'^grantInfoTwos/([1-9][0-9]*)$', views.grantInfoTwos_by_id),
+                  url(r'^grantInfoTwos/publish/$', views.grantInfoTwos_publish),
+
                   url(r'^acts/$', views.acts),
                   url(r'^acts/format/$', views.actsFormat),
                   url(r'^acts/([1-9][0-9]*)$', views.acts_by_id),
                   url(r'^acts/publish/$', views.acts_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
 
                   url(r'^jobs/$', views.jobs),
                   url(r'^jobs/format/$', views.jobsFormat),

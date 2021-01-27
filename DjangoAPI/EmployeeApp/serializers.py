@@ -5,7 +5,8 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Leaderstwo, StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, \
     SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
     InfChi, AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, \
-    Sports, Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, StandartCopiestwo
+    Sports, Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, \
+    StandartCopiestwo, GrantInfoTwo
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -133,9 +134,14 @@ class VolumesSerializer(serializers.ModelSerializer):
         model = Volumes
         fields = (
             'id',
-            'name',
-            'fio',
-            'regulation'
+            'federal',
+            'sub',
+            'place',
+            'fis',
+            'money',
+            'moneyfile',
+            'plan',
+            'info'
         )
 
 
@@ -238,10 +244,7 @@ class PaidServicesSerializer(serializers.ModelSerializer):
         model = PaidServices
         fields = (
             'id',
-            'info',
-            'dogpaid',
-            'doc',
-            'order'
+            'info'
         )
 
 
@@ -391,8 +394,42 @@ class GrantInfoSerializer(serializers.ModelSerializer):
         model = GrantInfo
         fields = (
             'id',
-            'name',
-            'text'
+            'grant',
+            'support',
+            'hostel_info',
+            'inter_info',
+            'hostel_ts',
+            'inter_ts',
+            'hostel_ls',
+            'inter_ls',
+            'hostel_num',
+            'inter_num',
+            'hostel_inv',
+            'inter_inv',
+            'hostel_fd',
+            'inter_fd'
+        )
+
+
+class GrantInfoTwoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GrantInfoTwo
+        fields = (
+            'id',
+            'grant',
+            'support',
+            'hostel_info',
+            'inter_info',
+            'hostel_ts',
+            'inter_ts',
+            'hostel_ls',
+            'inter_ls',
+            'hostel_num',
+            'inter_num',
+            'hostel_inv',
+            'inter_inv',
+            'hostel_fd',
+            'inter_fd'
         )
 
 

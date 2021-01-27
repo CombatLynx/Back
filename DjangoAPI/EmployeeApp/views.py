@@ -8,7 +8,8 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     StandartCopies, PaidServices, Internationaldog, Internationalaccr, SpecCab, SpecPrac, SpecLib, SpecSport, \
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
     AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, Sports, \
-    Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, StandartCopiestwo
+    Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, StandartCopiestwo, \
+    GrantInfoTwo
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -1020,14 +1021,15 @@ def representations_publish(request):
         return HttpResponse("OK")
 
 
+# ФИНАНСОВО-ХОЗЯЙСТВЕННАЯ ДЕЯТЕЛЬНОСТЬ
 # ------------------------- ОБЪЕМ ОБРАЗОВАТЕЛЬНОЙ ДЕЯТЕЛЬНОСТИ ---------------------------------
 
 def volume_to_list(row):
-    return [row.id, row.federal, row.sub, row.place, row.fis, row.money, row.moneyfile, row.plan, row.info]
+    return [row.id, row.federal, row.sub, row.place, row.fis]
 
 
 def volume_format():
-    return ['id', 'federal', 'sub', 'place', 'fis', 'money', 'moneyfile', 'plan', 'info']
+    return ['id', 'federal', 'sub', 'place', 'fis']
 
 
 @csrf_exempt
@@ -1066,10 +1068,6 @@ def volumes_by_id(request, id):
             sub=req_json['sub'],
             place=req_json['place'],
             fis=req_json['fis'],
-            money=req_json['money'],
-            moneyfile=req_json['moneyfile'],
-            plan=req_json['plan'],
-            info=req_json['info'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -1084,10 +1082,6 @@ def volumes_by_id(request, id):
             sub=req_json['sub'],
             place=req_json['place'],
             fis=req_json['fis'],
-            money=req_json['money'],
-            moneyfile=req_json['moneyfile'],
-            plan=req_json['plan'],
-            info=req_json['info'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -1104,23 +1098,20 @@ volume_info_replace_map = {
     }
 }
 
-volume_info_replace_links_map = {
-    'td': {
-        'finYear': lambda obj: obj[4],
-        'finPost': lambda obj: obj[5],
-        'finRas': lambda obj: obj[6],
-    }
-}
+# volume_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
 
 volume_info_row_template = \
-    '<tr itemprop="volume">' \
+    '<tr itemprop="vol">' \
     '<td itemprop="finBFVolume"></td>' \
     '<td itemprop="finBRVolume"></td>' \
     '<td itemprop="finBMVolume"></td>' \
     '<td itemprop="finPVolume"></td>' \
-    '<td itemprop="finYear"><a href="" download="">Положение</a></td>' \
-    '<td itemprop="finPost"><a href="" download="">Положение</a></td>' \
-    '<td itemprop="finRas"><a href="">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -1130,13 +1121,13 @@ def volumes_publish(request):
     if request.method == 'GET':
         volumes_information = Volumes.objects.all()
 
-        file = 'EmployeeApp/parser/pages/budget/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/budget/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "volumes"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'volume'})
+        rows = table.find_all('tr', {'itemprop': 'vol'})
 
         for row in rows:
             row.extract()
@@ -1145,7 +1136,127 @@ def volumes_publish(request):
             values = volume_to_list(item)[1:]
             row = bs4.BeautifulSoup(volume_info_row_template)
             replace_page_elements(volume_info_replace_map, row, values)
-            replace_page_links(volume_info_replace_links_map, row, values)
+            # replace_page_links(volume_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ФИНАНСОВО-ХОЗЯЙСТВЕННАЯ ДЕЯТЕЛЬНОСТЬ
+# ------------------- Информация о поступлении и расходовании финансовых и материальных средств -------------------
+
+def rush_to_list(row):
+    return [row.id, row.money, row.moneyfile, row.plan]
+
+
+def rush_format():
+    return ['id', 'money', 'moneyfile', 'plan']
+
+
+@csrf_exempt
+def rushs(request):
+    if request.method == 'GET':
+        a = Volumes.objects.all()
+        a = [rush_to_list(item) for item in a]
+        return JsonResponse({
+            'format': rush_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def rushsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(rush_format(), safe=False)
+
+
+@csrf_exempt
+def rushs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Volumes.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Volumes(
+            money=req_json['money'],
+            moneyfile=req_json['moneyfile'],
+            plan=req_json['plan'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Volumes.objects.get(id=id)
+        obj = Volumes(
+            id=int(id),
+            money=req_json['money'],
+            moneyfile=req_json['moneyfile'],
+            plan=req_json['plan'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+rush_info_replace_map = {
+    'td': {
+        'finYear': lambda obj: obj[0],
+        'finPost': lambda obj: obj[1],
+        'finRas': lambda obj: obj[2],
+    }
+}
+
+# rush_info_replace_links_map = {
+#     'td': {
+#         'finYear': lambda obj: obj[4],
+#         'finPost': lambda obj: obj[5],
+#         'finRas': lambda obj: obj[6],
+#     }
+# }
+
+rush_info_row_template = \
+    '<tr itemprop="volume">' \
+    '<td itemprop="finYear"></td>' \
+    '<td itemprop="finPost"></td>' \
+    '<td itemprop="finRas"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def rushs_publish(request):
+    if request.method == 'GET':
+        rushs_information = Volumes.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/budget/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "volumesss"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'volume'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(rushs_information):
+            values = rush_to_list(item)[1:]
+            row = bs4.BeautifulSoup(rush_info_row_template)
+            replace_page_elements(rush_info_replace_map, row, values)
+            # replace_page_links(rush_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -1254,7 +1365,7 @@ vac_info_replace_map = {
 # }
 
 vac_info_row_template = \
-    '<tr itemprop="vac">' \
+    '<tr itemprop="vacant">' \
     '<td itemprop="eduCode"></td>' \
     '<td itemprop="eduName"></td>' \
     '<td itemprop="eduLevel"></td>' \
@@ -1273,13 +1384,13 @@ def vacs_publish(request):
     if request.method == 'GET':
         vacs_information = Vacs.objects.all()
 
-        file = 'EmployeeApp/parser/pages/vacant/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/vacant/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "vacant"})
+        tables = page_parser.find_all('table', {'itemprop': "vacants"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'vac'})
+        rows = table.find_all('tr', {'itemprop': 'vacant'})
 
         for row in rows:
             row.extract()
@@ -1310,6 +1421,7 @@ def leader_format():
 
 def leader_format_types():
     return ['text', 'text', 'text', 'text', 'text']
+
 
 @csrf_exempt
 def leaders(request):
@@ -1438,6 +1550,7 @@ def leadersTwo_format():
 
 def leadersTwo_format_types():
     return ['text', 'text', 'text', 'text', 'text']
+
 
 @csrf_exempt
 def leadersTwos(request):
@@ -1925,7 +2038,6 @@ standartCopie_info_replace_map = {
     }
 }
 
-
 standartCopie_info_replace_files_map = {
     'td': {
         'file': lambda obj: obj[1],
@@ -2046,7 +2158,6 @@ standartCopiestwo_info_replace_map = {
     }
 }
 
-
 standartCopiestwo_info_replace_files_map = {
     'td': {
         'file': lambda obj: obj[1],
@@ -2093,11 +2204,15 @@ def standartCopiestwos_publish(request):
 # ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ ---------------------------------
 
 def paidService_to_list(row):
-    return [row.id, row.info, row.dogpaid, row.doc, row.order, row.docnew]
+    return [row.id, row.info]
 
 
 def paidService_format():
-    return ['id', 'info', 'dogpaid', 'doc', 'order', 'docnew']
+    return ['id', 'info']
+
+
+def paidService_format_types():
+    return ['text', 'file']
 
 
 @csrf_exempt
@@ -2107,6 +2222,7 @@ def paidServices(request):
         a = [paidService_to_list(item) for item in a]
         return JsonResponse({
             'format': paidService_format(),
+            'types': paidService_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -2118,7 +2234,10 @@ def paidServices(request):
 @csrf_exempt
 def paidServicesFormat(request):
     if request.method == 'GET':
-        return JsonResponse(paidService_format(), safe=False)
+        return JsonResponse({
+            "format": paidService_format(),
+            "types": paidService_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -2133,10 +2252,6 @@ def paidServices_by_id(request, id):
         req_json = JSONParser().parse(request)
         obj = PaidServices(
             info=req_json['info'],
-            dogpaid=req_json['dogpaid'],
-            doc=req_json['doc'],
-            order=req_json['order'],
-            docnew=req_json['docnew'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -2148,10 +2263,6 @@ def paidServices_by_id(request, id):
         obj = PaidServices(
             id=int(id),
             info=req_json['info'],
-            dogpaid=req_json['dogpaid'],
-            doc=req_json['doc'],
-            order=req_json['order'],
-            docnew=req_json['docnew'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -2159,27 +2270,27 @@ def paidServices_by_id(request, id):
         return HttpResponse(200)
 
 
-paidService_info_replace_map = {
+# paidService_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+paidService_info_replace_files_map = {
     'td': {
         'paidEdu': lambda obj: obj[0],
     }
 }
 
-paidService_info_replace_links_map = {
-    'td': {
-        'paidParents': lambda obj: obj[1],
-        'paidParents': lambda obj: obj[2],
-        'paidParents': lambda obj: obj[3],
-        'paidParents': lambda obj: obj[4],
-    }
-}
-
 paidService_info_row_template = \
-    '<tr itemprop="paid">' \
-    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
-    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
-    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
-    '<td itemprop="paidParents"><a href="" download="">Положение</a></td>' \
+    '<tr itemprop="paidE">' \
+    '<td itemprop="paidEdu"><a href="" download="">Ссылка на локальный нормативный акт</a></td>' \
     '</tr>'
 
 
@@ -2189,22 +2300,23 @@ def paidServices_publish(request):
     if request.method == 'GET':
         paidServices_information = PaidServices.objects.all()
 
-        file = 'EmployeeApp/parser/pages/paid_edu/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/paid_edu/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "paidEdu"})
+        tables = page_parser.find_all('table', {'itemprop': "paid"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'paid'})
+        rows = table.find_all('tr', {'itemprop': 'paidE'})
 
         for row in rows:
             row.extract()
         last_tr = table.tr
         for index, item in enumerate(paidServices_information):
-            values = volume_to_list(item)[1:]
+            values = paidService_to_list(item)[1:]
             row = bs4.BeautifulSoup(paidService_info_row_template)
-            replace_page_elements(paidService_info_replace_map, row, values)
-            replace_page_links(paidService_info_replace_links_map, row, values)
+            # replace_page_elements(paidService_info_replace_map, row, values)
+            # replace_page_links(paidService_info_replace_links_map, row, values)
+            replace_page_files(paidService_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -3593,6 +3705,10 @@ def grant_format():
     return ['id', 'filename']
 
 
+def grant_format_types():
+    return ['text', 'file']
+
+
 @csrf_exempt
 def grants(request):
     if request.method == 'GET':
@@ -3600,6 +3716,7 @@ def grants(request):
         a = [grant_to_list(item) for item in a]
         return JsonResponse({
             'format': grant_format(),
+            'types': grant_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -3611,7 +3728,10 @@ def grants(request):
 @csrf_exempt
 def grantsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(grant_format(), safe=False)
+        return JsonResponse({
+            "format": grant_format(),
+            "types": grant_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -3656,12 +3776,11 @@ def grants_by_id(request, id):
 #     }
 # }
 
-grant_info_replace_links_map = {
+grant_info_replace_files_map = {
     'td': {
         'localAct': lambda obj: obj[0],
     }
 }
-
 
 grant_info_row_template = \
     '<tr itemprop="act">' \
@@ -3675,7 +3794,7 @@ def grants_publish(request):
     if request.method == 'GET':
         grants_information = Grants.objects.all()
 
-        file = 'EmployeeApp/parser/pages/grants/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/grants/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "acts"})
         if len(tables) != 1:
@@ -3690,7 +3809,8 @@ def grants_publish(request):
             values = grant_to_list(item)[1:]
             row = bs4.BeautifulSoup(grant_info_row_template)
             # replace_page_elements(grant_info_replace_map, row, values)
-            replace_page_links(grant_info_replace_links_map, row, values)
+            # replace_page_links(grant_info_replace_links_map, row, values)
+            replace_page_files(grant_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -3703,22 +3823,11 @@ def grants_publish(request):
 # ----------------------------------------- Информация ---------------------------------------------------
 
 def grantInfo_to_list(row):
-    return [
-            row.id,
-            row.grant,
-            row.support,
-            row.hostel_info, row.inter_info,
-            row.hostel_ts, row.inter_ts,
-            row.hostel_ls, row.inter_ls,
-            row.hostel_num, row.inter_num,
-            row.hostel_inv, row.inter_inv,
-            row.hostel_fd, row.inter_fd
-            ]
+    return [row.id, row.grant, row.support, row.hostel_info, row.inter_info, row.hostel_ts, row.inter_ts, row.hostel_ls]
 
 
 def grantInfo_format():
-    return ['id', 'grant', 'support', 'hostel_info', 'inter_info', 'hostel_ts', 'inter_ts', 'hostel_ls', 'inter_ls',
-            'hostel_num', 'inter_num', 'hostel_inv', 'inter_inv', 'hostel_fd', 'inter_fd']
+    return ['id', 'grant', 'support', 'hostel_info', 'inter_info', 'hostel_ts', 'inter_ts', 'hostel_ls']
 
 
 @csrf_exempt
@@ -3760,13 +3869,6 @@ def grantInfos_by_id(request, id):
             hostel_ts=req_json['hostel_ts'],
             inter_ts=req_json['inter_ts'],
             hostel_ls=req_json['hostel_ls'],
-            inter_ls=req_json['inter_ls'],
-            hostel_num=req_json['hostel_num'],
-            inter_num=req_json['inter_num'],
-            hostel_inv=req_json['hostel_inv'],
-            inter_inv=req_json['inter_inv'],
-            hostel_fd=req_json['hostel_fd'],
-            inter_fd=req_json['inter_fd'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -3784,13 +3886,6 @@ def grantInfos_by_id(request, id):
             hostel_ts=req_json['hostel_ts'],
             inter_ts=req_json['inter_ts'],
             hostel_ls=req_json['hostel_ls'],
-            inter_ls=req_json['inter_ls'],
-            hostel_num=req_json['hostel_num'],
-            inter_num=req_json['inter_num'],
-            hostel_inv=req_json['hostel_inv'],
-            inter_inv=req_json['inter_inv'],
-            hostel_fd=req_json['hostel_fd'],
-            inter_fd=req_json['inter_fd'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -3807,12 +3902,6 @@ grantInfo_info_replace_map = {
         'hostelTS': lambda obj: obj[4],
         'interTS': lambda obj: obj[5],
         'hostelLS': lambda obj: obj[6],
-        'interLS': lambda obj: obj[7],
-        'hostelNum': lambda obj: obj[8],
-        'hostelInv': lambda obj: obj[9],
-        'interInv': lambda obj: obj[10],
-        'hostelFd': lambda obj: obj[11],
-        'interFd': lambda obj: obj[12],
     }
 }
 
@@ -3825,12 +3914,6 @@ grantInfo_info_row_template = \
     '<td itemprop="hostelTS"></td>' \
     '<td itemprop="interTS"></td>' \
     '<td itemprop="hostelLS"></td>' \
-    '<td id="its"></td>' \
-    '<td itemprop="hostelNum"></td>' \
-    '<td itemprop="hostelInv"></td>' \
-    '<td itemprop="interInv"></td>' \
-    '<td itemprop="hostelFd"></td>' \
-    '<td itemprop="interFd"></td>' \
     '</tr>'
 
 
@@ -3840,7 +3923,7 @@ def grantInfos_publish(request):
     if request.method == 'GET':
         grantInfos_information = GrantInfo.objects.all()
 
-        file = 'EmployeeApp/parser/pages/grants/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/grants/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "inf"})
         if len(tables) != 1:
@@ -3865,7 +3948,137 @@ def grantInfos_publish(request):
 
 
 # ------------------------- Стипендии и иные виды материальной поддержки ---------------------------------
+# ----------------------------------------- Информация 2 ---------------------------------------------------
+
+def grantInfoTwo_to_list(row):
+    return [row.id, row.inter_ls, row.hostel_num, row.inter_num, row.hostel_inv, row.inter_inv, row.hostel_fd,
+            row.inter_fd]
+
+
+def grantInfoTwo_format():
+    return ['id', 'inter_ls', 'hostel_num', 'inter_num', 'hostel_inv', 'inter_inv', 'hostel_fd', 'inter_fd']
+
+
+@csrf_exempt
+def grantInfoTwos(request):
+    if request.method == 'GET':
+        a = GrantInfoTwo.objects.all()
+        a = [grantInfoTwo_to_list(item) for item in a]
+        return JsonResponse({
+            'format': grantInfoTwo_format(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def grantInfoTwosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse(grantInfoTwo_format(), safe=False)
+
+
+@csrf_exempt
+def grantInfoTwos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = GrantInfoTwo.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = GrantInfoTwo(
+            inter_ls=req_json['inter_ls'],
+            hostel_num=req_json['hostel_num'],
+            inter_num=req_json['inter_num'],
+            hostel_inv=req_json['hostel_inv'],
+            inter_inv=req_json['inter_inv'],
+            hostel_fd=req_json['hostel_fd'],
+            inter_fd=req_json['inter_fd'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = GrantInfoTwo.objects.get(id=id)
+        obj = GrantInfoTwo(
+            id=int(id),
+            inter_ls=req_json['inter_ls'],
+            hostel_num=req_json['hostel_num'],
+            inter_num=req_json['inter_num'],
+            hostel_inv=req_json['hostel_inv'],
+            inter_inv=req_json['inter_inv'],
+            hostel_fd=req_json['hostel_fd'],
+            inter_fd=req_json['inter_fd'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+grantInfoTwo_info_replace_map = {
+    'td': {
+        'interTS': lambda obj: obj[0],
+        'hostelNum': lambda obj: obj[1],
+        'interNum': lambda obj: obj[2],
+        'hostelInv': lambda obj: obj[3],
+        'interInv': lambda obj: obj[4],
+        'hostelFd': lambda obj: obj[5],
+        'interFd': lambda obj: obj[6],
+    }
+}
+
+grantInfoTwo_info_row_template = \
+    '<tr itemprop="infortwo">' \
+    '<td itemprop="interTS"></td>' \
+    '<td itemprop="hostelNum"></td>' \
+    '<td itemprop="interNum"></td>' \
+    '<td itemprop="hostelInv"></td>' \
+    '<td itemprop="interInv"></td>' \
+    '<td itemprop="hostelFd"></td>' \
+    '<td itemprop="interFd"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def grantInfoTwos_publish(request):
+    if request.method == 'GET':
+        grantInfoTwos_information = GrantInfoTwo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/grants/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "inftwo"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'infortwo'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(grantInfoTwos_information):
+            values = grantInfoTwo_to_list(item)[1:]
+            row = bs4.BeautifulSoup(grantInfoTwo_info_row_template)
+            replace_page_elements(grantInfoTwo_info_replace_map, row, values)
+            # replace_page_links(grant_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- Стипендии и иные виды материальной поддержки ---------------------------------
 # --- Копия локального нормативного акта, регламентирующего размер платы за пользование жилым помещением и коммунальные услуги в общежитии ---
+
 
 def act_to_list(row):
     return [row.id, row.filename]
@@ -3875,6 +4088,10 @@ def act_format():
     return ['id', 'filename']
 
 
+def act_format_types():
+    return ['text', 'file']
+
+
 @csrf_exempt
 def acts(request):
     if request.method == 'GET':
@@ -3882,6 +4099,7 @@ def acts(request):
         a = [act_to_list(item) for item in a]
         return JsonResponse({
             'format': act_format(),
+            'types': act_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -3893,7 +4111,10 @@ def acts(request):
 @csrf_exempt
 def actsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(act_format(), safe=False)
+        return JsonResponse({
+            "format": act_format(),
+            "types": act_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -3938,7 +4159,13 @@ def acts_by_id(request, id):
 #     }
 # }
 
-act_info_replace_links_map = {
+# act_info_replace_links_map = {
+#     'td': {
+#         'localAct': lambda obj: obj[0],
+#     }
+# }
+
+act_info_replace_files_map = {
     'td': {
         'localAct': lambda obj: obj[0],
     }
@@ -3947,7 +4174,7 @@ act_info_replace_links_map = {
 
 act_info_row_template = \
     '<tr itemprop="local">' \
-    '<td itemprop="localAct"><a href="" download="">Копия локального нормативного акта, регламентирующего размер платы за пользование жилым помещением и коммунальные услуги в общежитии</a></td>' \
+    '<td itemprop="localAct"><a href="" download="">Копия локального нормативного акта</a></td>' \
     '</tr>'
 
 
@@ -3957,7 +4184,7 @@ def acts_publish(request):
     if request.method == 'GET':
         acts_information = Acts.objects.all()
 
-        file = 'EmployeeApp/parser/pages/grants/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/grants/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "localCopy"})
         if len(tables) != 1:
@@ -3972,7 +4199,7 @@ def acts_publish(request):
             values = act_to_list(item)[1:]
             row = bs4.BeautifulSoup(act_info_row_template)
             # replace_page_elements(grant_info_replace_map, row, values)
-            replace_page_links(act_info_replace_links_map, row, values)
+            replace_page_files(act_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -3985,7 +4212,8 @@ def acts_publish(request):
 # --------------------------- Информация о трудоустройстве выпускников -----------------------------------
 
 def job_to_list(row):
-    return [row.id, row.code, row.name, row.numgrad, row.numworkgrad, row.numgrad1, row.numworkgrad1, row.numgrad2, row.numworkgrad2]
+    return [row.id, row.code, row.name, row.numgrad, row.numworkgrad, row.numgrad1, row.numworkgrad1, row.numgrad2,
+            row.numworkgrad2]
 
 
 def job_format():
@@ -4070,7 +4298,6 @@ job_info_replace_map = {
     }
 }
 
-
 job_info_row_template = \
     '<tr itemprop="graduateJob">' \
     '<td itemprop="eduCode"></td>' \
@@ -4090,7 +4317,7 @@ def jobs_publish(request):
     if request.method == 'GET':
         jobs_information = Jobs.objects.all()
 
-        file = 'EmployeeApp/parser/pages/grants/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/grants/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "info"})
         if len(tables) != 1:
@@ -4201,7 +4428,6 @@ gosAccreditation_info_replace_map = {
         'language': lambda obj: obj[6],
     }
 }
-
 
 gosAccreditation_info_row_template = \
     '<tr itemprop="eduAccred">' \
@@ -4322,7 +4548,6 @@ prof_info_replace_map = {
     }
 }
 
-
 prof_info_row_template = \
     '<tr itemprop="eduPOAccred">' \
     '<td itemprop="eduCode"></td>' \
@@ -4366,7 +4591,8 @@ def profs_publish(request):
 # Информация о численности обучающихся по реализуемым образовательным программам по источникам финансирования
 
 def inf_to_list(row):
-    return [row.id, row.code, row.name, row.level, row.form, row.number_bf, row.number_br, row.number_bm, row.number_p, row.number_f]
+    return [row.id, row.code, row.name, row.level, row.form, row.number_bf, row.number_br, row.number_bm, row.number_p,
+            row.number_f]
 
 
 def inf_format():
@@ -4454,7 +4680,6 @@ inf_info_replace_map = {
     }
 }
 
-
 inf_info_row_template = \
     '<tr itemprop="eduChislen">' \
     '<td itemprop="eduCode"></td>' \
@@ -4503,11 +4728,13 @@ def infs_publish(request):
 # Информация о результатах приема
 
 def admis_to_list(row):
-    return [row.id, row.code, row.name, row.level, row.studyform, row.budgetfederal, row.budgetrus, row.budgetplace, row.budgetfiz, row.summ]
+    return [row.id, row.code, row.name, row.level, row.studyform, row.budgetfederal, row.budgetrus, row.budgetplace,
+            row.budgetfiz, row.summ]
 
 
 def admis_format():
-    return ['id', 'code', 'name', 'level', 'studyform', 'budgetfederal', 'budgetrus', 'budgetplace', 'budgetfiz', 'summ']
+    return ['id', 'code', 'name', 'level', 'studyform', 'budgetfederal', 'budgetrus', 'budgetplace', 'budgetfiz',
+            'summ']
 
 
 @csrf_exempt
@@ -4590,7 +4817,6 @@ admis_info_replace_map = {
         'score': lambda obj: obj[8],
     }
 }
-
 
 admis_info_row_template = \
     '<tr itemprop="eduPriem">' \
@@ -4725,7 +4951,6 @@ perev_info_replace_map = {
     }
 }
 
-
 perev_info_row_template = \
     '<tr itemprop="eduPerevod">' \
     '<td itemprop="eduCode"></td>' \
@@ -4773,7 +4998,8 @@ def perevs_publish(request):
 # Информация об образовательной программе
 
 def obraz_to_list(row):
-    return [row.id, row.code, row.name, row.level, row.form, row.main, row.plan, row.annot, row.shed, row.method, row.pr, row.el]
+    return [row.id, row.code, row.name, row.level, row.form, row.main, row.plan, row.annot, row.shed, row.method,
+            row.pr, row.el]
 
 
 def obraz_format():
@@ -4869,7 +5095,6 @@ obraz_info_replace_map = {
     }
 }
 
-
 obraz_info_replace_links_map = {
     'td': {
         'opMain': lambda obj: obj[4],
@@ -4880,7 +5105,6 @@ obraz_info_replace_links_map = {
         'eduPr': lambda obj: obj[9],
     }
 }
-
 
 obraz_info_row_template = \
     '<tr itemprop="eduOp">' \
@@ -4932,15 +5156,18 @@ def obrazs_publish(request):
 # Информация об адаптированной образовательной программе
 
 def practic_to_list(row):
-    return [row.id, row.code, row.name, row.profile, row.studyforms, row.opis_obraz, row.uch_plan, row.annot_link, row.calend_link, row.norm_doc, row.inf_pract, row.inf_isp]
+    return [row.id, row.code, row.name, row.profile, row.studyforms, row.opis_obraz, row.uch_plan, row.annot_link,
+            row.calend_link, row.norm_doc, row.inf_pract, row.inf_isp]
 
 
 def practic_format():
-    return ['id', 'code', 'name', 'profile', 'studyforms', 'opis_obraz', 'uch_plan', 'annot_link', 'calend_link', 'norm_doc', 'inf_pract', 'inf_isp']
+    return ['id', 'code', 'name', 'profile', 'studyforms', 'opis_obraz', 'uch_plan', 'annot_link', 'calend_link',
+            'norm_doc', 'inf_pract', 'inf_isp']
 
 
 def practic_format_types():
     return ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text']
+
 
 @csrf_exempt
 def practics(request):
@@ -5026,7 +5253,6 @@ practic_info_replace_map = {
         'eduEl': lambda obj: obj[10],
     }
 }
-
 
 practic_info_replace_links_map = {
     'td': {
@@ -5175,7 +5401,6 @@ scienc_info_replace_map = {
     }
 }
 
-
 scienc_info_replace_links_map = {
     'td': {
         'resultNir': lambda obj: obj[4],
@@ -5297,7 +5522,6 @@ svedOrg_info_replace_map = {
     }
 }
 
-
 # svedOrg_info_replace_links_map = {
 #     'td': {
 #         'resultNir': lambda obj: obj[4],
@@ -5414,7 +5638,6 @@ facilit_info_replace_map = {
         'osnCab': lambda obj: obj[2],
     }
 }
-
 
 # facilit_info_replace_links_map = {
 #     'td': {
@@ -5533,7 +5756,6 @@ objPract_info_replace_map = {
         'osnPrac': lambda obj: obj[2],
     }
 }
-
 
 # objPract_info_replace_links_map = {
 #     'td': {
@@ -5655,7 +5877,6 @@ librare_info_replace_map = {
         'objCnt': lambda obj: obj[3],
     }
 }
-
 
 # librare_info_replace_links_map = {
 #     'td': {
@@ -5779,7 +6000,6 @@ sport_info_replace_map = {
     }
 }
 
-
 # sport_info_replace_links_map = {
 #     'td': {
 #         'resultNir': lambda obj: obj[4],
@@ -5901,7 +6121,6 @@ meal_info_replace_map = {
         'objCnt': lambda obj: obj[3],
     }
 }
-
 
 # meal_info_replace_links_map = {
 #     'td': {
@@ -6025,7 +6244,6 @@ healt_info_replace_map = {
     }
 }
 
-
 # healt_info_replace_links_map = {
 #     'td': {
 #         'resultNir': lambda obj: obj[4],
@@ -6138,20 +6356,20 @@ def ones_by_id(request, id):
 one_info_replace_map = {
     'td': {
         'name': lambda obj: obj[0],
+        'purposeFacil': lambda obj: obj[1],
     }
 }
 
-
-one_info_replace_links_map = {
-    'td': {
-         'purposeFacil': lambda obj: obj[1],
-    }
-}
+# one_info_replace_links_map = {
+#     'td': {
+#
+#     }
+# }
 
 one_info_row_template = \
     '<tr itemprop="facil">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="purposeFacil"><a href=" ">Ссылка</a></td>' \
+    '<td itemprop="purposeFacil"></td>' \
     '</tr>'
 
 
@@ -6176,7 +6394,7 @@ def ones_publish(request):
             values = one_to_list(item)[1:]
             row = bs4.BeautifulSoup(one_info_row_template)
             replace_page_elements(one_info_replace_map, row, values)
-            replace_page_links(one_info_replace_links_map, row, values)
+            # replace_page_links(one_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -6252,20 +6470,20 @@ def twos_by_id(request, id):
 two_info_replace_map = {
     'td': {
         'name': lambda obj: obj[0],
+        'comNet': lambda obj: obj[1],
     }
 }
 
-
-two_info_replace_links_map = {
-    'td': {
-         'comNet': lambda obj: obj[1],
-    }
-}
+# two_info_replace_links_map = {
+#     'td': {
+#          'comNet': lambda obj: obj[1],
+#     }
+# }
 
 two_info_row_template = \
     '<tr itemprop="net">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="comNet"><a href=" ">Ссылка</a></td>' \
+    '<td itemprop="comNet"></td>' \
     '</tr>'
 
 
@@ -6290,7 +6508,7 @@ def twos_publish(request):
             values = two_to_list(item)[1:]
             row = bs4.BeautifulSoup(two_info_row_template)
             replace_page_elements(two_info_replace_map, row, values)
-            replace_page_links(two_info_replace_links_map, row, values)
+            # replace_page_links(two_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -6366,20 +6584,20 @@ def threes_by_id(request, id):
 three_info_replace_map = {
     'td': {
         'name': lambda obj: obj[0],
+        'purposeEios': lambda obj: obj[1],
     }
 }
 
-
-three_info_replace_links_map = {
-    'td': {
-         'purposeEios': lambda obj: obj[1],
-    }
-}
+# three_info_replace_links_map = {
+#     'td': {
+#          'purposeEios': lambda obj: obj[1],
+#     }
+# }
 
 three_info_row_template = \
     '<tr itemprop="eios">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="purposeEios"><a href=" ">Ссылка</a></td>' \
+    '<td itemprop="purposeEios"></td>' \
     '</tr>'
 
 
@@ -6404,7 +6622,7 @@ def threes_publish(request):
             values = three_to_list(item)[1:]
             row = bs4.BeautifulSoup(three_info_row_template)
             replace_page_elements(three_info_replace_map, row, values)
-            replace_page_links(three_info_replace_links_map, row, values)
+            # replace_page_links(three_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -6480,20 +6698,20 @@ def fours_by_id(request, id):
 four_info_replace_map = {
     'td': {
         'name': lambda obj: obj[0],
+        'eoisOwn': lambda obj: obj[1],
     }
 }
 
-
-four_info_replace_links_map = {
-    'td': {
-         'eoisOwn': lambda obj: obj[1],
-    }
-}
+# four_info_replace_links_map = {
+#     'td': {
+#          'eoisOwn': lambda obj: obj[1],
+#     }
+# }
 
 four_info_row_template = \
     '<tr itemprop="own">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="eoisOwn"><a href=" ">Ссылка</a></td>' \
+    '<td itemprop="eoisOwn"></td>' \
     '</tr>'
 
 
@@ -6518,7 +6736,7 @@ def fours_publish(request):
             values = four_to_list(item)[1:]
             row = bs4.BeautifulSoup(four_info_row_template)
             replace_page_elements(four_info_replace_map, row, values)
-            replace_page_links(four_info_replace_links_map, row, values)
+            # replace_page_links(four_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -6594,20 +6812,20 @@ def fives_by_id(request, id):
 five_info_replace_map = {
     'td': {
         'name': lambda obj: obj[0],
+        'eoisSide': lambda obj: obj[1],
     }
 }
 
-
-five_info_replace_links_map = {
-    'td': {
-         'eoisSide': lambda obj: obj[1],
-    }
-}
+# five_info_replace_links_map = {
+#     'td': {
+#          'eoisSide': lambda obj: obj[1],
+#     }
+# }
 
 five_info_row_template = \
     '<tr itemprop="side">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="eoisSide"><a href=" ">Ссылка</a></td>' \
+    '<td itemprop="eoisSide"></td>' \
     '</tr>'
 
 
@@ -6632,7 +6850,7 @@ def fives_publish(request):
             values = five_to_list(item)[1:]
             row = bs4.BeautifulSoup(five_info_row_template)
             replace_page_elements(five_info_replace_map, row, values)
-            replace_page_links(five_info_replace_links_map, row, values)
+            # replace_page_links(five_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -6708,20 +6926,20 @@ def sixs_by_id(request, id):
 six_info_replace_map = {
     'td': {
         'name': lambda obj: obj[0],
+        'bdec': lambda obj: obj[1],
     }
 }
 
-
-six_info_replace_links_map = {
-    'td': {
-         'bdec': lambda obj: obj[1],
-    }
-}
+# six_info_replace_links_map = {
+#     'td': {
+#          'bdec': lambda obj: obj[1],
+#     }
+# }
 
 six_info_row_template = \
     '<tr itemprop="bd">' \
     '<td itemprop="name"></td>' \
-    '<td itemprop="bdec"><a href=" ">Ссылка</a></td>' \
+    '<td itemprop="bdec"></td>' \
     '</tr>'
 
 
@@ -6746,7 +6964,7 @@ def sixs_publish(request):
             values = six_to_list(item)[1:]
             row = bs4.BeautifulSoup(six_info_row_template)
             replace_page_elements(six_info_replace_map, row, values)
-            replace_page_links(six_info_replace_links_map, row, values)
+            # replace_page_links(six_info_replace_links_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -6766,6 +6984,10 @@ def seven_format():
     return ['id', 'name', 'link']
 
 
+def seven_format_types():
+    return ['text', 'text', 'text']
+
+
 @csrf_exempt
 def sevens(request):
     if request.method == 'GET':
@@ -6773,6 +6995,7 @@ def sevens(request):
         a = [seven_to_list(item) for item in a]
         return JsonResponse({
             'format': seven_format(),
+            'types': seven_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -6784,7 +7007,10 @@ def sevens(request):
 @csrf_exempt
 def sevensFormat(request):
     if request.method == 'GET':
-        return JsonResponse(seven_format(), safe=False)
+        return JsonResponse({
+            "format": seven_format(),
+            "types": seven_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
@@ -6825,10 +7051,9 @@ seven_info_replace_map = {
     }
 }
 
-
 seven_info_replace_links_map = {
     'td': {
-         'link': lambda obj: obj[1],
+        'link': lambda obj: obj[1],
     }
 }
 

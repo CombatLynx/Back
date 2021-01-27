@@ -303,6 +303,30 @@ class GrantInfo(models.Model):
         db_table = 'grant_info'
 
 
+class GrantInfoTwo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    grant = models.CharField(blank=True, null=True)
+    support = models.CharField(blank=True, null=True)
+    hostel_info = models.CharField(blank=True, null=True)
+    inter_info = models.CharField(blank=True, null=True)
+    hostel_ts = models.CharField(blank=True, null=True)
+    inter_ts = models.CharField(blank=True, null=True)
+    hostel_ls = models.CharField(blank=True, null=True)
+    inter_ls = models.CharField(blank=True, null=True)
+    hostel_num = models.CharField(blank=True, null=True)
+    inter_num = models.CharField(blank=True, null=True)
+    hostel_inv = models.CharField(blank=True, null=True)
+    inter_inv = models.CharField(blank=True, null=True)
+    hostel_fd = models.CharField(blank=True, null=True)
+    inter_fd = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'grant_info_two'
+
+
 class Grants(models.Model):
     filename = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField()
@@ -570,6 +594,17 @@ class OvzTwo(models.Model):
 
 class PaidServices(models.Model):
     info = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'paid_services'
+
+
+class PaidServicesTwo(models.Model):
+    info = models.CharField(blank=True, null=True)
     dogpaid = models.CharField(blank=True, null=True)
     doc = models.CharField(blank=True, null=True)
     order = models.CharField(blank=True, null=True)
@@ -580,7 +615,7 @@ class PaidServices(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'paid_services'
+        db_table = 'paid_services_two'
 
 
 class Perevod(models.Model):

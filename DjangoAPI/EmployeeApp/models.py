@@ -497,6 +497,29 @@ class GrantInfo(models.Model):
         db_table = 'grant_info'
 
 
+class GrantInfoTwo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    grant = models.CharField(blank=True, null=True, max_length=1000)
+    support = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_info = models.CharField(blank=True, null=True, max_length=1000)
+    inter_info = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_ts = models.CharField(blank=True, null=True, max_length=1000)
+    inter_ts = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_ls = models.CharField(blank=True, null=True, max_length=1000)
+    inter_ls = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_num = models.CharField(blank=True, null=True, max_length=1000)
+    inter_num = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_inv = models.CharField(blank=True, null=True, max_length=1000)
+    inter_inv = models.CharField(blank=True, null=True, max_length=1000)
+    hostel_fd = models.CharField(blank=True, null=True, max_length=1000)
+    inter_fd = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'grant_info_two'
+
+
 class Grants(models.Model):
     filename = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
@@ -683,15 +706,10 @@ class Health(models.Model):
         db_table = 'health'
 
 
-#
 class PaidServices(models.Model):
     info = models.CharField(blank=True, null=True, max_length=1000)
-    dogpaid = models.CharField(blank=True, null=True, max_length=1000)
-    doc = models.CharField(blank=True, null=True, max_length=1000)
-    order = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
-    docnew = models.CharField(blank=True, null=True, max_length=1000)
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
