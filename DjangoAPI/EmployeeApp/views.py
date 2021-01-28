@@ -9,7 +9,8 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
     AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, Sports, \
     Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, StandartCopiestwo, \
-    GrantInfoTwo, SvedenOne, SvedenTwo, Plat
+    GrantInfoTwo, SvedenOne, SvedenTwo, Plat, DocA, DocB, DocC, DocD, DocE, DocF, DocG, DocH, DocI, DocJ, DocK, DocL, \
+    DocM, DocN, DocO, DocP
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer

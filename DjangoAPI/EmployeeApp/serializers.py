@@ -6,7 +6,8 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
     InfChi, AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, \
     Sports, Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, \
-    StandartCopiestwo, GrantInfoTwo, SvedenOne, SvedenTwo, Plat
+    StandartCopiestwo, GrantInfoTwo, SvedenOne, SvedenTwo, Plat, DocA, DocB, DocC, DocD, DocE, DocF, DocG, DocH, \
+    DocI, DocJ, DocK, DocL, DocM, DocN, DocO, DocP
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -766,4 +767,148 @@ class PlatSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'info'
+        )
+
+
+class DocASerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocA
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocBSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocB
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocCSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocC
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocDSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocD
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocESerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocE
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocFSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocF
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocGSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocG
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocHSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocH
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocISerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocI
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocJSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocJ
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocKSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocK
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocLSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocL
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocMSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocM
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocNSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocN
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocOSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocO
+        fields = (
+            'id',
+            'document'
+        )
+
+
+class DocPSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DocP
+        fields = (
+            'id',
+            'document'
         )

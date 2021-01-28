@@ -733,6 +733,166 @@ class SvedenTwo(models.Model):
         db_table = 'sveden_two'
 
 
+class DocA(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_a'
+
+
+class DocB(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_b'
+
+
+class DocC(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_c'
+
+
+class DocD(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_d'
+
+
+class DocE(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_e'
+
+
+class DocF(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_f'
+
+
+class DocG(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_g'
+
+
+class DocH(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_h'
+
+
+class DocI(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_i'
+
+
+class DocJ(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_j'
+
+
+class DocK(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_k'
+
+
+class DocL(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_l'
+
+
+class DocM(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_m'
+
+
+class DocN(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_n'
+
+
+class DocO(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_o'
+
+
+class DocP(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    document = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'doc_p'
+
+
 class Plat(models.Model):
     info = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()
