@@ -118,6 +118,13 @@ urlpatterns = [
                   url(r'^upload-file/$', views.handle_file),
                   url(r'^download-file/(.*)$', views.handle_file),
 
+                  url(r'^plats/$', views.plats),
+                  url(r'^plats/format/$', views.platsFormat),
+                  url(r'^plats/([1-9][0-9]*)$', views.plats_by_id),
+                  url(r'^plats/publish/$', views.plats_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
+
                   url(r'^internationalDogs/$', views.internationalDogs),
                   url(r'^internationalDogs/format/$', views.internationalDogsFormat),
                   url(r'^internationalDogs/([1-9][0-9]*)$', views.internationalDogs_by_id),
@@ -127,6 +134,18 @@ urlpatterns = [
                   url(r'^internationalAccrs/format/$', views.internationalAccrsFormat),
                   url(r'^internationalAccrs/([1-9][0-9]*)$', views.internationalAccrs_by_id),
                   url(r'^internationalAccrs/publish/$', views.internationalAccrs_publish),
+
+                  url(r'^svedenOnes/$', views.svedenOnes),
+                  url(r'^svedenOnes/format/$', views.svedenOnesFormat),
+                  url(r'^svedenOnes/([1-9][0-9]*)$', views.svedenOnes_by_id),
+                  url(r'^svedenOnes/publish/$', views.svedenOnes_publish),
+                  url(r'^upload-file/$', views.handle_file),
+                  url(r'^download-file/(.*)$', views.handle_file),
+
+                  url(r'^svedenTwos/$', views.svedenTwos),
+                  url(r'^svedenTwos/format/$', views.svedenTwosFormat),
+                  url(r'^svedenTwos/([1-9][0-9]*)$', views.svedenTwos_by_id),
+                  url(r'^svedenTwos/publish/$', views.svedenTwos_publish),
 
                   url(r'^specCabs/$', views.specCabs),
                   url(r'^specCabs/format/$', views.specCabsFormat),

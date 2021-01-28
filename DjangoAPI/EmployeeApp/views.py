@@ -9,7 +9,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, InfChi, \
     AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, Sports, \
     Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, StandartCopiestwo, \
-    GrantInfoTwo
+    GrantInfoTwo, SvedenOne, SvedenTwo, Plat
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
     DepartmentsInformationSerializer, SubdivisionsSerializer
@@ -18,6 +18,7 @@ from django.core.files.storage import default_storage
 from datetime import datetime
 
 import bs4
+import mimetypes
 
 
 # Create your views here.
@@ -321,9 +322,6 @@ def handle_uploaded_file(f):
     with open(uploaded_file_dir + f.name, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
-
-
-import mimetypes
 
 
 @csrf_exempt
@@ -2201,7 +2199,7 @@ def standartCopiestwos_publish(request):
         return HttpResponse("OK")
 
 
-# ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ ---------------------------------
+# ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ 1 ---------------------------------
 
 def paidService_to_list(row):
     return [row.id, row.info]
@@ -2284,13 +2282,13 @@ def paidServices_by_id(request, id):
 
 paidService_info_replace_files_map = {
     'td': {
-        'paidEdu': lambda obj: obj[0],
+        'paids': lambda obj: obj[0],
     }
 }
 
 paidService_info_row_template = \
-    '<tr itemprop="paidE">' \
-    '<td itemprop="paidEdu"><a href="" download="">Ссылка на локальный нормативный акт</a></td>' \
+    '<tr itemprop="paidEdu">' \
+    '<td itemprop="paids"><a href="" download="">Ссылка</a></td>' \
     '</tr>'
 
 
@@ -2302,11 +2300,11 @@ def paidServices_publish(request):
 
         file = 'EmployeeApp/parser/pages/sveden/paid_edu/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "paid"})
+        tables = page_parser.find_all('table', {'itemprop': "paidsss"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'paidE'})
+        rows = table.find_all('tr', {'itemprop': 'paidEdu'})
 
         for row in rows:
             row.extract()
@@ -2317,6 +2315,130 @@ def paidServices_publish(request):
             # replace_page_elements(paidService_info_replace_map, row, values)
             # replace_page_links(paidService_info_replace_links_map, row, values)
             replace_page_files(paidService_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ 2 ---------------------------------
+
+def plat_to_list(row):
+    return [row.id, row.info]
+
+
+def plat_format():
+    return ['id', 'info']
+
+
+def plat_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def plats(request):
+    if request.method == 'GET':
+        a = Plat.objects.all()
+        a = [plat_to_list(item) for item in a]
+        return JsonResponse({
+            'format': plat_format(),
+            'types': plat_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def platsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": plat_format(),
+            "types": plat_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def plats_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = Plat.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = Plat(
+            info=req_json['info'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = Plat.objects.get(id=id)
+        obj = Plat(
+            id=int(id),
+            info=req_json['info'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# plat_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+plat_info_replace_files_map = {
+    'td': {
+        'paidps': lambda obj: obj[0],
+    }
+}
+
+plat_info_row_template = \
+    '<tr itemprop="paidParents">' \
+    '<td itemprop="paidps"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def plats_publish(request):
+    if request.method == 'GET':
+        plats_information = Plat.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/paid_edu/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "paidpsss"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'paidParents'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(plats_information):
+            values = plat_to_list(item)[1:]
+            row = bs4.BeautifulSoup(plat_info_row_template)
+            # replace_page_elements(plat_info_replace_map, row, values)
+            # replace_page_links(plat_info_replace_links_map, row, values)
+            replace_page_files(plat_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 
@@ -2423,7 +2545,7 @@ def internationalDogs_publish(request):
     if request.method == 'GET':
         internationalDogs_information = Internationaldog.objects.all()
 
-        file = 'EmployeeApp/parser/pages/inter/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/inter/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "internationalD"})
         if len(tables) != 1:
@@ -2548,7 +2670,7 @@ def internationalAccrs_publish(request):
     if request.method == 'GET':
         internationalAccrs_information = Internationalaccr.objects.all()
 
-        file = 'EmployeeApp/parser/pages/inter/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/inter/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "internationalA"})
         if len(tables) != 1:
@@ -2673,7 +2795,7 @@ def specCabs_publish(request):
     if request.method == 'GET':
         specCabs_information = SpecCab.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "cab"})
         if len(tables) != 1:
@@ -2798,7 +2920,7 @@ def specPracs_publish(request):
     if request.method == 'GET':
         specPracs_information = SpecPrac.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "prac"})
         if len(tables) != 1:
@@ -2927,7 +3049,7 @@ def specLibs_publish(request):
     if request.method == 'GET':
         specLibs_information = SpecLib.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "lib"})
         if len(tables) != 1:
@@ -3056,7 +3178,7 @@ def specSports_publish(request):
     if request.method == 'GET':
         specSports_information = SpecSport.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "sport"})
         if len(tables) != 1:
@@ -3185,7 +3307,7 @@ def specMeals_publish(request):
     if request.method == 'GET':
         specMeals_information = SpecMeal.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "meal"})
         if len(tables) != 1:
@@ -3314,7 +3436,7 @@ def specHealths_publish(request):
     if request.method == 'GET':
         specHealths_information = SpecHealth.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "heal"})
         if len(tables) != 1:
@@ -3435,7 +3557,7 @@ def ovzs_publish(request):
     if request.method == 'GET':
         ovzs_information = Ovz.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "ovz"})
         if len(tables) != 1:
@@ -3548,7 +3670,7 @@ def linkOvzs_publish(request):
     if request.method == 'GET':
         linkOvzs_information = LinkOvz.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "links"})
         if len(tables) != 1:
@@ -3670,7 +3792,7 @@ def ovzTwos_publish(request):
     if request.method == 'GET':
         ovzTwos_information = OvzTwo.objects.all()
 
-        file = 'EmployeeApp/parser/pages/ovz/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/ovz/index.html'
         page_parser = read_page(file)
         tables = page_parser.find_all('table', {'itemprop': "ovzTwos"})
         if len(tables) != 1:
@@ -7090,5 +7212,260 @@ def sevens_publish(request):
             last_tr = last_tr.next_sibling
 
         # new_page = replace_page_elements(basic_sevenormation_replace_map, page_parser, sevenormation)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -----------------------------  Основные сведения 1 ----------------------------------------------------
+
+
+def svedenOne_to_list(row):
+    return [row.id, row.date_create, row.address, row.mode, row.phones, row.emails]
+
+
+def svedenOne_format():
+    return ['id', 'date_create', 'address', 'mode', 'phones', 'emails']
+
+
+def svedenOne_format_types():
+    return ['text', 'text', 'text', 'text', 'text', 'text']
+
+
+@csrf_exempt
+def svedenOnes(request):
+    if request.method == 'GET':
+        a = SvedenOne.objects.all()
+        a = [svedenOne_to_list(item) for item in a]
+        return JsonResponse({
+            'format': svedenOne_format(),
+            'types': svedenOne_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def svedenOnesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": svedenOne_format(),
+            "types": svedenOne_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def svedenOnes_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SvedenOne.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SvedenOne(
+            date_create=req_json['date_create'],
+            address=req_json['address'],
+            mode=req_json['mode'],
+            phones=req_json['phones'],
+            emails=req_json['emails'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SvedenOne.objects.get(id=id)
+        obj = SvedenOne(
+            id=int(id),
+            date_create=req_json['date_create'],
+            address=req_json['address'],
+            mode=req_json['mode'],
+            phones=req_json['phones'],
+            emails=req_json['emails'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+svedenOne_info_replace_map = {
+    'td': {
+        'regDate': lambda obj: obj[0],
+        'address': lambda obj: obj[1],
+        'workTime': lambda obj: obj[2],
+        'telephone': lambda obj: obj[3],
+    }
+}
+
+svedenOne_info_replace_links_map = {
+    'td': {
+        'email': lambda obj: obj[4],
+    }
+}
+
+svedenOne_info_row_template = \
+    '<tr itemprop="qqq">' \
+    '<td itemprop="regDate"></td>' \
+    '<td itemprop="address"></td>' \
+    '<td itemprop="workTime"></td>' \
+    '<td itemprop="telephone"></td>' \
+    '<td itemprop="email"><a href="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def svedenOnes_publish(request):
+    if request.method == 'GET':
+        svedenOnes_information = SvedenOne.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/common/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "www"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'qqq'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(svedenOnes_information):
+            values = svedenOne_to_list(item)[1:]
+            row = bs4.BeautifulSoup(svedenOne_info_row_template)
+            replace_page_elements(svedenOne_info_replace_map, row, values)
+            replace_page_links(svedenOne_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# -----------------------------  Основные сведения 2 ----------------------------------------------------
+
+def svedenTwo_to_list(row):
+    return [row.id, row.number, row.address_place]
+
+
+def svedenTwo_format():
+    return ['id', 'number', 'address_place']
+
+
+def svedenTwo_format_types():
+    return ['text', 'text', 'text']
+
+
+@csrf_exempt
+def svedenTwos(request):
+    if request.method == 'GET':
+        a = SvedenTwo.objects.all()
+        a = [svedenTwo_to_list(item) for item in a]
+        return JsonResponse({
+            'format': svedenTwo_format(),
+            'types': svedenTwo_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def svedenTwosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": svedenTwo_format(),
+            "types": svedenTwo_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def svedenTwos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = SvedenTwo.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = SvedenTwo(
+            number=req_json['number'],
+            address_place=req_json['address_place'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = SvedenTwo.objects.get(id=id)
+        obj = SvedenTwo(
+            id=int(id),
+            number=req_json['number'],
+            address_place=req_json['address_place'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+svedenTwo_info_replace_map = {
+    'td': {
+        'number': lambda obj: obj[0],
+        'address': lambda obj: obj[1],
+    }
+}
+
+# svedenTwo_info_replace_links_map = {
+#     'td': {
+#         'emailRep': lambda obj: obj[4],
+#         'websiteRep': lambda obj: obj[5],
+#     }
+# }
+
+svedenTwo_info_row_template = \
+    '<tr itemprop="addressPlace">' \
+    '<td itemprop="number"></td>' \
+    '<td itemprop="address"></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def svedenTwos_publish(request):
+    if request.method == 'GET':
+        svedenTwos_information = SvedenTwo.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/common/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "twotwo"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'addressPlace'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(svedenTwos_information):
+            values = svedenTwo_to_list(item)[1:]
+            row = bs4.BeautifulSoup(svedenTwo_info_row_template)
+            replace_page_elements(svedenTwo_info_replace_map, row, values)
+            # replace_page_links(svedenTwo_info_replace_links_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
         write_page(file, str(page_parser))
         return HttpResponse("OK")

@@ -706,6 +706,43 @@ class Health(models.Model):
         db_table = 'health'
 
 
+class SvedenOne(models.Model):
+    date_create = models.CharField(blank=True, null=True, max_length=1000)
+    address = models.CharField(blank=True, null=True, max_length=1000)
+    mode = models.CharField(blank=True, null=True, max_length=1000)
+    phones = models.CharField(blank=True, null=True, max_length=1000)
+    faxes = models.CharField(blank=True, null=True, max_length=1000)
+    emails = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address_place = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'sveden_one'
+
+
+class SvedenTwo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address_place = models.CharField(blank=True, null=True, max_length=1000)
+    number = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'sveden_two'
+
+
+class Plat(models.Model):
+    info = models.CharField(blank=True, null=True, max_length=1000)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'plat'
+
+
 class PaidServices(models.Model):
     info = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()

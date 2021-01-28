@@ -6,7 +6,7 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     SpecSport, SpecMeal, SpecHealth, Ovz, LinkOvz, OvzTwo, Grants, GrantInfo, Acts, Jobs, GosAccreditations, Prof, \
     InfChi, AdmissionResults, Perevod, Obraz, Practices, ScienceResults, SvedOrg, Facilities, ObjPract, Libraries, \
     Sports, Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, \
-    StandartCopiestwo, GrantInfoTwo
+    StandartCopiestwo, GrantInfoTwo, SvedenOne, SvedenTwo, Plat
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -734,4 +734,36 @@ class TableSevenSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'link'
+        )
+
+
+class SvedenOneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SvedenOne
+        fields = (
+            'id',
+            'date_create',
+            'address',
+            'mode',
+            'phones',
+            'emails'
+        )
+
+
+class SvedenTwoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SvedenTwo
+        fields = (
+            'id',
+            'number',
+            'address_place'
+        )
+
+
+class PlatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plat
+        fields = (
+            'id',
+            'info'
         )

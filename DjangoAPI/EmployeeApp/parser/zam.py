@@ -1,21 +1,25 @@
-# ФИНАНСОВО-ХОЗЯЙСТВЕННАЯ ДЕЯТЕЛЬНОСТЬ
-# ------------------------- ОБЪЕМ ОБРАЗОВАТЕЛЬНОЙ ДЕЯТЕЛЬНОСТИ ---------------------------------
+# ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ 1 ---------------------------------
 
-def rush_to_list(row):
-    return [row.id, row.federal, row.sub, row.place, row.fis]
+def plat_to_list(row):
+    return [row.id, row.info]
 
 
-def rush_format():
-    return ['id', 'federal', 'sub', 'place', 'fis']
+def plat_format():
+    return ['id', 'info']
+
+
+def plat_format_types():
+    return ['text', 'file']
 
 
 @csrf_exempt
-def rushs(request):
+def plats(request):
     if request.method == 'GET':
-        a = rushs.objects.all()
-        a = [rush_to_list(item) for item in a]
+        a = Plats.objects.all()
+        a = [plat_to_list(item) for item in a]
         return JsonResponse({
-            'format': rush_format(),
+            'format': plat_format(),
+            'types': plat_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -25,26 +29,26 @@ def rushs(request):
 
 
 @csrf_exempt
-def rushsFormat(request):
+def platsFormat(request):
     if request.method == 'GET':
-        return JsonResponse(rush_format(), safe=False)
+        return JsonResponse({
+            "format": plat_format(),
+            "types": plat_format_types(),
+        }, safe=False)
 
 
 @csrf_exempt
-def rushs_by_id(request, id):
+def plats_by_id(request, id):
     if request.method == 'DELETE':
-        obj = rushs.objects.get(id=id)
+        obj = Plats.objects.get(id=id)
         if obj is None:
             return HttpResponseBadRequest()
         obj.delete()
         return HttpResponse(200)
     elif request.method == 'POST':
         req_json = JSONParser().parse(request)
-        obj = rushs(
-            federal=req_json['federal'],
-            sub=req_json['sub'],
-            place=req_json['place'],
-            fis=req_json['fis'],
+        obj = Plats(
+            info=req_json['info'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -52,13 +56,10 @@ def rushs_by_id(request, id):
         return HttpResponse(200)
     elif request.method == 'PUT':
         req_json = JSONParser().parse(request)
-        obj_old = rushs.objects.get(id=id)
-        obj = rushs(
+        obj_old = Plats.objects.get(id=id)
+        obj = Plats(
             id=int(id),
-            federal=req_json['federal'],
-            sub=req_json['sub'],
-            place=req_json['place'],
-            fis=req_json['fis'],
+            info=req_json['info'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -66,54 +67,53 @@ def rushs_by_id(request, id):
         return HttpResponse(200)
 
 
-rush_info_replace_map = {
-    'td': {
-        'finBFrush': lambda obj: obj[0],
-        'finBRrush': lambda obj: obj[1],
-        'finBMrush': lambda obj: obj[2],
-        'finPrush': lambda obj: obj[3],
-    }
-}
-
-# rush_info_replace_links_map = {
+# plat_info_replace_map = {
 #     'td': {
-#         'finYear': lambda obj: obj[4],
-#         'finPost': lambda obj: obj[5],
-#         'finRas': lambda obj: obj[6],
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
 #     }
 # }
 
-rush_info_row_template = \
-    '<tr itemprop="vol">' \
-    '<td itemprop="finBFrush"></td>' \
-    '<td itemprop="finBRrush"></td>' \
-    '<td itemprop="finBMrush"></td>' \
-    '<td itemprop="finPrush"></td>' \
+plat_info_replace_files_map = {
+    'td': {
+        'paids': lambda obj: obj[0],
+    }
+}
+
+plat_info_row_template = \
+    '<tr itemprop="paidEdu">' \
+    '<td itemprop="paids"><a href="" download="">Ссылка</a></td>' \
     '</tr>'
 
 
 # будут проблемы, если оказалось так, что таблица пустая
 @csrf_exempt
-def rushs_publish(request):
+def plats_publish(request):
     if request.method == 'GET':
-        rushs_information = rushs.objects.all()
+        plats_information = Plats.objects.all()
 
-        file = 'EmployeeApp/parser/pages/sveden/budget/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/paid_edu/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "rushs"})
+        tables = page_parser.find_all('table', {'itemprop': "paidsss"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'vol'})
+        rows = table.find_all('tr', {'itemprop': 'paidEdu'})
 
         for row in rows:
             row.extract()
         last_tr = table.tr
-        for index, item in enumerate(rushs_information):
-            values = rush_to_list(item)[1:]
-            row = bs4.BeautifulSoup(rush_info_row_template)
-            replace_page_elements(rush_info_replace_map, row, values)
-            # replace_page_links(rush_info_replace_links_map, row, values)
+        for index, item in enumerate(plats_information):
+            values = plat_to_list(item)[1:]
+            row = bs4.BeautifulSoup(plat_info_row_template)
+            # replace_page_elements(plat_info_replace_map, row, values)
+            # replace_page_links(plat_info_replace_links_map, row, values)
+            replace_page_files(plat_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

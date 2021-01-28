@@ -8,6 +8,51 @@
 from django.db import models
 
 
+class EmployeeappBasicinformations(models.Model):
+    biid = models.AutoField(db_column='BIid', primary_key=True)  # Field name made lowercase.
+    biregdate = models.DateField(db_column='BIregDate')  # Field name made lowercase.
+    biaddress = models.CharField(db_column='BIaddress', max_length=1000)  # Field name made lowercase.
+    biworktime = models.CharField(db_column='BIworkTime', max_length=1000)  # Field name made lowercase.
+    bitelephone = models.CharField(db_column='BItelephone', max_length=1000)  # Field name made lowercase.
+    bifaxes = models.CharField(db_column='BIfaxes', max_length=1000)  # Field name made lowercase.
+    biemail = models.CharField(db_column='BIemail', max_length=1000)  # Field name made lowercase.
+    biaddressplace = models.CharField(db_column='BIaddressPlace', max_length=1000)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'EmployeeApp_basicinformations'
+
+
+class EmployeeappDepartments(models.Model):
+    departmentid = models.AutoField(db_column='DepartmentId', primary_key=True)  # Field name made lowercase.
+    departmentname = models.CharField(db_column='DepartmentName', max_length=100)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'EmployeeApp_departments'
+
+
+class EmployeeappDepartmentsinformation(models.Model):
+    diid = models.AutoField(db_column='DIid', primary_key=True)  # Field name made lowercase.
+    dirow = models.CharField(db_column='DIrow', max_length=100000)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'EmployeeApp_departmentsinformation'
+
+
+class EmployeeappEmployees(models.Model):
+    employeeid = models.AutoField(db_column='EmployeeId', primary_key=True)  # Field name made lowercase.
+    employeename = models.CharField(db_column='EmployeeName', max_length=100)  # Field name made lowercase.
+    department = models.CharField(db_column='Department', max_length=100)  # Field name made lowercase.
+    dateofjoining = models.DateField(db_column='DateOfJoining')  # Field name made lowercase.
+    photofilename = models.CharField(db_column='PhotoFileName', max_length=100)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'EmployeeApp_employees'
+
+
 class Acts(models.Model):
     filename = models.CharField(blank=True, null=True)
     created_at = models.DateTimeField()
@@ -47,6 +92,72 @@ class ArInternalMetadata(models.Model):
     class Meta:
         managed = False
         db_table = 'ar_internal_metadata'
+
+
+class AuthGroup(models.Model):
+    name = models.CharField(unique=True, max_length=150)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_group'
+
+
+class AuthGroupPermissions(models.Model):
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_group_permissions'
+        unique_together = (('group', 'permission'),)
+
+
+class AuthPermission(models.Model):
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    codename = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_permission'
+        unique_together = (('content_type', 'codename'),)
+
+
+class AuthUser(models.Model):
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.BooleanField()
+    username = models.CharField(unique=True, max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.CharField(max_length=254)
+    is_staff = models.BooleanField()
+    is_active = models.BooleanField()
+    date_joined = models.DateTimeField()
+    first_name = models.CharField(max_length=150)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user'
+
+
+class AuthUserGroups(models.Model):
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user_groups'
+        unique_together = (('user', 'group'),)
+
+
+class AuthUserUserPermissions(models.Model):
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user_user_permissions'
+        unique_together = (('user', 'permission'),)
 
 
 class AvalFacilities(models.Model):
@@ -95,6 +206,50 @@ class Db2(models.Model):
     class Meta:
         managed = False
         db_table = 'db (2)'
+
+
+class DjangoAdminLog(models.Model):
+    action_time = models.DateTimeField()
+    object_id = models.TextField(blank=True, null=True)
+    object_repr = models.CharField(max_length=200)
+    change_message = models.TextField()
+    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    action_flag = models.PositiveSmallIntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_admin_log'
+
+
+class DjangoContentType(models.Model):
+    app_label = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+
+    class Meta:
+        managed = False
+        db_table = 'django_content_type'
+        unique_together = (('app_label', 'model'),)
+
+
+class DjangoMigrations(models.Model):
+    app = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    applied = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_migrations'
+
+
+class DjangoSession(models.Model):
+    session_key = models.CharField(primary_key=True, max_length=40)
+    session_data = models.TextField()
+    expire_date = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'django_session'
 
 
 class EduIformations(models.Model):
@@ -636,6 +791,17 @@ class Perevod(models.Model):
         db_table = 'perevod'
 
 
+class Plat(models.Model):
+    info = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'plat'
+
+
 class Practices(models.Model):
     code = models.CharField(blank=True, null=True)
     name = models.CharField(blank=True, null=True)
@@ -973,6 +1139,35 @@ class SvedOrg(models.Model):
     class Meta:
         managed = False
         db_table = 'sved_org'
+
+
+class SvedenOne(models.Model):
+    date_create = models.CharField(blank=True, null=True)
+    address = models.CharField(blank=True, null=True)
+    mode = models.CharField(blank=True, null=True)
+    phones = models.CharField(blank=True, null=True)
+    faxes = models.CharField(blank=True, null=True)
+    emails = models.CharField(blank=True, null=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address_place = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'sveden_one'
+
+
+class SvedenTwo(models.Model):
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+    owner = models.IntegerField(blank=True, null=True)
+    address_place = models.CharField(blank=True, null=True)
+    number = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'sveden_two'
 
 
 class TableFive(models.Model):
