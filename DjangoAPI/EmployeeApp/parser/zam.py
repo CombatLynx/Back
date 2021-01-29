@@ -1,25 +1,25 @@
-# ------------------------- ПЛАТНЫЕ ОБРАЗОВАТЕЛЬНЫЕ УСЛУГИ 1 ---------------------------------
+# ---------------- Копия свидетельства о государственной аккредитации (с приложениями) -----------------------------
 
-def plat_to_list(row):
-    return [row.id, row.info]
-
-
-def plat_format():
-    return ['id', 'info']
+def docp_to_list(row):
+    return [row.id, row.document]
 
 
-def plat_format_types():
+def docp_format():
+    return ['id', 'document']
+
+
+def docp_format_types():
     return ['text', 'file']
 
 
 @csrf_exempt
-def plats(request):
+def docps(request):
     if request.method == 'GET':
-        a = Plats.objects.all()
-        a = [plat_to_list(item) for item in a]
+        a = Docp.objects.all()
+        a = [docp_to_list(item) for item in a]
         return JsonResponse({
-            'format': plat_format(),
-            'types': plat_format_types(),
+            'format': docp_format(),
+            'types': docp_format_types(),
             'data': a
         }, safe=False)
     elif request.method == 'POST':
@@ -29,26 +29,26 @@ def plats(request):
 
 
 @csrf_exempt
-def platsFormat(request):
+def docpsFormat(request):
     if request.method == 'GET':
         return JsonResponse({
-            "format": plat_format(),
-            "types": plat_format_types(),
+            "format": docp_format(),
+            "types": docp_format_types(),
         }, safe=False)
 
 
 @csrf_exempt
-def plats_by_id(request, id):
+def docps_by_id(request, id):
     if request.method == 'DELETE':
-        obj = Plats.objects.get(id=id)
+        obj = Docp.objects.get(id=id)
         if obj is None:
             return HttpResponseBadRequest()
         obj.delete()
         return HttpResponse(200)
     elif request.method == 'POST':
         req_json = JSONParser().parse(request)
-        obj = Plats(
-            info=req_json['info'],
+        obj = Docp(
+            document=req_json['document'],
             created_at=datetime.today(),
             updated_at=datetime.today()
         )
@@ -56,10 +56,10 @@ def plats_by_id(request, id):
         return HttpResponse(200)
     elif request.method == 'PUT':
         req_json = JSONParser().parse(request)
-        obj_old = Plats.objects.get(id=id)
-        obj = Plats(
+        obj_old = Docp.objects.get(id=id)
+        obj = Docp(
             id=int(id),
-            info=req_json['info'],
+            document=req_json['document'],
             updated_at=datetime.today(),
             created_at=obj_old.created_at
         )
@@ -67,7 +67,7 @@ def plats_by_id(request, id):
         return HttpResponse(200)
 
 
-# plat_info_replace_map = {
+# docp_info_replace_map = {
 #     'td': {
 #         'name': lambda obj: obj[0],
 #         'fio': lambda obj: obj[1],
@@ -75,45 +75,45 @@ def plats_by_id(request, id):
 #         'addressStr': lambda obj: obj[3],
 #         # 'site': lambda obj: obj[4],
 #         'email': lambda obj: obj[5],
-#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#         # 'divisionClauseDocpink': lambda obj: obj[6],
 #     }
 # }
 
-plat_info_replace_files_map = {
+docp_info_replace_files_map = {
     'td': {
-        'paids': lambda obj: obj[0],
+        'ustd': lambda obj: obj[0],
     }
 }
 
-plat_info_row_template = \
-    '<tr itemprop="paidEdu">' \
-    '<td itemprop="paids"><a href="" download="">Ссылка</a></td>' \
+docp_info_row_temdocpe = \
+    '<tr itemprop="accreditationDocpink">' \
+    '<td itemprop="ustd"><a href="" download="">Ссылка</a></td>' \
     '</tr>'
 
 
 # будут проблемы, если оказалось так, что таблица пустая
 @csrf_exempt
-def plats_publish(request):
+def docps_publish(request):
     if request.method == 'GET':
-        plats_information = Plats.objects.all()
+        docps_information = Docp.objects.all()
 
-        file = 'EmployeeApp/parser/pages/sveden/paid_edu/index.html'
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
         page_parser = read_page(file)
-        tables = page_parser.find_all('table', {'itemprop': "paidsss"})
+        tables = page_parser.find_all('table', {'itemprop': "ustavd"})
         if len(tables) != 1:
             return HttpResponse("Error")
         table = tables[0]
-        rows = table.find_all('tr', {'itemprop': 'paidEdu'})
+        rows = table.find_all('tr', {'itemprop': 'accreditationDocpink'})
 
         for row in rows:
             row.extract()
         last_tr = table.tr
-        for index, item in enumerate(plats_information):
-            values = plat_to_list(item)[1:]
-            row = bs4.BeautifulSoup(plat_info_row_template)
-            # replace_page_elements(plat_info_replace_map, row, values)
-            # replace_page_links(plat_info_replace_links_map, row, values)
-            replace_page_files(plat_info_replace_files_map, row, values)
+        for index, item in enumerate(docps_information):
+            values = docp_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docp_info_row_temdocpe)
+            # replace_page_elements(docp_info_replace_map, row, values)
+            # replace_page_links(docp_info_replace_links_map, row, values)
+            replace_page_files(docp_info_replace_files_map, row, values)
             last_tr.insert_after(row)
             last_tr = last_tr.next_sibling
 

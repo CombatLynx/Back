@@ -7470,3 +7470,1998 @@ def svedenTwos_publish(request):
         # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
         write_page(file, str(page_parser))
         return HttpResponse("OK")
+
+
+# --------------------------------- Документы ---------------------------------
+
+# ---------------- Копия устава образовательной организации ---------------------------------
+
+def doca_to_list(row):
+    return [row.id, row.document]
+
+
+def doca_format():
+    return ['id', 'document']
+
+
+def doca_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docas(request):
+    if request.method == 'GET':
+        a = DocA.objects.all()
+        a = [doca_to_list(item) for item in a]
+        return JsonResponse({
+            'format': doca_format(),
+            'types': doca_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docasFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": doca_format(),
+            "types": doca_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docas_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocA.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocA(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocA.objects.get(id=id)
+        obj = DocA(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# doca_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+doca_info_replace_files_map = {
+    'td': {
+        'ust': lambda obj: obj[0],
+    }
+}
+
+doca_info_row_temdocae = \
+    '<tr itemprop="ustavDocLink">' \
+    '<td itemprop="ust"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docas_publish(request):
+    if request.method == 'GET':
+        docas_information = DocA.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustav"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'ustavDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docas_information):
+            values = doca_to_list(item)[1:]
+            row = bs4.BeautifulSoup(doca_info_row_temdocae)
+            # replace_page_elements(doca_info_replace_map, row, values)
+            # replace_page_links(doca_info_replace_links_map, row, values)
+            replace_page_files(doca_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Лицензия на осуществление образовательной деятельности с приложениями -----------------------------
+
+def docb_to_list(row):
+    return [row.id, row.document]
+
+
+def docb_format():
+    return ['id', 'document']
+
+
+def docb_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docbs(request):
+    if request.method == 'GET':
+        a = DocB.objects.all()
+        a = [docb_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docb_format(),
+            'types': docb_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docbsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docb_format(),
+            "types": docb_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docbs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocB.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocB(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocB.objects.get(id=id)
+        obj = DocB(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docb_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docb_info_replace_files_map = {
+    'td': {
+        'ustb': lambda obj: obj[0],
+    }
+}
+
+docb_info_row_temdocbe = \
+    '<tr itemprop="licenseDocLink">' \
+    '<td itemprop="ustb"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docbs_publish(request):
+    if request.method == 'GET':
+        docbs_information = DocB.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavb"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'licenseDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docbs_information):
+            values = docb_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docb_info_row_temdocbe)
+            # replace_page_elements(docb_info_replace_map, row, values)
+            # replace_page_links(docb_info_replace_links_map, row, values)
+            replace_page_files(docb_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия свидетельства о государственной аккредитации (с приложениями) -----------------------------
+
+def docc_to_list(row):
+    return [row.id, row.document]
+
+
+def docc_format():
+    return ['id', 'document']
+
+
+def docc_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def doccs(request):
+    if request.method == 'GET':
+        a = DocC.objects.all()
+        a = [docc_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docc_format(),
+            'types': docc_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def doccsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docc_format(),
+            "types": docc_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def doccs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocC.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocC(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocC.objects.get(id=id)
+        obj = DocC(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docc_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docc_info_replace_files_map = {
+    'td': {
+        'ustc': lambda obj: obj[0],
+    }
+}
+
+docc_info_row_temdocce = \
+    '<tr itemprop="accreditationDocLink">' \
+    '<td itemprop="ustc"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def doccs_publish(request):
+    if request.method == 'GET':
+        doccs_information = DocC.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavc"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'accreditationDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(doccs_information):
+            values = docc_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docc_info_row_temdocce)
+            # replace_page_elements(docc_info_replace_map, row, values)
+            # replace_page_links(docc_info_replace_links_map, row, values)
+            replace_page_files(docc_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия плана финансово-хозяйственной деятельности образовательной организации,
+# утверждённого в установленном законодательством Российской Федерации порядке, или бюджетных
+# смет образовательной организации -----------------------------
+
+def docd_to_list(row):
+    return [row.id, row.document]
+
+
+def docd_format():
+    return ['id', 'document']
+
+
+def docd_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docds(request):
+    if request.method == 'GET':
+        a = DocD.objects.all()
+        a = [docd_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docd_format(),
+            'types': docd_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docdsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docd_format(),
+            "types": docd_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docds_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocD.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocD(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocD.objects.get(id=id)
+        obj = DocD(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docd_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docd_info_replace_files_map = {
+    'td': {
+        'ustd': lambda obj: obj[0],
+    }
+}
+
+docd_info_row_temdocde = \
+    '<tr itemprop="finPlanDocLink">' \
+    '<td itemprop="ustd"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docds_publish(request):
+    if request.method == 'GET':
+        docds_information = DocD.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavd"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'accreditationDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docds_information):
+            values = docd_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docd_info_row_temdocde)
+            # replace_page_elements(docd_info_replace_map, row, values)
+            # replace_page_links(docd_info_replace_links_map, row, values)
+            replace_page_files(docd_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия локального нормативного акта, регламентирующего правила приема обучающихся -------------------
+
+def doce_to_list(row):
+    return [row.id, row.document]
+
+
+def doce_format():
+    return ['id', 'document']
+
+
+def doce_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def doces(request):
+    if request.method == 'GET':
+        a = DocE.objects.all()
+        a = [doce_to_list(item) for item in a]
+        return JsonResponse({
+            'format': doce_format(),
+            'types': doce_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docesFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": doce_format(),
+            "types": doce_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def doces_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocE.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocE(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocE.objects.get(id=id)
+        obj = DocE(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# doce_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+doce_info_replace_files_map = {
+    'td': {
+        'uste': lambda obj: obj[0],
+    }
+}
+
+doce_info_row_temdocee = \
+    '<tr itemprop="priemDocLink">' \
+    '<td itemprop="uste"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def doces_publish(request):
+    if request.method == 'GET':
+        doces_information = DocE.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustave"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'priemDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(doces_information):
+            values = doce_to_list(item)[1:]
+            row = bs4.BeautifulSoup(doce_info_row_temdocee)
+            # replace_page_elements(doce_info_replace_map, row, values)
+            # replace_page_links(doce_info_replace_links_map, row, values)
+            replace_page_files(doce_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия локального нормативного акта, регламентирующего режим занятий обучающихся -------------------
+
+def docf_to_list(row):
+    return [row.id, row.document]
+
+
+def docf_format():
+    return ['id', 'document']
+
+
+def docf_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docfs(request):
+    if request.method == 'GET':
+        a = DocF.objects.all()
+        a = [docf_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docf_format(),
+            'types': docf_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docfsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docf_format(),
+            "types": docf_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docfs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocF.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocF(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocF.objects.get(id=id)
+        obj = DocF(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docf_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docf_info_replace_files_map = {
+    'td': {
+        'ustf': lambda obj: obj[0],
+    }
+}
+
+docf_info_row_temdocfe = \
+    '<tr itemprop="modeDocLink">' \
+    '<td itemprop="ustf"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docfs_publish(request):
+    if request.method == 'GET':
+        docfs_information = DocF.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavf"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'modeDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docfs_information):
+            values = docf_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docf_info_row_temdocfe)
+            # replace_page_elements(docf_info_replace_map, row, values)
+            # replace_page_links(docf_info_replace_links_map, row, values)
+            replace_page_files(docf_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия локального нормативного акта, регламентирующего формы, периодичность и порядок текущего
+# контроля успеваемости и промежуточной аттестации обучающихся -----------------------------
+
+def docg_to_list(row):
+    return [row.id, row.document]
+
+
+def docg_format():
+    return ['id', 'document']
+
+
+def docg_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docgs(request):
+    if request.method == 'GET':
+        a = DocG.objects.all()
+        a = [docg_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docg_format(),
+            'types': docg_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docgsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docg_format(),
+            "types": docg_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docgs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocG.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocG(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocG.objects.get(id=id)
+        obj = DocG(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docg_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docg_info_replace_files_map = {
+    'td': {
+        'ustg': lambda obj: obj[0],
+    }
+}
+
+docg_info_row_temdocge = \
+    '<tr itemprop="tekKontrolDocLink">' \
+    '<td itemprop="ustg"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docgs_publish(request):
+    if request.method == 'GET':
+        docgs_information = DocG.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavg"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'tekKontrolDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docgs_information):
+            values = docg_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docg_info_row_temdocge)
+            # replace_page_elements(docg_info_replace_map, row, values)
+            # replace_page_links(docg_info_replace_links_map, row, values)
+            replace_page_files(docg_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия локального нормативного акта, регламентирующего порядок и основания перевода,
+# отчисления и восстановления обучающихся -----------------------------
+
+def doch_to_list(row):
+    return [row.id, row.document]
+
+
+def doch_format():
+    return ['id', 'document']
+
+
+def doch_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def dochs(request):
+    if request.method == 'GET':
+        a = DocH.objects.all()
+        a = [doch_to_list(item) for item in a]
+        return JsonResponse({
+            'format': doch_format(),
+            'types': doch_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def dochsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": doch_format(),
+            "types": doch_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def dochs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocH.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocH(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocH.objects.get(id=id)
+        obj = DocH(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# doch_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+doch_info_replace_files_map = {
+    'td': {
+        'usth': lambda obj: obj[0],
+    }
+}
+
+doch_info_row_temdoche = \
+    '<tr itemprop="perevodDocLink">' \
+    '<td itemprop="usth"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def dochs_publish(request):
+    if request.method == 'GET':
+        dochs_information = DocH.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavh"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'perevodDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(dochs_information):
+            values = doch_to_list(item)[1:]
+            row = bs4.BeautifulSoup(doch_info_row_temdoche)
+            # replace_page_elements(doch_info_replace_map, row, values)
+            # replace_page_links(doch_info_replace_links_map, row, values)
+            replace_page_files(doch_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия локального нормативного акта, регламентирующего порядок оформления возникновения,
+# приостановления и прекращения отношений между образовательной организацией и обучающимися и (или) родителями
+# (законными представителями) несовершеннолетних обучающихся -----------------------------
+
+def doci_to_list(row):
+    return [row.id, row.document]
+
+
+def doci_format():
+    return ['id', 'document']
+
+
+def doci_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docis(request):
+    if request.method == 'GET':
+        a = DocI.objects.all()
+        a = [doci_to_list(item) for item in a]
+        return JsonResponse({
+            'format': doci_format(),
+            'types': doci_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docisFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": doci_format(),
+            "types": doci_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docis_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocI.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocI(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocI.objects.get(id=id)
+        obj = DocI(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# doci_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+doci_info_replace_files_map = {
+    'td': {
+        'usti': lambda obj: obj[0],
+    }
+}
+
+doci_info_row_temdocie = \
+    '<tr itemprop="vozDocLink">' \
+    '<td itemprop="usti"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docis_publish(request):
+    if request.method == 'GET':
+        docis_information = DocI.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavi"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'vozDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docis_information):
+            values = doci_to_list(item)[1:]
+            row = bs4.BeautifulSoup(doci_info_row_temdocie)
+            # replace_page_elements(doci_info_replace_map, row, values)
+            # replace_page_links(doci_info_replace_links_map, row, values)
+            replace_page_files(doci_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия правил внутреннего распорядка обучающихся -----------------------------
+
+def docj_to_list(row):
+    return [row.id, row.document]
+
+
+def docj_format():
+    return ['id', 'document']
+
+
+def docj_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docjs(request):
+    if request.method == 'GET':
+        a = DocJ.objects.all()
+        a = [docj_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docj_format(),
+            'types': docj_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docjsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docj_format(),
+            "types": docj_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docjs_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocJ.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocJ(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocJ.objects.get(id=id)
+        obj = DocJ(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docj_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docj_info_replace_files_map = {
+    'td': {
+        'ustj': lambda obj: obj[0],
+    }
+}
+
+docj_info_row_temdocje = \
+    '<tr itemprop="localActStud">' \
+    '<td itemprop="ustj"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docjs_publish(request):
+    if request.method == 'GET':
+        docjs_information = DocJ.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavj"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'localActStud'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docjs_information):
+            values = docj_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docj_info_row_temdocje)
+            # replace_page_elements(docj_info_replace_map, row, values)
+            # replace_page_links(docj_info_replace_links_map, row, values)
+            replace_page_files(docj_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Копия правил внутреннего трудового распорядка -----------------------------
+
+def dock_to_list(row):
+    return [row.id, row.document]
+
+
+def dock_format():
+    return ['id', 'document']
+
+
+def dock_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docks(request):
+    if request.method == 'GET':
+        a = DocK.objects.all()
+        a = [dock_to_list(item) for item in a]
+        return JsonResponse({
+            'format': dock_format(),
+            'types': dock_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docksFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": dock_format(),
+            "types": dock_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docks_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocK.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocK(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocK.objects.get(id=id)
+        obj = DocK(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# dock_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+dock_info_replace_files_map = {
+    'td': {
+        'ustk': lambda obj: obj[0],
+    }
+}
+
+dock_info_row_temdocke = \
+    '<tr itemprop="localActOrder">' \
+    '<td itemprop="ustk"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docks_publish(request):
+    if request.method == 'GET':
+        docks_information = DocK.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavk"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'localActOrder'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docks_information):
+            values = dock_to_list(item)[1:]
+            row = bs4.BeautifulSoup(dock_info_row_temdocke)
+            # replace_page_elements(dock_info_replace_map, row, values)
+            # replace_page_links(dock_info_replace_links_map, row, values)
+            replace_page_files(dock_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Коллективный договор -----------------------------
+
+def docl_to_list(row):
+    return [row.id, row.document]
+
+
+def docl_format():
+    return ['id', 'document']
+
+
+def docl_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docls(request):
+    if request.method == 'GET':
+        a = DocL.objects.all()
+        a = [docl_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docl_format(),
+            'types': docl_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def doclsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docl_format(),
+            "types": docl_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docls_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocL.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocL(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocL.objects.get(id=id)
+        obj = DocL(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docl_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocLink': lambda obj: obj[6],
+#     }
+# }
+
+docl_info_replace_files_map = {
+    'td': {
+        'ustl': lambda obj: obj[0],
+    }
+}
+
+docl_info_row_temdocle = \
+    '<tr itemprop="localActOrder">' \
+    '<td itemprop="ustl"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docls_publish(request):
+    if request.method == 'GET':
+        docls_information = DocL.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavl"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'localActOrder'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docls_information):
+            values = docl_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docl_info_row_temdocle)
+            # replace_page_elements(docl_info_replace_map, row, values)
+            # replace_page_links(docl_info_replace_links_map, row, values)
+            replace_page_files(docl_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Отчет о результатах самообследования -----------------------------
+
+def docm_to_list(row):
+    return [row.id, row.document]
+
+
+def docm_format():
+    return ['id', 'document']
+
+
+def docm_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docms(request):
+    if request.method == 'GET':
+        a = DocM.objects.all()
+        a = [docm_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docm_format(),
+            'types': docm_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docmsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docm_format(),
+            "types": docm_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docms_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocM.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocM(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocM.objects.get(id=id)
+        obj = DocM(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docm_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocmink': lambda obj: obj[6],
+#     }
+# }
+
+docm_info_replace_files_map = {
+    'td': {
+        'ustm': lambda obj: obj[0],
+    }
+}
+
+docm_info_row_temdocme = \
+    '<tr itemprop="reportEduDocLink">' \
+    '<td itemprop="ustm"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docms_publish(request):
+    if request.method == 'GET':
+        docms_information = DocM.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavm"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'reportEduDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docms_information):
+            values = docm_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docm_info_row_temdocme)
+            # replace_page_elements(docm_info_replace_map, row, values)
+            # replace_page_links(docm_info_replace_links_map, row, values)
+            replace_page_files(docm_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Документ о порядке оказания платных образовательных услуг -----------------------------
+
+def docn_to_list(row):
+    return [row.id, row.document]
+
+
+def docn_format():
+    return ['id', 'document']
+
+
+def docn_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docns(request):
+    if request.method == 'GET':
+        a = DocN.objects.all()
+        a = [docn_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docn_format(),
+            'types': docn_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docnsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docn_format(),
+            "types": docn_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docns_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocN.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocN(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocN.objects.get(id=id)
+        obj = DocN(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docn_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocnink': lambda obj: obj[6],
+#     }
+# }
+
+docn_info_replace_files_map = {
+    'td': {
+        'ustn': lambda obj: obj[0],
+    }
+}
+
+docn_info_row_temdocne = \
+    '<tr itemprop="paidEduDocLink">' \
+    '<td itemprop="ustn"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docns_publish(request):
+    if request.method == 'GET':
+        docns_information = DocN.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavn"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'paidEduDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docns_information):
+            values = docn_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docn_info_row_temdocne)
+            # replace_page_elements(docn_info_replace_map, row, values)
+            # replace_page_links(docn_info_replace_links_map, row, values)
+            replace_page_files(docn_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ---------------- Документ об установлении размера платы, взимаемой с родителей (законных представителей) за присмотр
+# и уход за детьми, осваивающими образовательные программы дошкольного образования в организациях, осуществляющих
+# образовательную деятельность, за содержание детей в образовательной организации, реализующей образовательные
+# программы начального общего, основного общего или среднего общего образования -----------------------------
+
+def doco_to_list(row):
+    return [row.id, row.document]
+
+
+def doco_format():
+    return ['id', 'document']
+
+
+def doco_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docos(request):
+    if request.method == 'GET':
+        a = DocO.objects.all()
+        a = [doco_to_list(item) for item in a]
+        return JsonResponse({
+            'format': doco_format(),
+            'types': doco_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docosFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": doco_format(),
+            "types": doco_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docos_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocO.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocO(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocO.objects.get(id=id)
+        obj = DocO(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# doco_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocoink': lambda obj: obj[6],
+#     }
+# }
+
+doco_info_replace_files_map = {
+    'td': {
+        'usto': lambda obj: obj[0],
+    }
+}
+
+doco_info_row_temdocoe = \
+    '<tr itemprop="paidParents">' \
+    '<td itemprop="usto"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docos_publish(request):
+    if request.method == 'GET':
+        docos_information = DocO.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavo"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'paidParents'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docos_information):
+            values = doco_to_list(item)[1:]
+            row = bs4.BeautifulSoup(doco_info_row_temdocoe)
+            # replace_page_elements(doco_info_replace_map, row, values)
+            # replace_page_links(doco_info_replace_links_map, row, values)
+            replace_page_files(doco_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
+
+
+# ------------- Предписания органов, осуществляющих государственный контроль (надзор) в сфере образования ----------
+
+def docp_to_list(row):
+    return [row.id, row.document]
+
+
+def docp_format():
+    return ['id', 'document']
+
+
+def docp_format_types():
+    return ['text', 'file']
+
+
+@csrf_exempt
+def docps(request):
+    if request.method == 'GET':
+        a = DocP.objects.all()
+        a = [docp_to_list(item) for item in a]
+        return JsonResponse({
+            'format': docp_format(),
+            'types': docp_format_types(),
+            'data': a
+        }, safe=False)
+    elif request.method == 'POST':
+        pass
+    else:
+        return HttpResponseBadRequest()
+
+
+@csrf_exempt
+def docpsFormat(request):
+    if request.method == 'GET':
+        return JsonResponse({
+            "format": docp_format(),
+            "types": docp_format_types(),
+        }, safe=False)
+
+
+@csrf_exempt
+def docps_by_id(request, id):
+    if request.method == 'DELETE':
+        obj = DocP.objects.get(id=id)
+        if obj is None:
+            return HttpResponseBadRequest()
+        obj.delete()
+        return HttpResponse(200)
+    elif request.method == 'POST':
+        req_json = JSONParser().parse(request)
+        obj = DocP(
+            document=req_json['document'],
+            created_at=datetime.today(),
+            updated_at=datetime.today()
+        )
+        obj.save()
+        return HttpResponse(200)
+    elif request.method == 'PUT':
+        req_json = JSONParser().parse(request)
+        obj_old = DocP.objects.get(id=id)
+        obj = DocP(
+            id=int(id),
+            document=req_json['document'],
+            updated_at=datetime.today(),
+            created_at=obj_old.created_at
+        )
+        obj.save()
+        return HttpResponse(200)
+
+
+# docp_info_replace_map = {
+#     'td': {
+#         'name': lambda obj: obj[0],
+#         'fio': lambda obj: obj[1],
+#         'post': lambda obj: obj[2],
+#         'addressStr': lambda obj: obj[3],
+#         # 'site': lambda obj: obj[4],
+#         'email': lambda obj: obj[5],
+#         # 'divisionClauseDocpink': lambda obj: obj[6],
+#     }
+# }
+
+docp_info_replace_files_map = {
+    'td': {
+        'ustp': lambda obj: obj[0],
+    }
+}
+
+docp_info_row_temdocpe = \
+    '<tr itemprop="prescriptionDocLink">' \
+    '<td itemprop="ustp"><a href="" download="">Ссылка</a></td>' \
+    '</tr>'
+
+
+# будут проблемы, если оказалось так, что таблица пустая
+@csrf_exempt
+def docps_publish(request):
+    if request.method == 'GET':
+        docps_information = DocP.objects.all()
+
+        file = 'EmployeeApp/parser/pages/sveden/document/index.html'
+        page_parser = read_page(file)
+        tables = page_parser.find_all('table', {'itemprop': "ustavp"})
+        if len(tables) != 1:
+            return HttpResponse("Error")
+        table = tables[0]
+        rows = table.find_all('tr', {'itemprop': 'prescriptionDocLink'})
+
+        for row in rows:
+            row.extract()
+        last_tr = table.tr
+        for index, item in enumerate(docps_information):
+            values = docp_to_list(item)[1:]
+            row = bs4.BeautifulSoup(docp_info_row_temdocpe)
+            # replace_page_elements(docp_info_replace_map, row, values)
+            # replace_page_links(docp_info_replace_links_map, row, values)
+            replace_page_files(docp_info_replace_files_map, row, values)
+            last_tr.insert_after(row)
+            last_tr = last_tr.next_sibling
+
+        # new_page = replace_page_elements(basic_information_replace_map, page_parser, information)
+        write_page(file, str(page_parser))
+        return HttpResponse("OK")
