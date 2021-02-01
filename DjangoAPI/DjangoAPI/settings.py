@@ -41,10 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'EmployeeApp.apps.EmployeeappConfig',
-    'rest_framework'
+    'rest_framework',
+    'crispy_forms',
+    'accounts'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+LOGIN_REDIRECT_URL = 'http://localhost:4200/'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
