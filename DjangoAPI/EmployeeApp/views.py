@@ -13,13 +13,25 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     DocM, DocN, DocO, DocP
 
 from .serializers import DepartmentSerializer, EmployeeSerializer, BasicInformationSerializer, \
-    DepartmentsInformationSerializer, SubdivisionsSerializer
+    DepartmentsInformationSerializer, SubdivisionsSerializer, UserSerializer
 
 from django.core.files.storage import default_storage
 from datetime import datetime
 
 import bs4
 import mimetypes
+
+from rest_framework import viewsets
+from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
 
 # Create your views here.
@@ -4293,7 +4305,6 @@ act_info_replace_files_map = {
         'localAct': lambda obj: obj[0],
     }
 }
-
 
 act_info_row_template = \
     '<tr itemprop="local">' \

@@ -8,6 +8,15 @@
 from django.db import models
 
 
+class User(models.Model):
+    username = models.CharField(blank=True, null=True, max_length=1000)
+    email = models.CharField(blank=True, null=True, max_length=1000)
+    password = models.CharField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = 'user'
+
+
 class Acts(models.Model):
     filename = models.CharField(blank=True, null=True, max_length=1000)
     created_at = models.DateTimeField()

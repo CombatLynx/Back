@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 
 from .models import Departments, Employees, BasicInformations, DepartmentsInformation, Subdivisions, \
     Founders, Filiations, Representations, Managements, Volumes, Vacs, Leaders, Teachers, FilialLeaders, \
@@ -8,6 +9,17 @@ from .models import Departments, Employees, BasicInformations, DepartmentsInform
     Sports, Meals, Health, TableOne, TableTwo, TableThree, TableFour, TableFive, TableSix, TableSeven, \
     StandartCopiestwo, GrantInfoTwo, SvedenOne, SvedenTwo, Plat, DocA, DocB, DocC, DocD, DocE, DocF, DocG, DocH, \
     DocI, DocJ, DocK, DocL, DocM, DocN, DocO, DocP
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password')
+        extra_kwargs = {'password': {'write_only': True, 'required': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
 
 
 class DepartmentSerializer(serializers.ModelSerializer):

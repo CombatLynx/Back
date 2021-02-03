@@ -55,8 +55,8 @@ class EmployeeappEmployees(models.Model):
 
 class Acts(models.Model):
     filename = models.CharField(blank=True, null=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
     owner = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -1500,6 +1500,16 @@ class Univerdocs(models.Model):
     class Meta:
         managed = False
         db_table = 'univerdocs'
+
+
+class User(models.Model):
+    username = models.CharField(blank=True, null=True)
+    email = models.CharField(blank=True, null=True)
+    password = models.CharField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'user'
 
 
 class Users(models.Model):
