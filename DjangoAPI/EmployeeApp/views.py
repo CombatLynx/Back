@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
@@ -324,6 +325,8 @@ def subdivision_format_types():
 
 
 @csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def subdivisions(request):
     if request.method == 'GET':
         a = Subdivisions.objects.all()
@@ -365,6 +368,8 @@ def handle_file(request, filename=None):
 
 
 @csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def subdivisionsFormat(request):
     if request.method == 'GET':
         return JsonResponse({
@@ -374,6 +379,8 @@ def subdivisionsFormat(request):
 
 
 @csrf_exempt
+@api_view(['DELETE', 'POST', 'PUT'])
+@permission_classes([IsAuthenticated])
 def subdivisions_by_id(request, id):
     if request.method == 'DELETE':
         obj = Subdivisions.objects.get(id=id)
